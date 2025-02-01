@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { dataArray } from "../constants/RecitersImages";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
-import { useGlobalContext } from "../context/GlobalProvider";
+
 import LottieView from "lottie-react-native";
 
 
@@ -62,7 +62,7 @@ const ListenComp = React.memo(
                 <View style={styles.buttonContent}>
                   <View style={styles.imageContainer}>
                     <Image
-                      resizeMode="cover"
+                      contentFit="cover"
                       style={styles.image}
                       source={{
                         uri: dataArray[id]?.image
@@ -72,8 +72,14 @@ const ListenComp = React.memo(
                     />
                   </View>
                   <View style={styles.textContainer}>
-                    <Text style={styles.reciterName}>
-                      {languages ? arabName : reciterName}
+                    <Text className="text-red-500" style={styles.reciterName}>
+                      {languages
+                        ? arabName.length > 25
+                          ? arabName.slice(0, 25) + "..."
+                          : arabName
+                        : reciterName.length > 25
+                        ? reciterName.slice(0, 25) + "..."
+                        : reciterName}
                     </Text>
                     <Text numberOfLines={1} style={styles.chapterName}>
                       {languages ? chapterAr : chapterName}
@@ -89,7 +95,6 @@ const ListenComp = React.memo(
                     reciterID={id}
                     arabName={arabName}
                     chapterAr={chapterAr}
-                    handlePlay={() => handleClick(id)}
                     chapteID={Chapterid}
                     mp3={mp3}
                   />
@@ -158,6 +163,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start",
     marginLeft: 12,
+    
   },
   reciterName: {
     color: "white",

@@ -22,7 +22,9 @@ import ModalAudio from "../../../components/ModalAudio";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 import { TouchableRipple } from "react-native-paper";
+import TrackPlayer from "react-native-track-player";
 
+ 
 const HEADER_MAX_HEIGHT = height * 0.62;
 const HEADER_MIN_HEIGHT = height * 0.25;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -55,18 +57,14 @@ const ReaderSurah = () => {
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
   const {
-    pauseAudio,
     languages,
     setIsPlaying,
     isPlaying,
     setChapterID,
     setIDchapter,
-    position,
     setPosition,
     setDuration,
-    duration,
-    currentTrackId,
-    setCurrentTrackId,
+    modalVisible,
     setArabicCH,
     chapters,
     setReciter,
@@ -75,9 +73,8 @@ const ReaderSurah = () => {
     setDataAudio,
     setAdtoList,
     setIDreader,
-    modalVisible,
     setReciterAR,
-    soundRef
+    playTrack
   } = useGlobalContext();
 
   const [loading, setloading] = useState(false);
@@ -85,8 +82,10 @@ const ReaderSurah = () => {
   const [visible, setvisible] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
+  const [currentTrackId, setCurrentTrackId] = useState(0);
    const [color, setColor] = useState(0);
-   const [color2, setColor2] = useState(0);
+  
+  
   
 
 
@@ -127,7 +126,7 @@ const ReaderSurah = () => {
   }, [languages, searchQuery, id, color]);
 
   const getChapter = async () => {
-    setloading(true);
+    
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
@@ -136,81 +135,74 @@ const ReaderSurah = () => {
     } catch (error) {
       console.error("Error fetching chapters:", error);
     } finally {
-      setloading(false);
+      
     }
   };
 
-  const fetchAudioUrl = async () => {
-    setloading(true);
+  const fetchAudioUrl = async (id) => {
+    
     try {
       const data = await fetchAudio(id);
       if (data && data.audio_files) {
         setDataAudio(data.audio_files);
+        
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
     } finally {
-      setloading(false);
+      
     }
   };
 
-
+ 
   //playSound
-  const playSound = async (
-    uri,
-    trackId,
-    chapterName,
-    name,
-    arabName,
-    id,
-    arabicCh
-  ) => {
-    try {
-      if (soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      }
+ 
+  
+  
+ 
 
-      await soundRef.current.loadAsync({ uri });
-      await soundRef.current.playAsync();
+  useEffect(() => {
+    const updateProgress = async () => {
+      const progress = await TrackPlayer.getProgress();
+      setPosition(progress.position);
+      setDuration(progress.duration);
+    };
+  
+    const interval = setInterval(updateProgress, 1000); // Update every second
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
-      // Set the current index in the list
+ 
 
-      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    } catch (error) {
-      console.error("Error playing sound:", error);
-    }
+ const playAudio = async (uri,trackId,chapterName,name, arabName, id,arabicCh) => {
+    await TrackPlayer.reset();
+    await TrackPlayer.add({
+      id: id,
+      url: uri,
+      title: chapterName,
+      artist: name,
+    });
+    await TrackPlayer.play();
+
+    
+    setColor(trackId);
     setCurrentTrackId(trackId);
     setChapterID(chapterName);
     setArabicCH(arabicCh);
     setIsPlaying(true);
     setReciter(name);
     setIDreader(id);
-    setColor(trackId);
-    setColor2(id)
+    
     setReciterAR(arabName);
-  };
-  
-  // Function to handle playback status updates
-  const onPlaybackStatusUpdate = (status) => {
-    if (status.isLoaded) {
-      setPosition(status.positionMillis);
-      setDuration(status.durationMillis);
-      setIsPlaying(status.isPlaying);
-
-      // Check if the audio has finished playing
-      if (status.didJustFinish) {
-        setCurrentTrackId();
-      }
-    }
+    
   };
 
 
+   //platNext
 
-  //platNext
-
-  const nextSurah = () => {
-    playSound(
+   const nextSurah = () => {
+    playAudio(
       dataAudio[currentTrackId].audio_url,
       dataAudio[currentTrackId].chapter_id,
       chapters[currentTrackId].name_simple,
@@ -225,7 +217,7 @@ const ReaderSurah = () => {
   //playAuto
 
   const playAuto = () => {
-    playSound(
+    playAudio(
       dataAudio[0].audio_url,
       dataAudio[0].chapter_id,
       chapters[0].name_simple,
@@ -239,7 +231,7 @@ const ReaderSurah = () => {
   //PlayPrevious
 
   const previousSurah = async () => {
-    playSound(
+    playAudio(
       dataAudio[currentTrackId - 2].audio_url,
       dataAudio[currentTrackId - 2].chapter_id,
       chapters[currentTrackId - 2].name_simple,
@@ -250,14 +242,16 @@ const ReaderSurah = () => {
     );
   };
 
-  const handlePress = (index) => {
-    if (index) setColor(index);
-  };
+
+
+
+ 
+  
 
   //  Memoizing filtered data
   const memoizedFilteredData = useMemo(() => {
     return filteredData;
-  }, [filteredData]);
+  }, [filteredData,]);
 
   //  Memoizing chapters list
   const memoizedChapters = useMemo(() => {
@@ -323,7 +317,7 @@ const ReaderSurah = () => {
             {isPlaying ? (
               <View>
                 <TouchableRipple
-                  onPress={pauseAudio}
+                  onPress={"pauseAudio"}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -334,7 +328,7 @@ const ReaderSurah = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={playAuto}
+                  onPress={"playAuto"}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -404,7 +398,7 @@ const ReaderSurah = () => {
             <View style={{}}>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={pauseAudio}
+                onPress={"pauseAudio"}
                 style={styles.playPauseButton}
               >
                 <FontAwesome5 name="pause" size={20} color="#00D1FF" />
@@ -414,7 +408,7 @@ const ReaderSurah = () => {
             <View style={{}}>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={playAuto}
+                onPress={"playAuto"}
                 style={styles.playPauseButton}
               >
                 <Entypo name="controller-play" size={24} color="#00D1FF" />
@@ -456,11 +450,11 @@ const ReaderSurah = () => {
             arab_name={arab_name}
             chapterAr={item.name_arabic}
             chapterName={item.name_simple}
-            playSound={playSound}
+            playSound={playAudio}
             languages={languages}
             setAdtoList={setAdtoList}
             color={item.id === color}
-            onPress={() => handlePress(item.id)}
+            
           />
           )}
         />
@@ -470,14 +464,14 @@ const ReaderSurah = () => {
         paddingBottom: 150,
         paddingTop: HEADER_MAX_HEIGHT,
       }}
-      data={memoizedChapters}
+      data={chapters}
       ref={flashListRef}
-      estimatedItemSize={70}
+      estimatedItemSize={75}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
         { useNativeDriver: false }
       )}
-      keyExtractor={(item) => item?.id?.toString()}
+      keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <SuratReader
           chapteID={item.id}
@@ -493,10 +487,12 @@ const ReaderSurah = () => {
           arab_name={arab_name}
           chapterAr={item.name_arabic}
           chapterName={item.name_simple}
-          playSound={playSound}
+          // playSound={playSound}
+          playAudio={playAudio}
           languages={languages}
           setAdtoList={setAdtoList}
           color={item.id === color}
+          setloading={setloading}
           
         />
           )}
@@ -518,16 +514,16 @@ const ReaderSurah = () => {
           <Ionicons name="arrow-up" size={24} color="white" />
         </TouchableRipple>
       </Animated.View>
-
-      {/* Modal */}
-      <View style={styles.centeredView}>
+        {/* Modal */}
+        <View style={styles.centeredView}>
         <Modal animationType="slide" transparent={true} visible={modalVisible}>
           <StatusBar backgroundColor="#181A3C" />
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <ModalAudio
-                duration={duration}
-                position={position}
+               
+                // shuffle={shuffle}
+                // setShuffle={setShuffle}
                 setPosition={setPosition}
                 nextSurah={nextSurah}
                 previousSurah={previousSurah}
@@ -536,6 +532,8 @@ const ReaderSurah = () => {
           </View>
         </Modal>
       </View>
+
+     
     </View>
   );
 };
@@ -684,5 +682,11 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
+
+
+
+
+
+
 
 export default ReaderSurah;

@@ -1,7 +1,6 @@
 import { View, Text, Image, ImageBackground, StyleSheet, StatusBar } from 'react-native';
 import React, { useEffect } from 'react';
 import { router } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/Colors';
 
 
@@ -54,9 +53,11 @@ const styles = StyleSheet.create({
   logo: {
     height: 150,
     width: 150,
+    
   },
   textContainer: {
     alignItems: 'center',
+    bottom:30
   },
   title: {
     color: '#00D1FF',

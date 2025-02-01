@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    
     "ios": {
       "supportsTablet": true,
       "runtimeVersion": {
@@ -15,14 +15,18 @@
       }
     },
     "android": {
+
+      "permissions": [
+        
+        "android.permission.FOREGROUND_SERVICE",
+         "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE"
-      ],
+    
       "package": "com.riadp1.Quran",
       "runtimeVersion": "1.0.0"
     },
@@ -38,7 +42,14 @@
         {
           "image": "./assets/images/splash.png",
           "imageWidth": 200,
-          "resizeMode": "contain"
+          "resizeMode": "contain",
+          "backgroundColor":"#0000"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
         }
       ],
       "expo-font"

@@ -1,13 +1,6 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require("expo/metro-config");
+const { withNativeWind } = require("nativewind/metro");
 
-/** @type {import('expo/metro-config').MetroConfig} */
-const defaultConfig  = getDefaultConfig(__dirname);
-const config = {
-    resolver: {
-      assetExts: [...defaultConfig.resolver.assetExts, 'lottie'],
-      assets:["./assets/fonts"]
-    },
-  };
+const config = getDefaultConfig(__dirname);
 
-module.exports = (config,defaultConfig);
+module.exports = withNativeWind(config, { input: "./global.css" });

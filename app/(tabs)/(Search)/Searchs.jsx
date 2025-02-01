@@ -9,19 +9,20 @@ import {
 } from "react-native";
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
-import SearchBar from "../../components/SearchBar";
 
-import { fetchChater, fetchSuwar } from "../API/QuranApi";
+
+import { fetchChater, fetchSuwar } from "../../API/QuranApi";
 
 import { router } from "expo-router";
 import { dataArray } from "@/constants/RecitersImages";
-import { NewData } from "../../constants/NewData";
+import { NewData } from "../../../constants/NewData";
 import { Button, TouchableRipple } from "react-native-paper";
-import { Colors } from "../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 import { StatusBar } from "react-native";
-import ChapterFilter from "../../components/ChapterFilter";
-import ReaderFilter from "../../components/ReaderFilter";
-import { useGlobalContext } from "../../context/GlobalProvider";
+import ChapterFilter from "../../../components/ChapterFilter";
+import ReaderFilter from "../../../components/ReaderFilter";
+import { useGlobalContext } from "../../../context/GlobalProvider";
+import SearchBar from "../../../components/SearchBar";
 
 const Ios = Platform.OS == "ios";
 let { width, height } = Dimensions.get("window");
@@ -102,7 +103,7 @@ const Search = () => {
       console.log("Moratilii", item);
     } else if (item.reciter_name) {
       router.push({
-        pathname: `/ReaderSurah/`,
+        pathname: `/ReciterSearch/`,
         params: {
           id: item.id,
           name: item.reciter_name,
@@ -119,7 +120,7 @@ const Search = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         filteredData={filteredData}
-        title="Chapter or Reciter..."
+        title={languages?"ابحث عن السورة أو القارئ...":" Search Chapter or Reciter..."}
       />
 
       {/* results */}
@@ -144,9 +145,9 @@ const Search = () => {
                   <View style={styles.imageContainer}>
                     {item.name_simple ? (
                       <Image
-                        resizeMode="contain"
+                        contentFit="contain"
                         style={styles.image}
-                        source={require("../../assets/images/quranLogo.png")}
+                        source={require("../../../assets/images/quranLogo.png")}
                       />
                     ) : (
                       <Image

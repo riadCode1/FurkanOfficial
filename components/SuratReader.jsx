@@ -15,11 +15,12 @@ const SuratReader = ({
   chapterAr,
   reciterName,
   arab_name,
-  playSound,
+  index,
   dataAudio,
   chapteID,
   loading,
   id,
+  playAudio,
   setIDchapter,
   setvisible,
   data,
@@ -28,14 +29,14 @@ const SuratReader = ({
 
   
   const handlePlay = () => {
-    playSound(
+    playAudio(
       dataAudio[chapteID - 1]?.audio_url,
       chapteID,
       chapterName,
       reciterName,
       arab_name,
       id,
-      chapterAr
+      chapterAr, index
     );
     
     
@@ -65,7 +66,7 @@ const SuratReader = ({
               <View style={{flexDirection:"row"}} >
                 <View style={styles.imageContainer}>
                   <Image
-                    resizeMode="cover"
+                    contentFit="cover"
                     style={styles.image}
                     source={{
                       uri: dataArray[id]?.image

@@ -3,75 +3,86 @@ import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
 import { Entypo, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useGlobalContext } from "../context/GlobalProvider";
-
-import { useSharedValue } from "react-native-reanimated";
 import { Colors } from "../constants/Colors";
 import Slider from "@react-native-community/slider";
 import { TouchableRipple } from "react-native-paper";
-import { useIsFocused } from "@react-navigation/native";
+import TrackPlayer, { useProgress } from "react-native-track-player";
+import { skipToNext } from "react-native-track-player/lib/src/trackPlayer";
 
 
-const ModalAudio = ({ nextSurah, previousSurah }) => {
+const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
   const {
     setModalVisible,
     chapterId,
-    setPosition,
     duration,
     position,
     reciter,
     reciterAR,
     isPlaying,
     languages,
-    pauseAudio,
+    setIsPlaying,
     arabicCH,
-    soundRef
+    playNext,
+    playPrevious,
+    togglePlayback
+    
   } = useGlobalContext();
 
-  const focused = useIsFocused()
+ 
 
-  const progress = useSharedValue(position);
-  const min = useSharedValue(0);
-  const max = useSharedValue(duration);
+  const progress = useProgress();
+  
 
   useEffect(() => {
 
-    progress.value = position;
-  }, [,position,focused]);
+    progress.position;
+  }, [,shuffle]);
 
-  const formatTime = (millis) => {
-    const hours = Math.floor(millis / 3600000); // Convert to hours
-    const minutes = Math.floor((millis % 3600000) / 60000); // Calculate remaining minutes
-    const seconds = Math.floor((millis % 60000) / 1000); // Calculate remaining seconds
-    return `0${hours}:${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`;
+  const handlerepeat = () => {
+    
+    setShuffle("first");
+    
   };
 
- 
+  const handleShuffle = () => {
+    
+    setShuffle("second");
+    
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600); // Convert to hours
+    const minutes = Math.floor((seconds % 3600) / 60); // Calculate remaining minutes
+    const secs = Math.floor(seconds % 60); // Calculate remaining seconds
+  
+    // Format as HH:MM:SS or MM:SS
+    if (hours > 0) {
+      return `0${hours}:${minutes < 10 ? "0" : ""}${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+    } else {
+      return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-       
         <TouchableRipple
-      onPress={() => setModalVisible(false)}
-      rippleColor="rgba(255, 255, 255, 0.2)"
-      style={styles.backButton}
-      borderless={true}
-    >
-       <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
-    </TouchableRipple>
-       
+          onPress={() => setModalVisible(false)}
+          rippleColor="rgba(255, 255, 255, 0.2)"
+          style={styles.backButton}
+          borderless={true}
+        >
+          <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
+        </TouchableRipple>
 
-    <TouchableRipple
-      onPress={() => setModalVisible(false)}
-      rippleColor="rgba(255, 255, 255, 0.2)"
-      style={styles.backButton}
-      borderless={true}
-    >
-       <Entypo name="dots-three-vertical" size={20} color="white" />
-    </TouchableRipple>
-
-     
+        <TouchableRipple
+          onPress={() => setModalVisible(false)}
+          rippleColor="rgba(255, 255, 255, 0.2)"
+          style={styles.backButton}
+          borderless={true}
+        >
+          <Entypo name="dots-three-vertical" size={20} color="white" />
+        </TouchableRipple>
       </View>
 
       <View style={styles.imageContainer}>
@@ -93,23 +104,19 @@ const ModalAudio = ({ nextSurah, previousSurah }) => {
 
       {/* Progress bar and time display */}
       <View style={styles.progressContainer}>
-
         {/* Slider for progress */}
-     <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={duration || 1}
-                value={position}
-                thumbTintColor={Colors.blue} // Apply track style
-                minimumTrackTintColor={Colors.blue}
-                maximumTrackTintColor="#fff"
-                onSlidingComplete={async (value) => {
-                  if (soundRef) {
-                    await soundRef.current.setPositionAsync(value);
-                  }
-                }}
-              />
-
+        <Slider
+          style={styles.slider}
+          minimumValue={0}
+          maximumValue={duration || 1} // Ensure duration is valid
+          value={position} // Use the position state
+          thumbTintColor={Colors.blue} // Apply track style
+          minimumTrackTintColor={Colors.blue}
+          maximumTrackTintColor="#fff"
+          onSlidingComplete={async (value) => {
+            await TrackPlayer.seekTo(value); // Seek to the new position
+          }}
+        />
         <View style={styles.timeContainer}>
           <Text style={styles.timeText}>{formatTime(position)}</Text>
           <Text style={styles.timeText}>{formatTime(duration)}</Text>
@@ -120,17 +127,19 @@ const ModalAudio = ({ nextSurah, previousSurah }) => {
             <MaterialIcons name="skip-previous" size={40} color="white" />
           </TouchableOpacity>
 
+          
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={pauseAudio}
+            onPress={togglePlayback}
             style={styles.playPauseButton}
           >
-            {isPlaying ? (
-              <FontAwesome name="pause" size={24} color="white" />
-            ) : (
-              <FontAwesome name="play" size={24} color="white" />
-            )}
+            {isPlaying?
+             <FontAwesome name="pause" size={24} color="white" />
+            :
+            <FontAwesome name="play" size={24} color="white" /> }
+            
           </TouchableOpacity>
+     
 
           <TouchableOpacity activeOpacity={0.7} onPress={nextSurah}>
             <MaterialIcons name="skip-next" size={40} color="white" />
@@ -138,11 +147,33 @@ const ModalAudio = ({ nextSurah, previousSurah }) => {
         </View>
 
         <View style={styles.shuffleRepeatContainer}>
-          <TouchableOpacity activeOpacity={0.7}>
+          <TouchableOpacity
+            style={[
+              {
+                backgroundColor:
+                  shuffle === "second" ? Colors.backgroundTint : "transparent",
+                padding: 10,
+                borderRadius: 5,
+              },
+            ]}
+            onPress={handleShuffle}
+            activeOpacity={0.7}
+          >
             <MaterialIcons name="shuffle" size={30} color="#00D1FF" />
           </TouchableOpacity>
 
-          <TouchableOpacity activeOpacity={0.7}>
+          <TouchableOpacity
+            style={[
+              {
+                backgroundColor:
+                  shuffle === "first" ? Colors.backgroundTint : "transparent",
+                padding: 10,
+                borderRadius: 5,
+              },
+            ]}
+            onPress={handlerepeat}
+            activeOpacity={0.7}
+          >
             <MaterialIcons name="repeat" size={30} color="#00D1FF" />
           </TouchableOpacity>
         </View>

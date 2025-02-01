@@ -169,7 +169,7 @@ const Readers = () => {
           setloading(false);
         });
     }
-  }, [searchQuery, activeButton]);
+  }, [searchQuery, ]);
   
 
   return (
@@ -195,14 +195,14 @@ const Readers = () => {
           <Image
             source={require("../../../assets/images/quranLogo.png")}
             blurRadius={20}
-            resizeMode="cover"
+            contentFit="cover"
             style={[styles.headerImage]}
           />
         </Animated.View>
 
         <Animated.View style={[styles.imageContainer, {}]}>
           <Image
-            resizeMode="cover"
+            contentFit="cover"
             style={[styles.image]}
             source={require("../../../assets/images/quranLogo.png")}
           />
@@ -405,20 +405,14 @@ const Readers = () => {
       {activeButton === "button1" && (
         <Listen
           chapterName={name}
-          scrollY={scrollY}
-          ButtonOpacity={ButtonOpacity}
+          scrollY={scrollY}         
           HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT}
           chapterAr={chapter_arab}
           searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          filteredData={filteredData}
-          color={color}
-          setColor={setColor}
-          title="Chapter or Reciter..."
+          filteredData={filteredData}          
           Chapterid={Chapterid}
           loading={loading}
           ButtonTranslate={ButtonTranslate}
-          info={chapterInfo.short_text}
           quranData={quranData}
         />
       )}

@@ -40,7 +40,7 @@ const Dropmenu = ({
 
   const saveToPlaylist = async (list) => {
     setIsSaved(true);
-    console.log(list);
+    
     await AsyncStorage.getItem("playList").then((token) => {
       const res = JSON.parse(token);
 
@@ -85,7 +85,7 @@ const Dropmenu = ({
   };
   const renderBookmark = async (list) => {
 
-    console.log("render",list)
+    
     await AsyncStorage.getItem("playList").then((token) => {
       const res = JSON.parse(token);
       if (res) {

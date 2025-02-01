@@ -5,3 +5,7 @@ import service from './service';
 
 AppRegistry.registerComponent('YourAppName', () => app);
 TrackPlayer.registerPlaybackService(() => service);
+
+// Import your global CSS file
+
+

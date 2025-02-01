@@ -5,6 +5,7 @@ import BottomBar from "@/components/BottomBar";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { useEffect, useState } from "react";
 import Blur from "../../components/Blur";
+import { Colors } from "../../constants/Colors";
 
 
 export default function Layout() {
@@ -55,48 +56,52 @@ export default function Layout() {
             height: 74,
             position: "absolute",
             alignItems:"center",
-            borderTopWidth: 1,
-            borderTopColor: "#00D1FF",
+            borderTopWidth: 0.5,
+            borderTopColor: "#99A5FF",
             elevation: 0,
             paddingTop:10,
             flex:1,
-            backgroundColor:"rgba(0,0,0,0.8)",
+            backgroundColor:Colors.background,
       
            
             
             
           },
-          tabBarBackground: () => (
-     <Blur/>
-    ),
+         
           
              
          }}
       >
         <Tabs.Screen
           name="(Home)"
+          
           options={{
+            href:"Index",
             title: languages?"الرئيسية":"Home",
             tabBarIcon: ({ color, focused }) => (
               <Octicons
                 name="home"
                 size={24}
-                color={focused ? "#00D1FF" : "gray"}
+                color={focused ? Colors.blue : Colors.textGray}
               />
             ),
           }}
         />
         <Tabs.Screen
-          name="Search"
+          name="(Search)"
+          
           options={{
+            href:"Searchs",
             title: languages?" بحث":"Search",
             tabBarIcon: ({ color, focused }) => (
               <AntDesign
                 size={24}
                 name="search1"
-                color={focused ? "#00D1FF" : "gray"}
+                color={focused ? Colors.blue : Colors.textGray}
               />
             ),
+
+            
           }}
         />
         <Tabs.Screen
@@ -107,7 +112,7 @@ export default function Layout() {
               <AntDesign
                 size={24}
                 name="download"
-                color={focused ? "#00D1FF" : "gray"}
+                color={focused ? Colors.blue : Colors.textGray}
               />
             ),
           }}
@@ -116,11 +121,12 @@ export default function Layout() {
           name="(Settings)"
           options={{
             title: languages?"الإعدادات":"Seattings",
+            
             tabBarIcon: ({ color, focused }) => (
               <AntDesign
                 size={24}
                 name="setting"
-                color={focused ? "#00D1FF" : "gray"}
+                color={focused ? Colors.blue : Colors.textGray}
               />
             ),
           }}

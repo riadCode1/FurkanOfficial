@@ -190,7 +190,7 @@ const onPlaybackStatusUpdate = (status) => {
   };
 
   return (
-    <View>
+    <View className=" items-center">
       <View style={{ marginBottom: 16 }}>
         <SearchBar
           title={languages ? "ابحث عن مدخراتك" : "Search your savings"}
@@ -206,7 +206,7 @@ const onPlaybackStatusUpdate = (status) => {
             data={filteredData}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={70}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => item.id.toString()}
             contentContainerStyle={styles.flatlistContent}
             renderItem={({ item }) => (
               <View
@@ -282,7 +282,7 @@ const onPlaybackStatusUpdate = (status) => {
             data={playlist}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={70}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => item.id.toString()}
             contentContainerStyle={styles.flatlistContent}
             renderItem={({ item }) => (
               <View

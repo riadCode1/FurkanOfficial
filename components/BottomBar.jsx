@@ -23,8 +23,8 @@ const BottomBar = ({
  
   idReader,
 }) => {
-  useEffect(() => {}, [chapterId, ]);
-   const { languages } = useGlobalContext();
+  
+   const { languages,togglePlayback } = useGlobalContext();
 
   return (
     <TouchableOpacity
@@ -58,15 +58,15 @@ const BottomBar = ({
       </View>
 
       <TouchableRipple
-        rippleColor="rgba(53, 53, 151,0.4)"
-        onPress={pauseAudio}
+        rippleColor="rgba(200, 200, 200, 0.1)"
+        onPress={togglePlayback}
         borderRadius={20} borderless
         style={styles.iconButton}
       >
         {playing ? (
-          <FontAwesome5 name="pause" size={24} color="#00D1FF" />
+          <FontAwesome5 name="pause" size={20} color="#00D1FF" />
         ) : (
-          <FontAwesome5 name="play" size={24} color="#00D1FF" />
+          <FontAwesome5 name="play" size={20} color="#00D1FF" />
         )}
       </TouchableRipple>
     </TouchableOpacity>
@@ -117,9 +117,9 @@ const styles = StyleSheet.create({
   iconButton: {
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
-     // To make it fully circular
-    padding: 8,
+   
+    height:58,
+    width:58
   },
 });
 

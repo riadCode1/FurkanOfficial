@@ -71,7 +71,7 @@ const Index = () => {
               style={styles.logo}
               source={require("../../../assets/images/Logo.png")}
             />
-            <Text style={styles.logoText}>Furqan</Text>
+            <Text  style={styles.logoText}>Furqan</Text>
 
             <Image
               style={styles.logo}
@@ -80,14 +80,7 @@ const Index = () => {
             />
           </View>
 
-          <TouchableRipple
-            rippleColor="rgba(53, 53, 151,1)"
-            borderRadius={20}
-            borderless
-            style={styles.iconButton}
-          >
-            <Feather name="cast" size={24} color="white" />
-          </TouchableRipple>
+     
         </View>
 
         {/* Listen */}

@@ -25,7 +25,7 @@ const ReaderFilter = () => {
   const { languages } = useGlobalContext();
 
   const handleNavigate = (arab_name, name, id) => {
-    router.push({ pathname: `/ReaderSurah/`, params: { arab_name, name, id } });
+    router.push({ pathname: `/ReciterSearch/`, params: {id , arab_name, name, } });
   };
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const ReaderFilter = () => {
         contentContainerStyle={{ paddingBottom: 450 }}
         data={reader}
         showsVerticalScrollIndicator={false}
-        estimatedItemSize={70}
+        initialNumToRender={70}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>
@@ -87,9 +87,9 @@ const ReaderFilter = () => {
               <TouchableRipple
                 onPress={() =>
                   handleNavigate(
-                    item.translated_name.name,
-                    item.reciter_name,
-                    item.id
+                    item?.translated_name.name,
+                    item?.reciter_name,
+                    item?.id
                   )
                 }
                 rippleColor="rgba(200, 200, 200, 0.1)"
@@ -105,7 +105,7 @@ const ReaderFilter = () => {
                   <View style={{ flexDirection: "row", gap: 12 }}>
                     <View style={styles.imageContainer}>
                       <Image
-                        resizeMode="contain"
+                        contentFit="contain"
                         style={styles.image}
                         source={{
                           uri: dataArray[item.id]?.image

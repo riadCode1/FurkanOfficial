@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/GlobalProvider";
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import { Audio,  } from "expo-av";
 import ModalAudio from "./ModalAudio";
 
 import { Colors } from "../constants/Colors";
@@ -125,22 +125,8 @@ const Listen = ({
     id,
     chapterAR
   ) => {
-    try {
-      if (soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      }
 
-      await soundRef.current.loadAsync({ uri });
-      await soundRef.current.playAsync();
-      await soundRef.current.setVolumeAsync(1.0);
-
-      // Set the current index in the list
-      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    } catch (error) {
-      console.error("Error playing sound:", error);
-    }
-
+    
     setCurrentTrackId(trackId);
     setChapterID(chapterName);
     setIsPlaying(true);
@@ -149,6 +135,28 @@ const Listen = ({
     setIDreader(id);
     setReciterAR(arabName);
     setColor2(id);
+    try {
+      if (soundRef.current._loaded && soundRef.current._uri === uri) {
+        await soundRef.current.playAsync();
+        return;
+      }
+  
+      // Stop and unload the current sound if it's loaded
+      if (soundRef.current._loaded) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      }
+  
+      // Load and play the new sound
+      await soundRef.current.loadAsync({ uri });
+      await soundRef.current.playAsync();
+  
+      // Set the playback status update listener
+      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    } catch (error) {
+      console.error("Error playing sound:", error);
+      setIsPlaying(false); // Ensure isPlaying is set to false in case of error
+    }
   };
 
   // Function to handle playback status updates
@@ -167,25 +175,12 @@ const Listen = ({
 
   // Play on the Background
   useEffect(() => {
-    const setupAudioMode = async () => {
-      await Audio.setAudioModeAsync({
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-        interruptionModeIOS: InterruptionModeIOS.DuckOthers,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
-      });
-    };
-
-   
-
-    setupAudioMode();
+    
   }, [searchQuery, languages,]);
 
   const handleClick = (id) => {
     setColor2(id);
-    handleReciterSelect();
+   
   };
 
   return (
@@ -216,6 +211,7 @@ const Listen = ({
                 chapterName={chapterName}
                 languages={languages}
                 mp3={audioUri}
+                handleReciterDrop={handleReciterDrop}
                 Chapterid={Chapterid}
               />
             </View>
@@ -229,7 +225,7 @@ const Listen = ({
             paddingTop: HEADER_MAX_HEIGHT,
           }}
           data={quranData}
-          initialNumToRender={70}
+          initialNumToRender={50}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: true }
@@ -248,6 +244,7 @@ const Listen = ({
                 languages={languages}
                 mp3={mp3}
                 color2={color2}
+                handleReciterDrop={handleReciterDrop}
                 Chapterid={Chapterid}
                 handleClick={handleClick}
                 
