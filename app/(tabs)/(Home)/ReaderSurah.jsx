@@ -1,30 +1,20 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { TouchableOpacity, Modal, Dimensions, FlatList } from "react-native";
-import { router, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
+import { TouchableOpacity, Dimensions } from "react-native";
+import { router, useGlobalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 let { width, height } = Dimensions.get("window");
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Image,
-  StatusBar,
-} from "react-native";
+import { View, Text, StyleSheet, Animated, Image } from "react-native";
 import SearchBar from "../../../components/SearchBar";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { fetchAudio, fetchChater } from "../../API/QuranApi";
 import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
-import ModalAudio from "../../../components/ModalAudio";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 import { TouchableRipple } from "react-native-paper";
-import TrackPlayer from "react-native-track-player";
 
- 
 const HEADER_MAX_HEIGHT = height * 0.62;
 const HEADER_MIN_HEIGHT = height * 0.25;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -62,9 +52,6 @@ const ReaderSurah = () => {
     isPlaying,
     setChapterID,
     setIDchapter,
-    setPosition,
-    setDuration,
-    modalVisible,
     setArabicCH,
     chapters,
     setReciter,
@@ -74,7 +61,8 @@ const ReaderSurah = () => {
     setAdtoList,
     setIDreader,
     setReciterAR,
-    playTrack
+    playTrack,
+    setTrackList,
   } = useGlobalContext();
 
   const [loading, setloading] = useState(false);
@@ -82,12 +70,7 @@ const ReaderSurah = () => {
   const [visible, setvisible] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
-  const [currentTrackId, setCurrentTrackId] = useState(0);
-   const [color, setColor] = useState(0);
-  
-  
-  
-
+  const [color, setColor] = useState(0);
 
   const scrollToTop = () => {
     if (flashListRef.current) {
@@ -123,10 +106,18 @@ const ReaderSurah = () => {
           setloading(false);
         });
     }
+
+    const trackList = dataAudio.map((data) => ({
+      id: 1,
+      url: data.audio_url,
+      title: chapters,
+      artist: name,
+      artwork: require("../../../assets/images/icon.png"),
+    }));
+    setTrackList(trackList);
   }, [languages, searchQuery, id, color]);
 
   const getChapter = async () => {
-    
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
@@ -135,129 +126,62 @@ const ReaderSurah = () => {
     } catch (error) {
       console.error("Error fetching chapters:", error);
     } finally {
-      
     }
   };
 
   const fetchAudioUrl = async (id) => {
-    
     try {
       const data = await fetchAudio(id);
       if (data && data.audio_files) {
         setDataAudio(data.audio_files);
-        
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
     } finally {
-      
     }
   };
 
- 
   //playSound
- 
-  
-  
- 
 
-  useEffect(() => {
-    const updateProgress = async () => {
-      const progress = await TrackPlayer.getProgress();
-      setPosition(progress.position);
-      setDuration(progress.duration);
-    };
-  
-    const interval = setInterval(updateProgress, 1000); // Update every second
-  
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
+  const playSound = (
+    uri,
+    trackId,
+    chapterName,
+    name,
+    arabName,
+    id,
+    arabicCh
+  ) => {
+    playTrack(
+      {
+        id: id,
+        url: uri,
+        title: chapters,
+        artist: name,
+        
+      },
+      trackId
+    );
 
- 
-
- const playAudio = async (uri,trackId,chapterName,name, arabName, id,arabicCh) => {
-    await TrackPlayer.reset();
-    await TrackPlayer.add({
-      id: id,
-      url: uri,
-      title: chapterName,
-      artist: name,
-    });
-    await TrackPlayer.play();
-
-    
     setColor(trackId);
-    setCurrentTrackId(trackId);
     setChapterID(chapterName);
     setArabicCH(arabicCh);
     setIsPlaying(true);
     setReciter(name);
     setIDreader(id);
-    
     setReciterAR(arabName);
-    
   };
-
-
-   //platNext
-
-   const nextSurah = () => {
-    playAudio(
-      dataAudio[currentTrackId].audio_url,
-      dataAudio[currentTrackId].chapter_id,
-      chapters[currentTrackId].name_simple,
-      name,
-      arab_name,
-      id,
-      chapters[currentTrackId].name_arabic
-    );
-  };
-
-
-  //playAuto
-
-  const playAuto = () => {
-    playAudio(
-      dataAudio[0].audio_url,
-      dataAudio[0].chapter_id,
-      chapters[0].name_simple,
-      name,
-      arab_name,
-      id,
-      chapters[0].name_arabic
-    );
-  };
-
-  //PlayPrevious
-
-  const previousSurah = async () => {
-    playAudio(
-      dataAudio[currentTrackId - 2].audio_url,
-      dataAudio[currentTrackId - 2].chapter_id,
-      chapters[currentTrackId - 2].name_simple,
-      name,
-      arab_name,
-      id,
-      chapters[currentTrackId - 2].name_arabic
-    );
-  };
-
-
-
-
- 
-  
 
   //  Memoizing filtered data
   const memoizedFilteredData = useMemo(() => {
     return filteredData;
-  }, [filteredData,]);
+  }, [filteredData]);
 
   //  Memoizing chapters list
   const memoizedChapters = useMemo(() => {
     return chapters;
   }, [chapters]);
-  
+
   return (
     <View style={styles.container}>
       <TouchableRipple
@@ -416,85 +340,80 @@ const ReaderSurah = () => {
             </View>
           )}
         </View>
-
-       
       </Animated.View>
 
       {searchQuery.length > 1 ? (
         <FlashList
-        contentContainerStyle={{
-          paddingBottom: 150,
-          paddingTop: HEADER_MAX_HEIGHT,
-          
-        }}
-        data={memoizedFilteredData}
-        ref={flashListRef}
-        estimatedItemSize={50}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <SuratReader
-            chapteID={item.id}
-            id={id}
-            setIsPlaying={setIsPlaying}
-            dataAudio={dataAudio}
-            reciterName={name}
-            data={item}
-            setSearchQuery={setSearchQuery}
-            setIDchapter={setIDchapter}
-            setvisible={setvisible}
-            loading={loading}
-            arab_name={arab_name}
-            chapterAr={item.name_arabic}
-            chapterName={item.name_simple}
-            playSound={playAudio}
-            languages={languages}
-            setAdtoList={setAdtoList}
-            color={item.id === color}
-            
-          />
+          contentContainerStyle={{
+            paddingBottom: 150,
+            paddingTop: HEADER_MAX_HEIGHT,
+          }}
+          data={memoizedFilteredData}
+          ref={flashListRef}
+          estimatedItemSize={50}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <SuratReader
+              chapteID={item.id}
+              id={id}
+              setIsPlaying={setIsPlaying}
+              dataAudio={dataAudio}
+              reciterName={name}
+              data={item}
+              setSearchQuery={setSearchQuery}
+              setIDchapter={setIDchapter}
+              setvisible={setvisible}
+              loading={loading}
+              arab_name={arab_name}
+              chapterAr={item.name_arabic}
+              chapterName={item.name_simple}
+              playSound={playSound}
+              languages={languages}
+              setAdtoList={setAdtoList}
+              color={item.id === color}
+            />
           )}
         />
       ) : (
         <FlashList
-      contentContainerStyle={{
-        paddingBottom: 150,
-        paddingTop: HEADER_MAX_HEIGHT,
-      }}
-      data={chapters}
-      ref={flashListRef}
-      estimatedItemSize={75}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false }
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <SuratReader
-          chapteID={item.id}
-          id={id}
-          setIsPlaying={setIsPlaying}
-          dataAudio={dataAudio}
-          reciterName={name}
-          data={item}
-          setSearchQuery={setSearchQuery}
-          setIDchapter={setIDchapter}
-          setvisible={setvisible}
-          loading={loading}
-          arab_name={arab_name}
-          chapterAr={item.name_arabic}
-          chapterName={item.name_simple}
-          // playSound={playSound}
-          playAudio={playAudio}
-          languages={languages}
-          setAdtoList={setAdtoList}
-          color={item.id === color}
-          setloading={setloading}
-          
-        />
+          contentContainerStyle={{
+            paddingBottom: 150,
+            paddingTop: HEADER_MAX_HEIGHT,
+          }}
+          data={chapters}
+          ref={flashListRef}
+          estimatedItemSize={75}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <SuratReader
+              chapteID={item.id}
+              id={id}
+              setIsPlaying={setIsPlaying}
+              dataAudio={dataAudio}
+              reciterName={name}
+              data={item}
+              setSearchQuery={setSearchQuery}
+              setIDchapter={setIDchapter}
+              setvisible={setvisible}
+              loading={loading}
+              arab_name={arab_name}
+              chapterAr={item.name_arabic}
+              chapterName={item.name_simple}
+              // playSound={playSound}
+              playAudio={playSound}
+              languages={languages}
+              setAdtoList={setAdtoList}
+              color={item.id === color}
+              setloading={setloading}
+            />
           )}
         />
       )}
@@ -514,26 +433,6 @@ const ReaderSurah = () => {
           <Ionicons name="arrow-up" size={24} color="white" />
         </TouchableRipple>
       </Animated.View>
-        {/* Modal */}
-        <View style={styles.centeredView}>
-        <Modal animationType="slide" transparent={true} visible={modalVisible}>
-          <StatusBar backgroundColor="#181A3C" />
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <ModalAudio
-               
-                // shuffle={shuffle}
-                // setShuffle={setShuffle}
-                setPosition={setPosition}
-                nextSurah={nextSurah}
-                previousSurah={previousSurah}
-              />
-            </View>
-          </View>
-        </Modal>
-      </View>
-
-     
     </View>
   );
 };
@@ -682,6 +581,9 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
+
+
+
 
 
 

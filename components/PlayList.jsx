@@ -8,7 +8,7 @@ import { Colors } from "../constants/Colors";
 import SearchBar from "./SearchBar";
 import { TouchableRipple } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import ModalAudio from "./ModalAudio";
+
 
 const PlayList = () => {
   const [alertVisible, setAlertVisible] = useState(false);
@@ -22,27 +22,16 @@ const PlayList = () => {
   const focused = useIsFocused();
 
    const {
-      pauseAudio,
+     
       languages,
       setIsPlaying,
-      isPlaying,
       setChapterID,
-      setIDchapter,
-      position,
       setPosition,
       setDuration,
-      duration,
-      currentTrackId,
       setCurrentTrackId,
       setArabicCH,
-      chapters,
       setReciter,
-      setchapters,
-      dataAudio,
-      setDataAudio,
-      setAdtoList,
       setIDreader,
-      modalVisible,
       setReciterAR,
       soundRef
     } = useGlobalContext();
@@ -353,19 +342,7 @@ const onPlaybackStatusUpdate = (status) => {
               </View>
             )}
           />
-           {/* Modal */}
-      <View style={styles.centeredView}>
-        <Modal animationType="slide" transparent={true} visible={modalVisible}>
-          <StatusBar backgroundColor="#181A3C" />
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <ModalAudio
-               
-              />
-            </View>
-          </View>
-        </Modal>
-      </View>
+         
           </>
         )
       ) : (

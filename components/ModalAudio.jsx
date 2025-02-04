@@ -123,7 +123,7 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
         </View>
 
         <View style={styles.controlsContainer}>
-          <TouchableOpacity activeOpacity={0.7} onPress={previousSurah}>
+          <TouchableOpacity activeOpacity={0.7} onPress={playPrevious}>
             <MaterialIcons name="skip-previous" size={40} color="white" />
           </TouchableOpacity>
 
@@ -141,7 +141,7 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
           </TouchableOpacity>
      
 
-          <TouchableOpacity activeOpacity={0.7} onPress={nextSurah}>
+          <TouchableOpacity activeOpacity={0.7} onPress={playNext}>
             <MaterialIcons name="skip-next" size={40} color="white" />
           </TouchableOpacity>
         </View>

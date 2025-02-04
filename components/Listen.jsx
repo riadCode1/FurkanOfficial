@@ -1,16 +1,11 @@
 import {
   View,
   StyleSheet,
-  Modal,
-  StatusBar,
   Animated,
   Dimensions,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "../context/GlobalProvider";
-import { Audio,  } from "expo-av";
-import ModalAudio from "./ModalAudio";
-
+import { useGlobalContext } from "../context/GlobalProvider"
 import { Colors } from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
@@ -43,20 +38,15 @@ const Listen = ({
 
   const {
     setReciterAR,
-    soundRef,
+    setTrackList,
     setArabicCH,
     languages,
     setCurrentTrackId,
     setChapterID,
     setIDreader,
     setReciter,
-    idReader,
     setIsPlaying,
-    setPosition,
-    setDuration,
-    duration,
-    position,
-    modalVisible,
+    playTrack,
   } = useGlobalContext();
 
   // Fetch audio URL based on reciter ID
@@ -75,19 +65,26 @@ const Listen = ({
 
   // Handle reciter selection
   const handleReciterSelect = async (reciterId) => {
-    
-
+    setIDreader( reciterId);
+    setChapterID(chapterName)
+    setReciter(quranData.find((r) => r?.id === reciterId)?.reciter_name);
     const uri = await getAudio(reciterId);
    
-    playSound(
-      uri,
-      Chapterid,
-      chapterName,
-      quranData.find((r) => r?.id === reciterId)?.reciter_name,
-      quranData.find((r) => r?.id === reciterId)?.translated_name.name,
-      reciterId,
-      chapterAr
+    playTrack(
+    {  url:uri,
+      id:reciterId,
+      chapterId:Chapterid,
+      chapter:chapterName,
+      artist:quranData.find((r) => r?.id === reciterId)?.reciter_name,
+      artistAR:quranData.find((r) => r?.id === reciterId)?.translated_name.name,
+      titleAR:chapterAr
+    },
+    reciterId
     );
+  
+   
+   
+    
   };
 
   const handleReciterDrop = async (reciterId) => {
@@ -98,22 +95,10 @@ const Listen = ({
   };
 
   // Navigate to the next reciter
-  const handleNextReciter = async () => {
-    const currentIndex = quranData.findIndex((r) => r.id === idReader);
-    const nextIndex = (currentIndex + 1) % quranData.length; // Loop back to the start
-    const nextReciterId = quranData[nextIndex].id;
-    await handleReciterSelect(nextReciterId);
-  };
+ 
 
   // Navigate to the previous reciter
-  const handlePreviousReciter = async () => {
-    const currentIndex = quranData.findIndex((r) => r.id === idReader);
-    const previousIndex =
-      (currentIndex - 1 + quranData.length) % quranData.length; // Loop back to the end
-    const previousReciterId = quranData[previousIndex].id;
-    await handleReciterSelect(previousReciterId);
-  };
-
+ 
   
 
   const playSound = async (
@@ -135,46 +120,20 @@ const Listen = ({
     setIDreader(id);
     setReciterAR(arabName);
     setColor2(id);
-    try {
-      if (soundRef.current._loaded && soundRef.current._uri === uri) {
-        await soundRef.current.playAsync();
-        return;
-      }
-  
-      // Stop and unload the current sound if it's loaded
-      if (soundRef.current._loaded) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
-      }
-  
-      // Load and play the new sound
-      await soundRef.current.loadAsync({ uri });
-      await soundRef.current.playAsync();
-  
-      // Set the playback status update listener
-      soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-    } catch (error) {
-      console.error("Error playing sound:", error);
-      setIsPlaying(false); // Ensure isPlaying is set to false in case of error
-    }
-  };
-
-  // Function to handle playback status updates
-  const onPlaybackStatusUpdate = (status) => {
-    if (status.isLoaded) {
-      setPosition(status.positionMillis);
-      setDuration(status.durationMillis);
-      setIsPlaying(status.isPlaying);
-
-      // Check if the audio has finished playing
-      if (status.didJustFinish) {
-        handleNextReciter();
-      }
-    }
-  };
+  }
+ 
 
   // Play on the Background
   useEffect(() => {
+    const trackList = quranData?.map((data) => ({
+      id: 1,
+      url: audioUri,
+      title: chapterName,
+      artist: data?.reciter_name,
+      artwork: require("../assets/images/icon.png"),
+    }));
+    setTrackList(trackList);
+
     
   }, [searchQuery, languages,]);
 
@@ -275,22 +234,7 @@ const Listen = ({
 
       {/* Modal */}
 
-      <View style={styles.centeredView}>
-        <Modal animationType="slide" transparent={true} visible={false}>
-          <StatusBar backgroundColor={Colors.background} />
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <ModalAudio
-                duration={duration}
-                position={position}
-                setPosition={setPosition}
-                nextSurah={handleNextReciter}
-                previousSurah={handlePreviousReciter}
-              />
-            </View>
-          </View>
-        </Modal>
-      </View>
+     
     </View>
   );
 };
