@@ -30,20 +30,20 @@ const ReaderSurah = () => {
 
   const smallHeaderOpacity = scrollY.interpolate({
     inputRange: [
-      HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
-      HEADER_SCROLL_DISTANCE,
-      290,
+      0, // Start of scroll
+      HEADER_SCROLL_DISTANCE / 2, // Midpoint
+      HEADER_SCROLL_DISTANCE, // End of scroll
     ],
     outputRange: [0, 0.5, 1],
     extrapolate: "clamp",
   });
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, 290],
-    outputRange: [2000, 0],
+    inputRange: [0, 290], // Strictly increasing
+    outputRange: [290, 0], // Descending output
     extrapolate: "clamp",
   });
-
+  
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
   const {
@@ -53,24 +53,21 @@ const ReaderSurah = () => {
     setChapterID,
     setIDchapter,
     setArabicCH,
-    chapters,
     setReciter,
-    setchapters,
-    dataAudio,
-    setDataAudio,
-    setAdtoList,
     setIDreader,
     setReciterAR,
     playTrack,
     setTrackList,
+    color2, setColor2
   } = useGlobalContext();
 
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [visible, setvisible] = useState(false);
+   const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
-  const [color, setColor] = useState(0);
+  const [chapters, setchapters] = useState([]);
+  
 
   const scrollToTop = () => {
     if (flashListRef.current) {
@@ -108,25 +105,29 @@ const ReaderSurah = () => {
     }
 
     const trackList = dataAudio.map((data) => ({
-      id: 1,
-      url: data.audio_url,
+      id: id,
       title: chapters,
       artist: name,
       artwork: require("../../../assets/images/icon.png"),
     }));
     setTrackList(trackList);
-  }, [languages, searchQuery, id, color]);
+  }, [languages, searchQuery, id, color2]);
 
   const getChapter = async () => {
+    
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
         setchapters(data.chapters);
+      
+        
+       
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
-    } finally {
-    }
+    } 
+
+    
   };
 
   const fetchAudioUrl = async (id) => {
@@ -152,18 +153,22 @@ const ReaderSurah = () => {
     id,
     arabicCh
   ) => {
+
+   
     playTrack(
       {
         id: id,
         url: uri,
         title: chapters,
         artist: name,
+        chapterID:trackId
         
       },
       trackId
+      
     );
 
-    setColor(trackId);
+    
     setChapterID(chapterName);
     setArabicCH(arabicCh);
     setIsPlaying(true);
@@ -365,16 +370,14 @@ const ReaderSurah = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              setvisible={setvisible}
+              setIDchapter={setIDchapter}             
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
               chapterName={item.name_simple}
               playSound={playSound}
-              languages={languages}
-              setAdtoList={setAdtoList}
-              color={item.id === color}
+              languages={languages}              
+              color={color2}
             />
           )}
         />
@@ -401,8 +404,7 @@ const ReaderSurah = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              setvisible={setvisible}
+              setIDchapter={setIDchapter}            
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
@@ -410,8 +412,7 @@ const ReaderSurah = () => {
               // playSound={playSound}
               playAudio={playSound}
               languages={languages}
-              setAdtoList={setAdtoList}
-              color={item.id === color}
+              color={ color2}
               setloading={setloading}
             />
           )}
@@ -495,10 +496,10 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    paddingTop: 40,
+    
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
-    height: HEADER_MIN_HEIGHT - 40,
+    height: "16%",
     backgroundColor: Colors.background,
     justifyContent: "center",
     alignItems: "center",
@@ -537,7 +538,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    top: "8%",
+    top: 45,
     left: 20,
     position: "absolute",
     width: 48,

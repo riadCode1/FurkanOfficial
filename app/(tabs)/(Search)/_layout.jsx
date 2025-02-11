@@ -15,6 +15,7 @@ const _layout = () => {
      
       <Stack.Screen name="Searchs" options={{animationDuration:250, animation:"fade", headerShown: false }} />
       <Stack.Screen name="ReciterSearch" options={{animationDuration:250, animation:"fade", headerShown: false }} />
+      <Stack.Screen name="ReadersSearch" options={{animationDuration:250, animation:"fade", headerShown: false }} />
 
       </Stack>
 

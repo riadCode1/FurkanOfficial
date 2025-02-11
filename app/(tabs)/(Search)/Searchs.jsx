@@ -151,7 +151,7 @@ const Search = () => {
                       />
                     ) : (
                       <Image
-                        resizeMode="contain"
+                        contentFit="contain"
                         style={styles.image}
                         source={{
                           uri: dataArray[item.id]?.image

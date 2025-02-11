@@ -1,15 +1,11 @@
-import {
-  View,
-  StyleSheet,
-  Animated,
-  Dimensions,
-} from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "../context/GlobalProvider"
+import { View, StyleSheet, Animated, Dimensions } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useGlobalContext } from "../context/GlobalProvider";
 import { Colors } from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import ListenComp from "./ListenComp";
+import { FlashList } from "@shopify/flash-list";
 
 let { width, height } = Dimensions.get("window");
 
@@ -17,6 +13,7 @@ const Listen = ({
   searchQuery,
   filteredData,
   loading,
+  languages,
   chapterAr,
   quranData,
   Chapterid,
@@ -27,7 +24,7 @@ const Listen = ({
 }) => {
   const [audioUri, setAudioUri] = useState(null);
   const [mp3, setMp3] = useState(null);
-  const [color2,setColor2,] = useState(false)
+  const [color2, setColor2] = useState(false);
   const flashListRef = useRef(null);
 
   const scrollToTop = () => {
@@ -40,13 +37,14 @@ const Listen = ({
     setReciterAR,
     setTrackList,
     setArabicCH,
-    languages,
     setCurrentTrackId,
     setChapterID,
     setIDreader,
     setReciter,
     setIsPlaying,
     playTrack,
+    color,
+    setColor
   } = useGlobalContext();
 
   // Fetch audio URL based on reciter ID
@@ -65,26 +63,25 @@ const Listen = ({
 
   // Handle reciter selection
   const handleReciterSelect = async (reciterId) => {
-    setIDreader( reciterId);
-    setChapterID(chapterName)
+    setIDreader(reciterId);
+    setArabicCH(chapterAr);
+    setChapterID(chapterName);
     setReciter(quranData.find((r) => r?.id === reciterId)?.reciter_name);
     const uri = await getAudio(reciterId);
-   
+
     playTrack(
-    {  url:uri,
-      id:reciterId,
-      chapterId:Chapterid,
-      chapter:chapterName,
-      artist:quranData.find((r) => r?.id === reciterId)?.reciter_name,
-      artistAR:quranData.find((r) => r?.id === reciterId)?.translated_name.name,
-      titleAR:chapterAr
-    },
-    reciterId
+      {
+        url: uri,
+        id: reciterId,
+        chapterID: Chapterid,
+        chapter: chapterName,
+        artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
+        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
+          .name,
+        titleAR: chapterAr,
+      },
+      Chapterid
     );
-  
-   
-   
-    
   };
 
   const handleReciterDrop = async (reciterId) => {
@@ -95,126 +92,62 @@ const Listen = ({
   };
 
   // Navigate to the next reciter
- 
 
   // Navigate to the previous reciter
- 
-  
-
-  const playSound = async (
-    uri,
-    trackId,
-    chapterName,
-    name,
-    arabName,
-    id,
-    chapterAR
-  ) => {
-
-    
-    setCurrentTrackId(trackId);
-    setChapterID(chapterName);
-    setIsPlaying(true);
-    setReciter(name);
-    setArabicCH(chapterAR);
-    setIDreader(id);
-    setReciterAR(arabName);
-    setColor2(id);
-  }
- 
 
   // Play on the Background
   useEffect(() => {
-    const trackList = quranData?.map((data) => ({
-      id: 1,
-      url: audioUri,
+    const trackList = quranData.map((data) => ({
+      id: Chapterid,
+
       title: chapterName,
-      artist: data?.reciter_name,
-      artwork: require("../assets/images/icon.png"),
+      artist: quranData,
     }));
     setTrackList(trackList);
+  }, [searchQuery, Chapterid, quranData, chapterName]);
 
-    
-  }, [searchQuery, languages,]);
-
-  const handleClick = (id) => {
-    setColor2(id);
-   
-  };
+  const handleClick = useCallback((id) => {
+    setColor(id);
+  }, [color]);
 
   return (
     <View style={styles.container}>
-      {searchQuery.length > 1 ? (
-        <Animated.FlatList
-          contentContainerStyle={{
-            paddingBottom: 200,
-            paddingTop: HEADER_MAX_HEIGHT,
-          }}
-           ref={flashListRef}
-          data={filteredData}
-          initialNumToRender={70}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View>
-              <ListenComp
-                id={item.id}
-                loading={loading}
-                handleReciterSelect={() => handleReciterSelect(item.id)}
-                arabName={item?.translated_name.name}
-                reciterName={item?.reciter_name}
-                chapterAr={chapterAr}
-                chapterName={chapterName}
-                languages={languages}
-                mp3={audioUri}
-                handleReciterDrop={handleReciterDrop}
-                Chapterid={Chapterid}
-              />
-            </View>
-          )}
-        />
-      ) : (
-        <Animated.FlatList
-          ref={flashListRef}
-          contentContainerStyle={{
-            paddingBottom: 200,
-            paddingTop: HEADER_MAX_HEIGHT,
-          }}
-          data={quranData}
-          initialNumToRender={50}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <>
-              <ListenComp
-                id={item.id}
-                loading={loading}
-                handleReciterSelect={() => handleReciterSelect(item.id)}
-                arabName={item?.translated_name.name}
-                reciterName={item?.reciter_name}
-                chapterAr={chapterAr}
-                chapterName={chapterName}
-                languages={languages}
-                mp3={mp3}
-                color2={color2}
-                handleReciterDrop={handleReciterDrop}
-                Chapterid={Chapterid}
-                handleClick={handleClick}
-                
-              />
-            </>
-          )}
-          // Optimize for large lists
-      maxToRenderPerBatch={5}
-      windowSize={10}
-        />
-      )}
+      <FlashList
+        ref={flashListRef}
+        contentContainerStyle={{
+          paddingBottom: 200,
+          
+          paddingTop: HEADER_MAX_HEIGHT,
+        }}
+        data={searchQuery.length > 1 ? filteredData : quranData}
+        estimatedItemSize={75} // Render fewer items initially
+        maxToRenderPerBatch={10} // Render fewer items per batch
+        windowSize={20} // Reduce offscreen items
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={true}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        keyExtractor={(item) => item.id} // No need for toString() if id is already a string
+        renderItem={({ item }) => (
+          <ListenComp
+            id={item.id}
+            loading={loading}
+            handleReciterSelect={handleReciterSelect}
+            arabName={item?.translated_name.name}
+            reciterName={item?.reciter_name}
+            chapterAr={chapterAr}
+            chapterName={chapterName}
+            languages={languages}
+            mp3={searchQuery.length > 1 ? audioUri : mp3}
+            color={color}
+            handleReciterDrop={handleReciterDrop}
+            Chapterid={Chapterid}
+            handleClick={handleClick}
+          />
+        )}
+      />
       <Animated.View
         style={[
           {
@@ -233,8 +166,6 @@ const Listen = ({
       </Animated.View>
 
       {/* Modal */}
-
-     
     </View>
   );
 };
@@ -243,6 +174,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+    marginTop:14
   },
   flashList: {
     paddingBottom: 100,

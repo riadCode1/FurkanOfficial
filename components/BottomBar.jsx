@@ -13,10 +13,9 @@ import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "../context/GlobalProvider";
 
 const BottomBar = ({
-  playing,
+  
   chapterId,
   setModalVisible,
-  pauseAudio,
   name,
   reciterAR,
   arabicCH,
@@ -24,7 +23,7 @@ const BottomBar = ({
   idReader,
 }) => {
   
-   const { languages,togglePlayback } = useGlobalContext();
+   const { languages,togglePlayback,isPlaying } = useGlobalContext();
 
   return (
     <TouchableOpacity
@@ -63,7 +62,7 @@ const BottomBar = ({
         borderRadius={20} borderless
         style={styles.iconButton}
       >
-        {playing ? (
+        {isPlaying ? (
           <FontAwesome5 name="pause" size={20} color="#00D1FF" />
         ) : (
           <FontAwesome5 name="play" size={20} color="#00D1FF" />

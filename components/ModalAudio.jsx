@@ -10,7 +10,7 @@ import TrackPlayer, { useProgress } from "react-native-track-player";
 import { skipToNext } from "react-native-track-player/lib/src/trackPlayer";
 
 
-const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
+const ModalAudio = ({ }) => {
   const {
     setModalVisible,
     chapterId,
@@ -20,13 +20,15 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
     reciterAR,
     isPlaying,
     languages,
-    setIsPlaying,
+    setShuffle,
     arabicCH,
     playNext,
     playPrevious,
-    togglePlayback
+    togglePlayback,
+    shuffle
     
   } = useGlobalContext();
+ 
 
  
 
@@ -40,13 +42,13 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
 
   const handlerepeat = () => {
     
-    setShuffle("first");
+    setShuffle(false);
     
   };
 
   const handleShuffle = () => {
     
-    setShuffle("second");
+    setShuffle(true);
     
   };
 
@@ -151,7 +153,7 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
             style={[
               {
                 backgroundColor:
-                  shuffle === "second" ? Colors.backgroundTint : "transparent",
+                  shuffle === true ? Colors.backgroundTint : "transparent",
                 padding: 10,
                 borderRadius: 5,
               },
@@ -166,7 +168,7 @@ const ModalAudio = ({ nextSurah, previousSurah,shuffle,setShuffle}) => {
             style={[
               {
                 backgroundColor:
-                  shuffle === "first" ? Colors.backgroundTint : "transparent",
+                  shuffle === false ? Colors.backgroundTint : "transparent",
                 padding: 10,
                 borderRadius: 5,
               },

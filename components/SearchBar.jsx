@@ -1,4 +1,4 @@
-import { View, TextInput, Animated, Platform, Dimensions } from "react-native";
+import { View, TextInput, Animated, Platform, Dimensions, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
@@ -12,24 +12,28 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
   const { languages } = useGlobalContext();
 
   return (
-    <View className="pt-2">
+    <View style={styles.container}>
       <Animated.View
-        className={`border ${
-          isFocused ? "border-cyan-400" : "border-transparent"
-        } rounded-lg px-4  flex flex-row justify-between items-center`}
-        style={{height:48, width: width * 0.93,backgroundColor: Colors.backgroundTint }}
+        style={[
+          styles.animatedView,
+          {
+            borderColor: isFocused ? Colors.blue : "transparent",
+            backgroundColor: Colors.backgroundTint,
+            width: width * 0.93,
+          },
+        ]}
       >
         <TextInput
           placeholder={title}
           placeholderTextColor={Colors.textGray}
-          
           onChangeText={(text) => setSearchQuery(text)}
           value={searchQuery}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className={`w-[90%] text-white ${
-            languages ? "text-right" : "text-left"
-          }`}
+          style={[
+            styles.textInput,
+            { textAlign: languages ? "right" : "left" },
+          ]}
         />
 
         {searchQuery?.length > 1 ? (
@@ -53,3 +57,22 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
 };
 
 export default SearchBar;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 8, // Equivalent to pt-2 in Tailwind
+  },
+  animatedView: {
+    borderWidth: 1, // Equivalent to border in Tailwind
+    borderRadius: 8, // Equivalent to rounded-lg in Tailwind
+    paddingHorizontal: 16, // Equivalent to px-4 in Tailwind
+    flexDirection: "row", // Equivalent to flex-row in Tailwind
+    justifyContent: "space-between", // Equivalent to justify-between in Tailwind
+    alignItems: "center", // Equivalent to items-center in Tailwind
+    height: 48, // Equivalent to h-12 in Tailwind
+  },
+  textInput: {
+    width: "90%", // Equivalent to w-[90%] in Tailwind
+    color: Colors.textGray, // Equivalent to text-white in Tailwind
+  },
+});

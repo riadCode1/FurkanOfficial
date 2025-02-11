@@ -66,11 +66,11 @@ const ReaderFilter = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         contentContainerStyle={{ paddingBottom: 450 }}
         data={reader}
         showsVerticalScrollIndicator={false}
-        initialNumToRender={70}
+        estimatedItemSize={75}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>

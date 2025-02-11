@@ -6,6 +6,7 @@ import React, {
   useState,
   useCallback,
   memo,
+  useMemo,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer from "react-native-track-player";
@@ -21,32 +22,21 @@ const GlobalProvider = memo(({ children }) => {
   const [languages, setLanguages] = useState(false);
   const [idReader, setIDreader] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playing, setPlaying] = useState(false);
   const [chapterId, setChapterID] = useState(null);
   const [arabicCH, setArabicCH] = useState(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTrackId, setCurrentTrackId] = useState(null);
   const [checked, setChecked] = useState("second");
-  const [chapterAudio, setAudioChapter] = useState([]);
-  const [chapters, setchapters] = useState([]);
-  const [dataAudio, setDataAudio] = useState([]);
   const [playlist, setPlaylist] = useState([]);
-  const [adtoList, setAdtoList] = useState(null);
-  const [shuffle, setShuffle] = useState("first");
-  const [modalVisible, setModalVisible] = useState(false)
- const [audioUri, setAudioUri] = useState(null);
+  const [shuffle, setShuffle] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [progress, setProgress] = useState(0);
+  const [currentReciter, setCurrentReciter] = useState(null);
   const [tracks, setTracks] = useState([]); // List of all tracks
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
-
-  
-
-
- 
-
-
+  const [color, setColor] = useState(0);
+  const [color2, setColor2] = useState(0);
 
   useEffect(() => {
     const initializeState = async () => {
@@ -72,7 +62,7 @@ const GlobalProvider = memo(({ children }) => {
     };
 
     initializeState();
-  }, [shuffle]);
+  }, []);
 
   // Memoized state update functions
   const saveCheck = useCallback(async (newName) => {
@@ -117,96 +107,151 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
-
-
-
- 
-
   useEffect(() => {
-         const updateProgress = async () => {
-           const progress = await TrackPlayer.getProgress();
-           setPosition(progress.position);
-           setDuration(progress.duration);
-         };
-      
-         const interval = setInterval(updateProgress, 1000);  
-      
-         return () => clearInterval(interval);  
-       }, []);
+    const updateProgress = async () => {
+      const progress = await TrackPlayer.getProgress();
+      setPosition(progress.position);
+      setDuration(progress.duration);
+    };
 
-       const getAudio = async (reciterId,Chapterid) => {
-        try {
-          const response = await fetch(
-            `https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${Chapterid}`
-          );
-          const data = await response.json();
-          setAudioUri(data?.audio_file?.audio_url);
-          return data?.audio_file?.audio_url; // Return the audio URL
-        } catch (error) {
-          console.error("Error fetching audio URL:", error);
-        }
-      };
+    const checkTrackEnd = async () => {
+      if (shuffle && position > 0 && duration > 0 && position >= duration) {
+        await playNext(); // Play the next track when the current one ends
+      }
+    };
+    const interval = setInterval(updateProgress, 1000);
+    checkTrackEnd();
+    return () => clearInterval(interval);
+    
+  }, [position,duration,playNext,shuffle]);
+
+
+
+
+  const getAudio = useCallback(async (reciterId, chapterId) => {
+    try {
+      const response = await fetch(
+        `https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${chapterId}`
+      );
+      const data = await response.json();
+
+      return data?.audio_file?.audio_url; // Return the audio URL
+    } catch (error) {
+      console.error("Error fetching audio URL:", error);
+    }
+  }, []);
 
   // Play a specific track
 
   const playTrack = async (track, index) => {
 
-    const uri = await getAudio(track.id,index);
-    console.log(uri)
-    console.log(track,index)
-   const tracker = {
-    id: track.id,
-    url: uri, // or a remote URL
-    title:  track.title? track.title[index-1].name_simple : track.chapter,
-    artist: track.artist,
-    artwork: dataArray[track.id]?.image,
-     // or a remote URL
+   
+
+    setCurrentTrack(track);
+    setColor2(index)
+    setColor(track.id)
+    setCurrentReciter(track.id);
+    setCurrentTrackIndex(index);
+    setChapterID(
+      track.title ? track.title[index - 1].name_simple : track.chapter
+    );
+    await TrackPlayer.reset();
+    const uri = await getAudio(track.id, index);
+
+    const tracker = {
+      id: track.id,
+      url: uri, // or a remote URL
+      title: track.title ? track.title[index - 1].name_simple : track.chapter,
+      artist: track.artist,
+      artwork: track.id
+        ? dataArray[track.id].image
+        : require("../assets/images/icon.png"),
+      // or a remote URL
+    };
+
+    await TrackPlayer.add(tracker);
+    await TrackPlayer.play();
+
+    setIsPlaying(true);
   };
 
+  
 
-    await TrackPlayer.reset()
+  const playTrackSkip = async (track, index) => {
+
+    setChapterID(track[index].title);
+    setColor(track[index].artist[index].id);
+    setReciter(track[index].artist[index].reciter_name);
+    await TrackPlayer.reset();
+
+    const uri = await getAudio(track[index].artist[index].id, track[index].id);
+    console.log(uri);
+
+    const tracker = {
+      id: track[index].artist[index].id,
+      url: uri, // or a remote URL
+      title: track[index].title,
+      artist: track[index].artist[index].reciter_name,
+      artwork: track.id
+        ? dataArray[track.id].image
+        : require("../assets/images/icon.png"),
+      // or a remote URL
+    };
+
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
 
     setCurrentTrack(track);
+    setCurrentReciter(track[index].artist[index].id);
+    setCurrentTrackIndex(index);
     setCurrentTrackIndex(index);
     setIsPlaying(true);
-    
-    
+    // setArabicCH(arabicCh);
+    setIsPlaying(true);
+    setIDreader(track[index].artist[index].id);
+    // setReciterAR(arabName);
   };
 
- 
-   // Play the next track
-   const playNext = async () => {
-  
-      const nextIndex = currentTrackIndex + 1;
-      const nextTrack = tracks[nextIndex-1];
-      console.log(nextTrack.title[nextIndex].name_arabic,currentTrackIndex)
-      await playTrack(nextTrack, nextIndex);
-      
-    
-  };
-   // Play the previous track
-   const playPrevious = async () => {
-   
-      const nextIndex = currentTrackIndex - 1;
-      const nextTrack = tracks[nextIndex];
-      console.log("prv",nextTrack.title[nextIndex].name_arabic,currentTrackIndex)
-      await playTrack(nextTrack, nextIndex);
-     
-  };
+  // Play the next track
 
- 
+  const playNext = async () => {
+    const nextIndex = currentTrackIndex + 1;
+    const nextReciter = currentReciter;
+    const nextTrack = tracks[nextIndex - 1];
+    const nextTrackSkip = tracks;
+    console.log(tracks.length);
+    if (tracks.length === 114) {
+      await playTrack(nextTrack, nextIndex);
+      console.log("track");
+    } else {
+      await playTrackSkip(nextTrackSkip, nextReciter);
+      console.log("skipper");
+    }
+  };
+  // Play the previous track
+  const playPrevious = async () => {
+    const nextIndex = currentTrackIndex - 1;
+    const nextReciter = currentReciter - 1;
+    const nextTrack = tracks[nextIndex - 1];
+    const nextTrackSkip = tracks;
+    console.log(nextTrackSkip.id);
+    if (tracks.length === 114) {
+      await playTrack(nextTrack, nextIndex);
+      console.log("track");
+    } else {
+      await playTrackSkip(nextTrackSkip, nextReciter - 1);
+      console.log("skipper");
+    }
+  };
 
   // Set the list of tracks
   const setTrackList = (trackList) => {
-    setTracks(trackList); 
+    setTracks(trackList);
+    console.log(trackList);
   };
 
-  
-
-
   // Toggle playback (play/pause)
+
   const togglePlayback = async () => {
     if (isPlaying) {
       await TrackPlayer.pause();
@@ -215,11 +260,6 @@ const GlobalProvider = memo(({ children }) => {
     }
     setIsPlaying(!isPlaying);
   };
-
- 
-
-
-
 
   return (
     <GlobalContext.Provider
@@ -236,12 +276,8 @@ const GlobalProvider = memo(({ children }) => {
         setReciterAR,
         idReader,
         setIDreader: idReciterSaved,
-        chapterAudio,
-        setAudioChapter,
         languages,
         setLanguages,
-        playing,
-        isPlaying,
         chapterId,
         setChapterID: chapterSaved,
         setIsPlaying,
@@ -251,30 +287,24 @@ const GlobalProvider = memo(({ children }) => {
         setArabicCH,
         saveCheck,
         checked,
-        chapters,
-        setchapters,
-        dataAudio,
-        setDataAudio,
         playlist,
         setPlaylist,
-        adtoList,
-        setAdtoList,
         IDchapter,
         setIDchapter,
         shuffle,
         setShuffle,
         togglePlayback,
         currentTrack,
-        progress,
         tracks,
         currentTrackIndex,
         playTrack,
         playNext,
         playPrevious,
         setTrackList,
-       
-
-
+        isPlaying,
+        setIsPlaying,
+        color, setColor,
+        color2, setColor2
       }}
     >
       {children}

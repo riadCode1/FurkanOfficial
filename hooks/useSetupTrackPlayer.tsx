@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import TrackPlayer, { Capability, RatingType, RepeatMode } from 'react-native-track-player'
+import TrackPlayer, { AddTrack, AppKilledPlaybackBehavior, Capability, RatingType, RepeatMode } from 'react-native-track-player'
 
 const setupPlayer = async () => {
 	await TrackPlayer.setupPlayer({
@@ -7,18 +7,26 @@ const setupPlayer = async () => {
 	})
 
 	await TrackPlayer.updateOptions({
+		
 		ratingType: RatingType.Heart,
 		capabilities: [
 			Capability.Play,
 			Capability.Pause,
-			Capability.SkipToNext,
-			Capability.SkipToPrevious,
+			
 			Capability.Stop,
 		],
+		icon:require("../assets/images/Logo.png"),
+		android: {
+			alwaysPauseOnInterruption:true,
+			appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+			
+		},
+		
+		
 	})
 
-	await TrackPlayer.setVolume(0.3) // not too loud
-	await TrackPlayer.setRepeatMode(RepeatMode.Queue)
+	await TrackPlayer.setVolume(0.5) // not too loud
+	await TrackPlayer.setRepeatMode(RepeatMode.Track)
 }
 
 export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
@@ -38,3 +46,9 @@ export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
 			})
 	}, [onLoad])
 }
+export const playTrack = async (tracks: AddTrack[], index = 0) => {
+	await TrackPlayer.reset();
+	await TrackPlayer.add(tracks);
+	await TrackPlayer.skip(index);
+	await TrackPlayer.play();
+  };

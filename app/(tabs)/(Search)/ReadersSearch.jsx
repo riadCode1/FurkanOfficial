@@ -20,7 +20,7 @@ const HEADER_MAX_HEIGHT = height * 0.65;
 const HEADER_MIN_HEIGHT = height * 0.3;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-const Readers = () => {
+const ReaderSearch = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const headerOpacity = scrollY.interpolate({
@@ -585,4 +585,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Readers;
+
+
+export default ReaderSearch;

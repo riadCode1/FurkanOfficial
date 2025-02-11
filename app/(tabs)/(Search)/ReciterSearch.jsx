@@ -30,20 +30,20 @@ const ReciterSearch = () => {
 
   const smallHeaderOpacity = scrollY.interpolate({
     inputRange: [
-      HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
-      HEADER_SCROLL_DISTANCE,
-      290,
+      0, // Start of scroll
+      HEADER_SCROLL_DISTANCE / 2, // Midpoint
+      HEADER_SCROLL_DISTANCE, // End of scroll
     ],
     outputRange: [0, 0.5, 1],
     extrapolate: "clamp",
   });
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, 290],
-    outputRange: [2000, 0],
+    inputRange: [0, 290], // Strictly increasing
+    outputRange: [290, 0], // Descending output
     extrapolate: "clamp",
   });
-
+  
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
   const {
@@ -53,12 +53,7 @@ const ReciterSearch = () => {
     setChapterID,
     setIDchapter,
     setArabicCH,
-    chapters,
     setReciter,
-    setchapters,
-    dataAudio,
-    setDataAudio,
-    setAdtoList,
     setIDreader,
     setReciterAR,
     playTrack,
@@ -67,10 +62,10 @@ const ReciterSearch = () => {
 
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [visible, setvisible] = useState(false);
+   const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
- 
+  const [chapters, setchapters] = useState([]);
   const [color, setColor] = useState(0);
 
   const scrollToTop = () => {
@@ -109,7 +104,7 @@ const ReciterSearch = () => {
     }
 
     const trackList = dataAudio.map((data) => ({
-      id: 1,
+      id: id,
       url: data.audio_url,
       title: chapters,
       artist: name,
@@ -123,6 +118,8 @@ const ReciterSearch = () => {
       const data = await fetchChater();
       if (data && data.chapters) {
         setchapters(data.chapters);
+        
+       
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
@@ -366,15 +363,13 @@ const ReciterSearch = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              setvisible={setvisible}
+              setIDchapter={setIDchapter}             
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
               chapterName={item.name_simple}
               playSound={playSound}
-              languages={languages}
-              setAdtoList={setAdtoList}
+              languages={languages}              
               color={item.id === color}
             />
           )}
@@ -402,8 +397,7 @@ const ReciterSearch = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              setvisible={setvisible}
+              setIDchapter={setIDchapter}            
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
@@ -411,7 +405,6 @@ const ReciterSearch = () => {
               // playSound={playSound}
               playAudio={playSound}
               languages={languages}
-              setAdtoList={setAdtoList}
               color={item.id === color}
               setloading={setloading}
             />
@@ -496,10 +489,10 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    paddingTop: 40,
+    
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
-    height: HEADER_MIN_HEIGHT - 40,
+    height: "16%",
     backgroundColor: Colors.background,
     justifyContent: "center",
     alignItems: "center",
@@ -538,7 +531,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    top: "8%",
+    top: 45,
     left: 20,
     position: "absolute",
     width: 48,
@@ -582,6 +575,16 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
+
+
+
+
+
+
+
+
+
+
 
 
 

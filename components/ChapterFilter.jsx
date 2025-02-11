@@ -36,18 +36,18 @@ const ChapterFilter = () => {
 
   const handleNavigate = (name, chapter_arab, Chapterid) => {
     router.push({
-      pathname: `Readers`,
+      pathname: `ReadersSearch`,
       params: { name, Chapterid, chapter_arab },
     });
   };
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         contentContainerStyle={{ paddingBottom: 450 }}
         data={chapter}
         showsVerticalScrollIndicator={false}
-        estimatedItemSize={50}
+        estimatedItemSize={75}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>
@@ -79,7 +79,7 @@ const ChapterFilter = () => {
                 <View style={{ flexDirection: "row", gap: 12 }}>
                   <View style={styles.imageContainer}>
                     <Image
-                      resizeMode="contain"
+                      contentFit="contain"
                       style={styles.image}
                       source={require("../assets/images/quranLogo.png")}
                     />

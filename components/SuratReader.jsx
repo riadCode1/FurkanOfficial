@@ -22,7 +22,6 @@ const SuratReader = ({
   id,
   playAudio,
   setIDchapter,
-  setvisible,
   data,
   setAdtoList
 }) => {
@@ -41,7 +40,7 @@ const SuratReader = ({
     
     
   };
- 
+
 
   return (
     <View>
@@ -55,7 +54,7 @@ const SuratReader = ({
     />
         </View>
       ) : (
-        <View style={[color && styles.Color, styles.container]}>
+        <View style={[color===chapteID && styles.Color, styles.container]}>
           <TouchableRipple
             onPress={handlePlay}
             rippleColor="rgba(200, 200, 200, 0.1)"
@@ -95,9 +94,7 @@ const SuratReader = ({
                 chapterAr={chapterAr}
                 data={data}
                 handlePlay={handlePlay}
-                setIDchapter={setIDchapter}
-                setvisible={setvisible}
-                chapteID={chapteID}
+                setIDchapter={setIDchapter}   
                 setAdtoList={setAdtoList}
                 mp3={dataAudio[chapteID - 1]?.audio_url}
               />
