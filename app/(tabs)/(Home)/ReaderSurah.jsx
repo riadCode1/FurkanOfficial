@@ -108,7 +108,9 @@ const ReaderSurah = () => {
       id: id,
       title: chapters,
       artist: name,
-      artwork: require("../../../assets/images/icon.png"),
+      artistAR:arab_name,
+      
+
     }));
     setTrackList(trackList);
   }, [languages, searchQuery, id, color2]);
@@ -161,7 +163,8 @@ const ReaderSurah = () => {
         url: uri,
         title: chapters,
         artist: name,
-        chapterID:trackId
+        artistAR:arabName,
+        chapterID:trackId,
         
       },
       trackId
@@ -169,12 +172,7 @@ const ReaderSurah = () => {
     );
 
     
-    setChapterID(chapterName);
-    setArabicCH(arabicCh);
-    setIsPlaying(true);
-    setReciter(name);
-    setIDreader(id);
-    setReciterAR(arabName);
+    
   };
 
   //  Memoizing filtered data

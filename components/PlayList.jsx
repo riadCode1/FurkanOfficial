@@ -33,7 +33,8 @@ const PlayList = () => {
       setReciter,
       setIDreader,
       setReciterAR,
-      soundRef
+      soundRef,
+      playTrack
     } = useGlobalContext();
 
   const hideAlert = () => {
@@ -77,9 +78,7 @@ const PlayList = () => {
     }
   };
 
-  {
-    /*SearchQuery */
-  }
+  {/*SearchQuery */}
 
   useEffect(() => {
     if (searchQuery.length > 1) {
@@ -111,72 +110,50 @@ const PlayList = () => {
 
 //PlaySound
 
-const playSound = async (
-  uri,
+
+
+const playSound = (
+  idReciter,
   trackId,
   chapterName,
   name,
   arabName,
-  id,
   arabicCh
 ) => {
-  try {
-    if (soundRef.current._loaded) {
-      await soundRef.current.stopAsync();
-      await soundRef.current.unloadAsync();
-    }
 
-    await soundRef.current.loadAsync({ uri });
-    await soundRef.current.playAsync();
+ 
+  playTrack(
+    {
+      
+      id: idReciter,
+      chapterID: trackId,
+      chapter: languages? arabicCh: chapterName,
+      artist: languages?arabName: name,
+      artistAR: arabName,
+      titleAR: arabicCh,
+      
+    },
+    trackId
+    
+  );
 
-    // Set the current index in the list
-
-    soundRef.current.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-  } catch (error) {
-    console.error("Error playing sound:", error);
-  }
-  setCurrentTrackId(trackId);
+  
   setChapterID(chapterName);
   setArabicCH(arabicCh);
   setIsPlaying(true);
   setReciter(name);
-  setIDreader(id);
-  setColor2(id)
+  setIDreader(idReciter);
   setReciterAR(arabName);
 };
 
+
 // Function to handle playback status updates
-const onPlaybackStatusUpdate = (status) => {
-  if (status.isLoaded) {
-    setPosition(status.positionMillis);
-    setDuration(status.durationMillis);
-    setIsPlaying(status.isPlaying);
-
-    // Check if the audio has finished playing
-    if (status.didJustFinish) {
-      setCurrentTrackId();
-    }
-  }
-};
 
 
 
 
 
-  const handleReciterSelect = async (
-    reciterId,
-    id,
-    chapter,
-    reciterName,
-    arabName,
-    chapterAr
-  ) => {
-    setIDreader(reciterId);
-    console.log(chapterAr);
-    const uri = await getAudio(reciterId, id);
 
-    playSound(uri, id, chapter, reciterName, arabName, reciterId, chapterAr);
-  };
 
   return (
     <View className=" items-center">
@@ -195,7 +172,7 @@ const onPlaybackStatusUpdate = (status) => {
             data={filteredData}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={70}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item, index) => item?.id?.toString()}
             contentContainerStyle={styles.flatlistContent}
             renderItem={({ item }) => (
               <View
@@ -207,10 +184,10 @@ const onPlaybackStatusUpdate = (status) => {
               >
                 <TouchableRipple
                   onPress={() => {
-                    handleReciterSelect(
+                    playSound(
                       item?.reciterID,
                       item?.id,
-                      item.chapter,
+                      item?.chapter,
                       item?.reciterName,
                       item?.arabName,
                       item?.chapterAr
@@ -271,7 +248,7 @@ const onPlaybackStatusUpdate = (status) => {
             data={playlist}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={70}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item, index) => item?.id?.toString()}
             contentContainerStyle={styles.flatlistContent}
             renderItem={({ item }) => (
               <View
@@ -283,10 +260,10 @@ const onPlaybackStatusUpdate = (status) => {
               >
                 <TouchableRipple
                   onPress={() => {
-                    handleReciterSelect(
+                    playSound(
                       item?.reciterID,
                       item?.id,
-                      item.chapter,
+                      item?.chapter,
                       item?.reciterName,
                       item?.arabName,
                       item?.chapterAr

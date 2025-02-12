@@ -2,15 +2,16 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
   useCallback,
   memo,
-  useMemo,
+ 
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer from "react-native-track-player";
 import { dataArray } from "../constants/RecitersImages";
+
+
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -145,24 +146,29 @@ const GlobalProvider = memo(({ children }) => {
 
   const playTrack = async (track, index) => {
 
+  
+   const uri = await getAudio(track.id, index);
    
-
     setCurrentTrack(track);
     setColor2(index)
     setColor(track.id)
+    setIDreader(track.id);
     setCurrentReciter(track.id);
     setCurrentTrackIndex(index);
-    setChapterID(
-      track.title ? track.title[index - 1].name_simple : track.chapter
-    );
+    setChapterID(track.title ? track.title[index - 1].name_simple : track.chapter);
+    setArabicCH(track.title ? track.title[index - 1].name_arabic : track.titleAR)
+    setReciter(track.artist);
+    setReciterAR(track.artistAR)
+
+    
     await TrackPlayer.reset();
-    const uri = await getAudio(track.id, index);
+    
 
     const tracker = {
       id: track.id,
       url: uri, // or a remote URL
-      title: track.title ? track.title[index - 1].name_simple : track.chapter,
-      artist: track.artist,
+      title: track.title ? languages?track.title[index - 1].name_arabic : track.title[index - 1].name_simple : languages?track.titleAR : track.chapter,
+      artist: languages? track.artistAR:track.artist,
       artwork: track.id
         ? dataArray[track.id].image
         : require("../assets/images/icon.png"),
@@ -179,24 +185,30 @@ const GlobalProvider = memo(({ children }) => {
 
   const playTrackSkip = async (track, index) => {
 
-    setChapterID(track[index].title);
+    
+    const uri = await getAudio(track[index].artist[index].id, track[index].id);
+
     setColor(track[index].artist[index].id);
-    setReciter(track[index].artist[index].reciter_name);
+    setIDreader(track[index].artist[index].id);
+    setReciter( track[index].artist[index].reciter_name);
+    setChapterID(track[index].title);
+    setArabicCH(track[index].titleAR)
+    setReciterAR(track[index].artist[index].translated_name.name)
+
     await TrackPlayer.reset();
 
-    const uri = await getAudio(track[index].artist[index].id, track[index].id);
-    console.log(uri);
+    
 
     const tracker = {
       id: track[index].artist[index].id,
       url: uri, // or a remote URL
-      title: track[index].title,
-      artist: track[index].artist[index].reciter_name,
-      artwork: track.id
-        ? dataArray[track.id].image
-        : require("../assets/images/icon.png"),
+      title: languages? track[index].titleAR:track[index].title,   
+      artist: languages? track[index].artist[index].translated_name.name : track[index].artist[index].reciter_name,
+      artwork:dataArray[track[index].artist[index].id].image
+        
       // or a remote URL
     };
+   
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
@@ -204,12 +216,10 @@ const GlobalProvider = memo(({ children }) => {
     setCurrentTrack(track);
     setCurrentReciter(track[index].artist[index].id);
     setCurrentTrackIndex(index);
-    setCurrentTrackIndex(index);
     setIsPlaying(true);
-    // setArabicCH(arabicCh);
-    setIsPlaying(true);
-    setIDreader(track[index].artist[index].id);
-    // setReciterAR(arabName);
+   
+    
+    
   };
 
   // Play the next track
@@ -219,35 +229,35 @@ const GlobalProvider = memo(({ children }) => {
     const nextReciter = currentReciter;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-    console.log(tracks.length);
+    
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      console.log("track");
-    } else {
+      
       await playTrackSkip(nextTrackSkip, nextReciter);
-      console.log("skipper");
+      
     }
   };
+
   // Play the previous track
   const playPrevious = async () => {
     const nextIndex = currentTrackIndex - 1;
-    const nextReciter = currentReciter - 1;
+    const nextReciter = currentReciter - 2;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-    console.log(nextTrackSkip.id);
+   
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      console.log("track");
+      
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter - 1);
-      console.log("skipper");
+     
     }
   };
 
   // Set the list of tracks
   const setTrackList = (trackList) => {
     setTracks(trackList);
-    console.log(trackList);
+    
   };
 
   // Toggle playback (play/pause)

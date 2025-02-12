@@ -93,9 +93,8 @@ const SuratReader = ({
                 arabName={arab_name}
                 chapterAr={chapterAr}
                 data={data}
-                handlePlay={handlePlay}
-                setIDchapter={setIDchapter}   
-                setAdtoList={setAdtoList}
+                chapteID={chapteID}
+                handlePlay={handlePlay}                  
                 mp3={dataAudio[chapteID - 1]?.audio_url}
               />
             </View>

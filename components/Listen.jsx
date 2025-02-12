@@ -24,7 +24,6 @@ const Listen = ({
 }) => {
   const [audioUri, setAudioUri] = useState(null);
   const [mp3, setMp3] = useState(null);
-  const [color2, setColor2] = useState(false);
   const flashListRef = useRef(null);
 
   const scrollToTop = () => {
@@ -34,14 +33,8 @@ const Listen = ({
   };
 
   const {
-    setReciterAR,
     setTrackList,
-    setArabicCH,
-    setCurrentTrackId,
-    setChapterID,
     setIDreader,
-    setReciter,
-    setIsPlaying,
     playTrack,
     color,
     setColor
@@ -63,21 +56,18 @@ const Listen = ({
 
   // Handle reciter selection
   const handleReciterSelect = async (reciterId) => {
-    setIDreader(reciterId);
-    setArabicCH(chapterAr);
-    setChapterID(chapterName);
-    setReciter(quranData.find((r) => r?.id === reciterId)?.reciter_name);
-    const uri = await getAudio(reciterId);
+    
+   
 
     playTrack(
       {
-        url: uri,
+        
         id: reciterId,
         chapterID: Chapterid,
         chapter: chapterName,
+        chapterAr:chapterAr,
         artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
-        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
-          .name,
+        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name.name,
         titleAR: chapterAr,
       },
       Chapterid
@@ -91,15 +81,13 @@ const Listen = ({
     setMp3(audio);
   };
 
-  // Navigate to the next reciter
-
-  // Navigate to the previous reciter
+  
 
   // Play on the Background
   useEffect(() => {
     const trackList = quranData.map((data) => ({
       id: Chapterid,
-
+      titleAR:chapterAr,
       title: chapterName,
       artist: quranData,
     }));

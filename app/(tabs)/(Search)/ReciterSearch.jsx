@@ -43,30 +43,26 @@ const ReciterSearch = () => {
     outputRange: [290, 0], // Descending output
     extrapolate: "clamp",
   });
-  
+
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
   const {
     languages,
     setIsPlaying,
     isPlaying,
-    setChapterID,
     setIDchapter,
-    setArabicCH,
-    setReciter,
-    setIDreader,
-    setReciterAR,
     playTrack,
     setTrackList,
+    color2,
+   
   } = useGlobalContext();
 
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-   const [dataAudio, setDataAudio] = useState([]);
+  const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
   const [chapters, setchapters] = useState([]);
-  const [color, setColor] = useState(0);
 
   const scrollToTop = () => {
     if (flashListRef.current) {
@@ -105,25 +101,21 @@ const ReciterSearch = () => {
 
     const trackList = dataAudio.map((data) => ({
       id: id,
-      url: data.audio_url,
       title: chapters,
       artist: name,
-      artwork: require("../../../assets/images/icon.png"),
+      artistAR: arab_name,
     }));
     setTrackList(trackList);
-  }, [languages, searchQuery, id, color]);
+  }, [languages, searchQuery, id, color2]);
 
   const getChapter = async () => {
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
         setchapters(data.chapters);
-        
-       
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
-    } finally {
     }
   };
 
@@ -144,11 +136,10 @@ const ReciterSearch = () => {
   const playSound = (
     uri,
     trackId,
-    chapterName,
     name,
     arabName,
     id,
-    arabicCh
+  
   ) => {
     playTrack(
       {
@@ -156,18 +147,11 @@ const ReciterSearch = () => {
         url: uri,
         title: chapters,
         artist: name,
-        
+        artistAR: arabName,
+        chapterID: trackId,
       },
       trackId
     );
-
-    setColor(trackId);
-    setChapterID(chapterName);
-    setArabicCH(arabicCh);
-    setIsPlaying(true);
-    setReciter(name);
-    setIDreader(id);
-    setReciterAR(arabName);
   };
 
   //  Memoizing filtered data
@@ -363,14 +347,14 @@ const ReciterSearch = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}             
+              setIDchapter={setIDchapter}
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
               chapterName={item.name_simple}
               playSound={playSound}
-              languages={languages}              
-              color={item.id === color}
+              languages={languages}
+              color={color2}
             />
           )}
         />
@@ -397,7 +381,7 @@ const ReciterSearch = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}            
+              setIDchapter={setIDchapter}
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
@@ -405,7 +389,7 @@ const ReciterSearch = () => {
               // playSound={playSound}
               playAudio={playSound}
               languages={languages}
-              color={item.id === color}
+              color={color2}
               setloading={setloading}
             />
           )}
@@ -489,7 +473,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    
+
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
     height: "16%",
@@ -575,21 +559,5 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default ReciterSearch;

@@ -1,10 +1,9 @@
-import { View, StyleSheet, Keyboard, Text, } from "react-native";
+import { View, Keyboard, Text, } from "react-native";
 import { Tabs } from "expo-router";
 import { Octicons, AntDesign } from "@expo/vector-icons";
 import BottomBar from "@/components/BottomBar";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { useEffect, useState } from "react";
-import Blur from "../../components/Blur";
 import { Colors } from "../../constants/Colors";
 
 

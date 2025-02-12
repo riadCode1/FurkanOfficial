@@ -12,7 +12,8 @@ const setupPlayer = async () => {
 		capabilities: [
 			Capability.Play,
 			Capability.Pause,
-			
+			// Capability.SkipToNext,
+			// Capability.SkipToPrevious,
 			Capability.Stop,
 		],
 		icon:require("../assets/images/Logo.png"),
