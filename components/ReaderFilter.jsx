@@ -60,7 +60,7 @@ const ReaderFilter = () => {
 
       const combinedData = [...uniqueFetchedData, ...uniqueNewData];
       setReader(combinedData.splice(1));
-      console.log(combinedData);
+      
     }
   };
 

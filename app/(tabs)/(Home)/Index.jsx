@@ -8,7 +8,6 @@ import {
   StatusBar,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Feather } from "@expo/vector-icons";
 import ReaderCard from "../../../components/ReaderCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ReadingSurah from "../../../components/ReadingSurah";
@@ -17,7 +16,7 @@ import { NewData } from "../../../constants/NewData";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import ModalAudio from "../../../components/ModalAudio";
 import { Colors } from "../../../constants/Colors";
-import { TouchableRipple } from "react-native-paper";
+
 
 const Index = () => {
   const [quranData, setQuranData] = useState([]);

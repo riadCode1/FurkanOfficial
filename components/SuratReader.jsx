@@ -21,9 +21,8 @@ const SuratReader = ({
   loading,
   id,
   playAudio,
-  setIDchapter,
   data,
-  setAdtoList
+ 
 }) => {
 
   

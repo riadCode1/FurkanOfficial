@@ -16,7 +16,6 @@ const PlayList = () => {
   const [idColor, setIdColor] = useState("");
   const [loading, setloading] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
-  const [audioUri, setAudioUri] = useState(null);
   const [playlist, setPlaylist] = useState([]);
   const [color2, setColor2] = useState(0);
   const focused = useIsFocused();
@@ -26,14 +25,11 @@ const PlayList = () => {
       languages,
       setIsPlaying,
       setChapterID,
-      setPosition,
-      setDuration,
-      setCurrentTrackId,
       setArabicCH,
       setReciter,
       setIDreader,
       setReciterAR,
-      soundRef,
+     
       playTrack
     } = useGlobalContext();
 
@@ -94,20 +90,7 @@ const PlayList = () => {
     }
   }, [languages, searchQuery]);
 
-  const getAudio = async (reciterId, id) => {
-    try {
-      const response = await fetch(
-        `https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${id}`
-      );
-      const data = await response.json();
-      setAudioUri(data?.audio_file?.audio_url);
-
-      return data?.audio_file?.audio_url; // Return the audio URL
-    } catch (error) {
-      console.error("Error fetching audio URL:", error);
-    }
-  };
-
+ 
 //PlaySound
 
 

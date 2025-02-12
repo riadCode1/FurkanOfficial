@@ -2,16 +2,15 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   useCallback,
   memo,
- 
+  useMemo,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer from "react-native-track-player";
 import { dataArray } from "../constants/RecitersImages";
-
-
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -147,8 +146,7 @@ const GlobalProvider = memo(({ children }) => {
   const playTrack = async (track, index) => {
 
   
-   const uri = await getAudio(track.id, index);
-   
+const uri = await getAudio(track.id, index);
     setCurrentTrack(track);
     setColor2(index)
     setColor(track.id)
@@ -160,8 +158,8 @@ const GlobalProvider = memo(({ children }) => {
     setReciter(track.artist);
     setReciterAR(track.artistAR)
 
+     await TrackPlayer.reset();
     
-    await TrackPlayer.reset();
     
 
     const tracker = {
@@ -198,6 +196,7 @@ const GlobalProvider = memo(({ children }) => {
     await TrackPlayer.reset();
 
     
+   console.log(uri)
 
     const tracker = {
       id: track[index].artist[index].id,
@@ -208,7 +207,7 @@ const GlobalProvider = memo(({ children }) => {
         
       // or a remote URL
     };
-   
+    console.log(tracker);
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
@@ -229,12 +228,13 @@ const GlobalProvider = memo(({ children }) => {
     const nextReciter = currentReciter;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-    
+    console.log(tracks.length);
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      
+      console.log("track");
+    } else {
       await playTrackSkip(nextTrackSkip, nextReciter);
-      
+      console.log("skipper");
     }
   };
 
@@ -244,13 +244,13 @@ const GlobalProvider = memo(({ children }) => {
     const nextReciter = currentReciter - 2;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-   
+    console.log(nextTrackSkip.id);
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      
+      console.log("track");
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter - 1);
-     
+      console.log("skipper");
     }
   };
 

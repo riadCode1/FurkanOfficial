@@ -7,7 +7,7 @@ import { Colors } from "../constants/Colors";
 import Slider from "@react-native-community/slider";
 import { TouchableRipple } from "react-native-paper";
 import TrackPlayer, { useProgress } from "react-native-track-player";
-import { skipToNext } from "react-native-track-player/lib/src/trackPlayer";
+
 
 
 const ModalAudio = ({ }) => {

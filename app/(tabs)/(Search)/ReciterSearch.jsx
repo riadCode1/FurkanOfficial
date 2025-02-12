@@ -136,10 +136,11 @@ const ReciterSearch = () => {
   const playSound = (
     uri,
     trackId,
+    chapterName,
     name,
     arabName,
     id,
-  
+    arabicCh
   ) => {
     playTrack(
       {

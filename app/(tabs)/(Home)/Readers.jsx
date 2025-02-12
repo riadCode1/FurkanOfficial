@@ -57,7 +57,7 @@ const Readers = () => {
 
   const { name, Chapterid, arab_name, chapter_arab } = params;
 
-  const { isPlaying, languages, color, setColor } =
+  const { isPlaying, languages, } =
     useGlobalContext();
 
   const [activeButton, setActiveButton] = useState("button1");
