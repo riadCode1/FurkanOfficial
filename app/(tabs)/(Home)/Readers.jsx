@@ -55,9 +55,9 @@ const Readers = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const { name, Chapterid, arab_name, chapter_arab } = params;
+  const { name, Chapterid,chapter_arab } = params;
 
-  const { isPlaying, languages, } =
+  const { isPlaying, languages,togglePlayback,playTrack } =
     useGlobalContext();
 
   const [activeButton, setActiveButton] = useState("button1");
@@ -105,7 +105,7 @@ const Readers = () => {
         (item) => item.id !== 10 && item.status !== "inactive"
       ); // Example conditions
 
-      setQuranData(filteredData.splice(1));
+      setQuranData(filteredData.splice(2));
 
       
     }
@@ -169,6 +169,25 @@ const Readers = () => {
         });
     }
   }, [searchQuery, ]);
+
+  const PlayAuto = async (reciterId) => {
+    
+  
+
+    playTrack(
+      {
+        
+        id: reciterId,
+        chapterID: Chapterid,
+        chapter: name,
+        chapterAr:chapter_arab,
+        artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
+        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name.name,
+        titleAR: chapter_arab,
+      },
+      Chapterid
+    );
+  };
   
 
   return (
@@ -227,7 +246,7 @@ const Readers = () => {
             {isPlaying ? (
               <View>
                 <TouchableRipple
-                  onPress={"pauseAudio"}
+                  onPress={togglePlayback}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -238,7 +257,7 @@ const Readers = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={"playAuto"}
+                  onPress={()=>PlayAuto(1)}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -365,7 +384,7 @@ const Readers = () => {
             {isPlaying ? (
               <View>
                 <TouchableRipple
-                  onPress={"pauseAudio"}
+                  onPress={togglePlayback}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -376,7 +395,7 @@ const Readers = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={"playAuto"}
+                  onPress={()=>PlayAuto(1)}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}

@@ -54,6 +54,7 @@ const ReciterSearch = () => {
     playTrack,
     setTrackList,
     color2,
+    togglePlayback
    
   } = useGlobalContext();
 
@@ -75,7 +76,7 @@ const ReciterSearch = () => {
     fetchAudioUrl(id);
 
     if (searchQuery.length > 1) {
-      setloading(true);
+      
 
       fetchChater(searchQuery)
         .then((suwarData) => {
@@ -94,9 +95,7 @@ const ReciterSearch = () => {
         .catch((error) => {
           console.error("Error fetching recitations: ", error);
         })
-        .finally(() => {
-          setloading(false);
-        });
+       
     }
 
     const trackList = dataAudio.map((data) => ({
@@ -152,6 +151,21 @@ const ReciterSearch = () => {
         chapterID: trackId,
       },
       trackId
+    );
+  };
+  const playAuto = (
+   
+  ) => {
+    playTrack(
+      {
+        id: id,
+        
+        title: chapters,
+        artist: name,
+        artistAR: arab_name,
+        chapterID: 1,
+      },
+      1
     );
   };
 
@@ -224,7 +238,7 @@ const ReciterSearch = () => {
             {isPlaying ? (
               <View>
                 <TouchableRipple
-                  onPress={"pauseAudio"}
+                  onPress={togglePlayback}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -235,7 +249,7 @@ const ReciterSearch = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={"playAuto"}
+                  onPress={playAuto}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}

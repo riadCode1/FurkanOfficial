@@ -18,7 +18,7 @@ const PlayList = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [playlist, setPlaylist] = useState([]);
   const [color2, setColor2] = useState(0);
-  const focused = useIsFocused();
+  const isFocused = useIsFocused();
 
    const {
      
@@ -37,18 +37,25 @@ const PlayList = () => {
     setAlertVisible(false);
   };
 
-  const fetchBookMark = async () => {
-    await AsyncStorage.getItem("playList").then((token) => {
-      const res = JSON.parse(token);
-
-      if (res) {
-        setPlaylist(res);
-      }
-    });
-  };
+  
   useEffect(() => {
-    fetchBookMark();
-  }, [focused, playlist]);
+    
+    if (isFocused) {
+      const fetchBookMark = async () => {
+        const token = await AsyncStorage.getItem("playList");
+        const res = JSON.parse(token);
+
+        if (res) {
+          setPlaylist(res);
+        }
+      };
+
+      fetchBookMark();
+    }
+  }, [ isFocused]);
+
+
+  
 
   const Remove = async (id) => {
     try {

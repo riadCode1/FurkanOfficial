@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { SplashScreen, Stack } from "expo-router";
+import { router, SplashScreen, Stack } from "expo-router";
 import { Provider as PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -10,6 +10,7 @@ import "../global.css";
 import TrackPlayer from "react-native-track-player";
 import { useSetupTrackPlayer } from '@/hooks/useSetupTrackPlayer'
 import { playbackService } from "../constants/playbackService";
+import { Linking } from "react-native";
 
 SplashScreen.preventAutoHideAsync()
 
@@ -24,6 +25,29 @@ export default function RootLayout() {
 	useSetupTrackPlayer({
 		onLoad: handleTrackPlayerLoaded,
 	}) 
+  useEffect(() => {
+    const handleDeepLink = (url) => {
+      if (url === 'trackplayer://notification.click') {
+        // Navigate to your player screen
+        router.navigate('Index'); // Replace with your navigation logic
+      }
+    };
+
+    // Check if the app was launched from a closed state with the URI
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    // Listen for incoming links while the app is running
+    Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    // Cleanup
+    return () => {
+      Linking.removeAllListeners('url');
+    };
+  }, []);
 
 	
   

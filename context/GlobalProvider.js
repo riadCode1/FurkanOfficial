@@ -144,29 +144,37 @@ const GlobalProvider = memo(({ children }) => {
   // Play a specific track
 
   const playTrack = async (track, index) => {
-
-  
-const uri = await getAudio(track.id, index);
+    console.log(track,index)
     setCurrentTrack(track);
-    setColor2(index)
-    setColor(track.id)
+    setColor2(index);
+    setColor(track.id);
     setIDreader(track.id);
     setCurrentReciter(track.id);
     setCurrentTrackIndex(index);
-    setChapterID(track.title ? track.title[index - 1].name_simple : track.chapter);
-    setArabicCH(track.title ? track.title[index - 1].name_arabic : track.titleAR)
+    setChapterID(
+      track.title ? track.title[index - 1].name_simple : track.chapter
+    );
+    setArabicCH(
+      track.title ? track.title[index - 1].name_arabic : track.titleAR
+    );
     setReciter(track.artist);
-    setReciterAR(track.artistAR)
+    setReciterAR(track.artistAR);
+    setIDchapter(index);
 
      await TrackPlayer.reset();
-    
-    
+    const uri = await getAudio(track.id, index);
 
     const tracker = {
       id: track.id,
       url: uri, // or a remote URL
-      title: track.title ? languages?track.title[index - 1].name_arabic : track.title[index - 1].name_simple : languages?track.titleAR : track.chapter,
-      artist: languages? track.artistAR:track.artist,
+      title: track.title
+        ? languages
+          ? track.title[index - 1].name_arabic
+          : track.title[index - 1].name_simple
+        : languages
+        ? track.titleAR
+        : track.chapter,
+      artist: languages ? track.artistAR : track.artist,
       artwork: track.id
         ? dataArray[track.id].image
         : require("../assets/images/icon.png"),
@@ -183,8 +191,7 @@ const uri = await getAudio(track.id, index);
 
   const playTrackSkip = async (track, index) => {
 
-    
-    const uri = await getAudio(track[index].artist[index].id, track[index].id);
+   
 
     setColor(track[index].artist[index].id);
     setIDreader(track[index].artist[index].id);
@@ -193,10 +200,11 @@ const uri = await getAudio(track.id, index);
     setArabicCH(track[index].titleAR)
     setReciterAR(track[index].artist[index].translated_name.name)
 
-    await TrackPlayer.reset();
+     await TrackPlayer.reset();
+    const uri = await getAudio(track[index].artist[index].id, track[index].id);
 
     
-   console.log(uri)
+ 
 
     const tracker = {
       id: track[index].artist[index].id,

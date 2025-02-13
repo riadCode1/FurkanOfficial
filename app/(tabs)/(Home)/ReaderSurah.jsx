@@ -43,31 +43,27 @@ const ReaderSurah = () => {
     outputRange: [290, 0], // Descending output
     extrapolate: "clamp",
   });
-  
+
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
   const {
     languages,
     setIsPlaying,
     isPlaying,
-    setChapterID,
     setIDchapter,
-    setArabicCH,
-    setReciter,
-    setIDreader,
-    setReciterAR,
     playTrack,
     setTrackList,
-    color2, setColor2
+    color2,
+    togglePlayback
+   
   } = useGlobalContext();
 
   const [loading, setloading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-   const [dataAudio, setDataAudio] = useState([]);
+  const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const flashListRef = useRef(null);
   const [chapters, setchapters] = useState([]);
-  
 
   const scrollToTop = () => {
     if (flashListRef.current) {
@@ -80,7 +76,7 @@ const ReaderSurah = () => {
     fetchAudioUrl(id);
 
     if (searchQuery.length > 1) {
-      setloading(true);
+      
 
       fetchChater(searchQuery)
         .then((suwarData) => {
@@ -99,37 +95,27 @@ const ReaderSurah = () => {
         .catch((error) => {
           console.error("Error fetching recitations: ", error);
         })
-        .finally(() => {
-          setloading(false);
-        });
+       
     }
 
     const trackList = dataAudio.map((data) => ({
       id: id,
       title: chapters,
       artist: name,
-      artistAR:arab_name,
-      
-
+      artistAR: arab_name,
     }));
     setTrackList(trackList);
   }, [languages, searchQuery, id, color2]);
 
   const getChapter = async () => {
-    
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
         setchapters(data.chapters);
-      
-        
-       
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
-    } 
-
-    
+    }
   };
 
   const fetchAudioUrl = async (id) => {
@@ -155,24 +141,32 @@ const ReaderSurah = () => {
     id,
     arabicCh
   ) => {
-
-   
     playTrack(
       {
         id: id,
         url: uri,
         title: chapters,
         artist: name,
-        artistAR:arabName,
-        chapterID:trackId,
-        
+        artistAR: arabName,
+        chapterID: trackId,
       },
       trackId
-      
     );
-
-    
-    
+  };
+  const playAuto = (
+   
+  ) => {
+    playTrack(
+      {
+        id: id,
+        
+        title: chapters,
+        artist: name,
+        artistAR: arab_name,
+        chapterID: 1,
+      },
+      1
+    );
   };
 
   //  Memoizing filtered data
@@ -244,7 +238,7 @@ const ReaderSurah = () => {
             {isPlaying ? (
               <View>
                 <TouchableRipple
-                  onPress={"pauseAudio"}
+                  onPress={togglePlayback}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -255,7 +249,7 @@ const ReaderSurah = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={"playAuto"}
+                  onPress={playAuto}
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -368,13 +362,13 @@ const ReaderSurah = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}             
+              setIDchapter={setIDchapter}
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
               chapterName={item.name_simple}
               playSound={playSound}
-              languages={languages}              
+              languages={languages}
               color={color2}
             />
           )}
@@ -402,7 +396,7 @@ const ReaderSurah = () => {
               reciterName={name}
               data={item}
               setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}            
+              setIDchapter={setIDchapter}
               loading={loading}
               arab_name={arab_name}
               chapterAr={item.name_arabic}
@@ -410,7 +404,7 @@ const ReaderSurah = () => {
               // playSound={playSound}
               playAudio={playSound}
               languages={languages}
-              color={ color2}
+              color={color2}
               setloading={setloading}
             />
           )}
@@ -494,7 +488,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    
+
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
     height: "16%",
@@ -580,10 +574,6 @@ const styles = StyleSheet.create({
     width: 48,
   },
 });
-
-
-
-
 
 
 

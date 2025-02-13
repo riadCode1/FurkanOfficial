@@ -7,6 +7,7 @@ import { Colors } from "../constants/Colors";
 import Slider from "@react-native-community/slider";
 import { TouchableRipple } from "react-native-paper";
 import TrackPlayer, { useProgress } from "react-native-track-player";
+import Dropmenu from "./Dropmenu";
 
 
 
@@ -25,7 +26,9 @@ const ModalAudio = ({ }) => {
     playNext,
     playPrevious,
     togglePlayback,
-    shuffle
+    shuffle,
+    IDchapter,
+    idReader
     
   } = useGlobalContext();
  
@@ -77,14 +80,15 @@ const ModalAudio = ({ }) => {
           <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
         </TouchableRipple>
 
-        <TouchableRipple
-          onPress={() => setModalVisible(false)}
-          rippleColor="rgba(255, 255, 255, 0.2)"
-          style={styles.backButton}
-          borderless={true}
-        >
-          <Entypo name="dots-three-vertical" size={20} color="white" />
-        </TouchableRipple>
+        <Dropmenu
+                chapter={chapterId}
+                reciterName={reciter}
+                reciterID={idReader}
+                arabName={reciterAR}
+                chapterAr={arabicCH}
+                chapteID={IDchapter}                               
+              
+              /> 
       </View>
 
       <View style={styles.imageContainer}>

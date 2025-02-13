@@ -16,10 +16,27 @@ const setupPlayer = async () => {
 			// Capability.SkipToPrevious,
 			Capability.Stop,
 		],
-		icon:require("../assets/images/Logo.png"),
+		
+
+		notificationCapabilities:[
+			Capability.Play,
+            Capability.Pause,
+            Capability.Stop,
+		],
+		compactCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+        ],
+		
+		
+		
+		icon:require("../assets/images/notifIcon.png"),
 		android: {
+			
 			alwaysPauseOnInterruption:true,
 			appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+			
+			
 			
 		},
 		
