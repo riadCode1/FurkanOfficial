@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, } from "react-native";
+import { View, Text, } from "react-native";
 import { Image } from 'expo-image';
 import React from "react";
 import Dropmenu from "./Dropmenu";
@@ -7,6 +7,8 @@ import { Colors } from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 
 import LottieView from "lottie-react-native";
+import StyleSheet from 'react-native-media-query';
+import { useGlobalContext } from "../context/GlobalProvider";
 
 const SuratReader = ({
   color,
@@ -18,13 +20,15 @@ const SuratReader = ({
   index,
   dataAudio,
   chapteID,
-  loading,
   id,
   playAudio,
   data,
  
 }) => {
-
+const {
+     
+      loading
+    } = useGlobalContext();
   
   const handlePlay = () => {
     playAudio(
@@ -44,11 +48,12 @@ const SuratReader = ({
   return (
     <View>
       {loading ? (
-        <View>
+        <View style={styles.lottie}>
          <LottieView
       source={require("../assets/images/Loading.json")}
-      style={{right:70, width: 400, height: 50}}
+      style={{ width: "100%", height: "100%"}}
       autoPlay
+      
       loop
     />
         </View>
@@ -104,7 +109,7 @@ const SuratReader = ({
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -115,6 +120,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tint,
     height: 75,
   },
+
+  lottie: {
+    right:70,
+    width: "100%",
+    height: 50,
+   
+    '@media (min-width: 768px)': {
+      
+      right:270,
+      width: "100%",
+  },}
+,    
   playButton: {
     borderRadius: 8,
     width: "100%",
@@ -122,13 +139,18 @@ const styles = StyleSheet.create({
     overflow: "hidden", // Ensures ripple stays within bounds
     alignContent: "center",
     justifyContent: "center",
+    paddingHorizontal: (16),
+    '@media (min-width: 768px)': {
+      
+      paddingHorizontal:32
+  },
   },
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     
-    paddingLeft: 16,
+    
   
   },
   imageContainer: {
@@ -154,7 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   reciterText: {
-    color: "#B0B0B0",
+    color: Colors.textGray,
     fontSize: 12,
   },
   menuContainer: {

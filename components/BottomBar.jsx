@@ -11,6 +11,11 @@ import { dataArray } from "@/constants/RecitersImages";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "../context/GlobalProvider";
+import { MaterialIcons } from "@expo/vector-icons";
+import TrackPlayer from "react-native-track-player";
+
+
+
 
 const BottomBar = ({
   
@@ -23,7 +28,25 @@ const BottomBar = ({
   idReader,
 }) => {
   
-   const { languages,togglePlayback,isPlaying } = useGlobalContext();
+   const { languages,togglePlayback,isPlaying,setIsPlaying } = useGlobalContext();
+
+   useEffect(() => {
+    // Handle play events
+    const playListener = TrackPlayer.addEventListener('remote-play', () => {
+      setIsPlaying(true);
+    });
+  
+    // Handle pause events
+    const pauseListener = TrackPlayer.addEventListener('remote-pause', () => {
+      setIsPlaying(false);
+    });
+  
+    // Cleanup both listeners
+    return () => {
+      playListener.remove();
+      pauseListener.remove();
+    };
+  }, []);
 
   return (
     <TouchableOpacity
@@ -51,7 +74,7 @@ const BottomBar = ({
             {languages ? arabicCH : chapterId}
           </Text>
           <Text style={styles.reciterText}>
-            {languages ? reciterAR : name}
+          {languages ?reciterAR :name}
           </Text>
         </View>
       </View>
@@ -63,9 +86,9 @@ const BottomBar = ({
         style={styles.iconButton}
       >
         {isPlaying ? (
-          <FontAwesome5 name="pause" size={20} color="#00D1FF" />
+          <MaterialIcons name="pause" size={30} color="#00D1FF" />
         ) : (
-          <FontAwesome5 name="play" size={20} color="#00D1FF" />
+          <MaterialIcons name="play-arrow" size={30} color="#00D1FF" />
         )}
       </TouchableRipple>
     </TouchableOpacity>
@@ -76,7 +99,7 @@ const styles = StyleSheet.create({
   container: {
     width: "95%",
     position: "absolute",
-    bottom: 90,
+    bottom: 85,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -84,7 +107,7 @@ const styles = StyleSheet.create({
     borderColor: "#00D1FF",
     height: 60,
     borderRadius: 8,
-    backgroundColor: Colors.tint,
+    backgroundColor: Colors.barbottom,
     alignSelf: "center",
     overflow: "hidden",
   },
@@ -102,7 +125,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
    paddingHorizontal:9,
-   paddingVertical:16
+   paddingVertical:16,
+   alignItems:"flex-start",
+   width:210
   },
   chapterText: {
     fontSize: 16,
@@ -111,7 +136,7 @@ const styles = StyleSheet.create({
   },
   reciterText: {
     fontSize: 12,
-    color: "#B3B3B3", // Equivalent to gray-400
+    color: Colors.textGray, // Equivalent to gray-400
   },
   iconButton: {
     justifyContent: "center",

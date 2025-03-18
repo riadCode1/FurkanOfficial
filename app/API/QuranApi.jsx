@@ -5,7 +5,6 @@ import axios from 'axios';
 
 
 
-
 const URL = 'https://api.quran.com/api/v4'; 
 
 const ReciterEndpoint = `${URL}/resources/recitations` 

@@ -29,7 +29,7 @@ export const NewData = {
       },
       {
         id: 13,
-        reciter_name: "saad al-ghaamidi",
+        reciter_name: "Saad al-Ghamdi",
         style: "Murattal",
         translated_name: {
           name: "سعد الغامدي",
@@ -111,6 +111,29 @@ export const NewData = {
         },
       },
 
+      
+      {
+        id: 23,
+        reciter_name: "Tawfik As Sayegh",
+        style: "Murattal",
+        translated_name: {
+          name: "توفيق الصايغ",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 26,
+        reciter_name: " Muhammad Al Mohaisany ",
+        style: "Murattal",
+        translated_name: {
+          name: " محمد المحيسني",
+          language_name: "arabic",
+        },
+      },
+
+
+
       {
         id: 40,
         reciter_name: "Abdul wadood haneef",
@@ -131,6 +154,16 @@ export const NewData = {
         },
       },
 
+      {
+        id: 44,
+        reciter_name: " Aziz Alili ",
+        style: "Murattal",
+        translated_name: {
+          name: " عزيز عليلي",
+          language_name: "arabic",
+        },
+      },
+
       
      
 
@@ -143,12 +176,40 @@ export const NewData = {
           language_name: "arabic",
         },
       },
+
       {
-        id: 61,
-        reciter_name: "Sadaqat ali",
+        id: 53,
+        reciter_name: "Muhammad Al-Luhaidan",
         style: "Murattal",
         translated_name: {
-          name: "صدقات علي",
+          name: "محمد اللحيدان",
+          language_name: "arabic",
+        },
+      },
+      {
+        id: 60,
+        reciter_name: "Abdul Rashid Ali Sufi",
+        style: "Murattal",
+        translated_name: {
+          name: " عبد الرشيد علي صوفي",
+          language_name: "arabic",
+        },
+      },
+      {
+        id: 64,
+        reciter_name: "Hamad Sinan",
+        style: "Murattal",
+        translated_name: {
+          name: "حمد سنان",
+          language_name: "arabic",
+        },
+      },
+      {
+        id: 68,
+        reciter_name: "Abtan Al Dulaimi",
+        style: "Murattal",
+        translated_name: {
+          name: "عبطان الدليمي",
           language_name: "arabic",
         },
       },
@@ -158,6 +219,45 @@ export const NewData = {
         style: "Murattal",
         translated_name: {
           name: "علي جابر",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 71,
+        reciter_name: "Mustafa Raad Al Azzawi",
+        style: "Murattal",
+        translated_name: {
+          name: "مصطفى رعد العزاوي",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 72,
+        reciter_name: "Abdullah Al Khayat",
+        style: "Murattal",
+        translated_name: {
+          name: "عبد الله الخياط",
+          language_name: "arabic",
+        },
+      },
+      {
+        id: 79,
+        reciter_name: "Mohamed Hassan",
+        style: "Murattal",
+        translated_name: {
+          name: "محمد حسان",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 80,
+        reciter_name: "Salah Al Hashem",
+        style: "Murattal",
+        translated_name: {
+          name: "صلاح الهاشم ",
           language_name: "arabic",
         },
       },
@@ -180,12 +280,42 @@ export const NewData = {
           language_name: "arabic",
         },
       },
+
+      {
+        id: 85,
+        reciter_name: "Hatem Farid ",
+        style: "Murattal",
+        translated_name: {
+          name: "حاتم فريد",
+          language_name: "arabic",
+        },
+      },
       {
         id: 97,
         reciter_name: "Yasser Dossari",
         style: "Murattal",
         translated_name: {
           name: "ياسر الدوسري",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 104,
+        reciter_name: "Nasser Al Qatami",
+        style: "Murattal",
+        translated_name: {
+          name: "ناصر القطامي",
+          language_name: "arabic",
+        },
+      },
+
+      {
+        id: 114,
+        reciter_name: "Ali Al houdaifi",
+        style: "Murattal",
+        translated_name: {
+          name: "علي الحذيفي ",
           language_name: "arabic",
         },
       },
@@ -209,6 +339,16 @@ export const NewData = {
              language_name: "arabic",
            },
          },
+
+         {
+          id: 162,
+          reciter_name: "Abdullah Al-Juhani",
+          style: "Murattal",
+          translated_name: {
+            name: "عبد الله عواد الجهني",
+            language_name: "arabic",
+          },
+        },
      
   ],
 };

@@ -1,6 +1,6 @@
 import { View, TextInput, Animated, Platform, Dimensions, StyleSheet } from "react-native";
 import React, { useState } from "react";
-import { Entypo, Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "../context/GlobalProvider";
 
@@ -37,17 +37,17 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
         />
 
         {searchQuery?.length > 1 ? (
-          <Entypo
+          <MaterialIcons
             onPress={() => setSearchQuery("")}
-            name="circle-with-cross"
+            name="close"
             size={24}
             color={Colors.textGray}
           />
         ) : (
-          <Feather
+          <MaterialIcons
             name="search"
             size={24}
-            strokeWidth={2}
+            strokeWidth={5}
             color={Colors.textGray}
           />
         )}
@@ -60,7 +60,7 @@ export default SearchBar;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 8, // Equivalent to pt-2 in Tailwind
+    // Equivalent to pt-2 in Tailwind
   },
   animatedView: {
     borderWidth: 1, // Equivalent to border in Tailwind

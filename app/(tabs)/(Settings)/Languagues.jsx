@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RadioButton, TouchableRipple } from "react-native-paper";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { Colors } from "../../../constants/Colors";
-
+import StyleSheet from 'react-native-media-query';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 const Languagues = () => {
   const { languages, checked, saveCheck, setLanguages } = useGlobalContext();
 
@@ -24,6 +26,15 @@ const Languagues = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+<TouchableRipple
+        onPress={() => router.back()}
+        rippleColor="rgba(255, 255, 255, 0.2)"
+        style={styles.backButton}
+        borderless={true}
+      >
+        <Ionicons name="arrow-back" size={24} color="white" />
+      </TouchableRipple>
       <View style={styles.header}>
         <Text style={styles.headerText}>
           {languages ? "اللغة" : "Languages"}
@@ -75,7 +86,7 @@ const Languagues = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -88,6 +99,22 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  backButton: {
+    position:"absolute",
+    width:48,
+    height:48,
+    top:44,
+    left:16,
+    zIndex:99,
+    elevation: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#454B8C",
+    borderRadius: 50,
+    '@media (min-width: 700px)': {
+            left:32
+        },
   },
   optionsContainer: {
     alignItems: "center",

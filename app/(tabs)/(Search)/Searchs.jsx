@@ -5,14 +5,12 @@ import {
   Dimensions,
   FlatList,
   SafeAreaView,
-  StyleSheet,
+  
 } from "react-native";
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from "react";
-
-
+import StyleSheet from 'react-native-media-query';
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
-
 import { router } from "expo-router";
 import { dataArray } from "@/constants/RecitersImages";
 import { NewData } from "../../../constants/NewData";
@@ -39,7 +37,7 @@ const Search = () => {
     setActiveButton(button);
   };
   const getBackgroundColor = (button) => {
-    return activeButton === button ? Colors.tint : Colors.rgb;
+    return activeButton === button ? Colors.tintLight : Colors.rgb;
   };
 
   useEffect(() => {
@@ -147,7 +145,7 @@ const Search = () => {
                       <Image
                         contentFit="contain"
                         style={styles.image}
-                        source={require("../../../assets/images/quranLogo.png")}
+                        source={require("../../../assets/images/quranLogo.jpeg")}
                       />
                     ) : (
                       <Image
@@ -220,7 +218,7 @@ const Search = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const { styles} = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -239,6 +237,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     marginTop: 16,
+    '@media (min-width: 768px)': {
+      paddingHorizontal: 32,
+  
+    }
   },
   filter: {
     alignItems: "center",
@@ -255,6 +257,7 @@ const styles = StyleSheet.create({
   resultsText: {
     color: "white",
     marginLeft: 16,
+    
   },
   flatlistContainer: {
     paddingBottom: 200,
@@ -269,8 +272,13 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: "center",
     height: 65,
-    width: 400,
+    width: "100%",
     paddingHorizontal: 16,
+    '@media (min-width: 768px)': {
+      paddingHorizontal: 32,
+  
+    }
+    
   },
   imageContainer: {
     borderColor: "#00BCE5",

@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  StyleSheet,
   Dimensions,
   FlatList,
 } from "react-native";
@@ -16,11 +15,11 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
-
+import StyleSheet from 'react-native-media-query';
 let { width, height } = Dimensions.get("window");
 const ReaderFilter = () => {
   const [reader, setReader] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const { languages } = useGlobalContext();
 
@@ -105,7 +104,7 @@ const ReaderFilter = () => {
                   <View style={{ flexDirection: "row", gap: 12 }}>
                     <View style={styles.imageContainer}>
                       <Image
-                        contentFit="contain"
+                        contentFit="cover"
                         style={styles.image}
                         source={{
                           uri: dataArray[item.id]?.image
@@ -138,7 +137,7 @@ const ReaderFilter = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -150,6 +149,10 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 12,
     paddingHorizontal: 16,
+    '@media (min-width: 768px)': {
+      paddingHorizontal: 32,
+  
+    }
   },
   imageContainer: {
     overflow: "hidden",

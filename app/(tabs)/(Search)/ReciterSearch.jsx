@@ -1,46 +1,51 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { TouchableOpacity, Dimensions } from "react-native";
+import {
+  TouchableOpacity,
+  Dimensions,
+  StatusBar,
+ 
+} from "react-native";
+import StyleSheet from 'react-native-media-query';
 import { router, useGlobalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 let { width, height } = Dimensions.get("window");
-import { View, Text, StyleSheet, Animated, Image } from "react-native";
+import { View, Text, Animated } from "react-native";
 import SearchBar from "../../../components/SearchBar";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { fetchAudio, fetchChater } from "../../API/QuranApi";
 import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
-import { Colors } from "../../../constants/Colors";
+import { Colors,  } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 import { TouchableRipple } from "react-native-paper";
 
-const HEADER_MAX_HEIGHT = height * 0.62;
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { Image } from "expo-image";
+import { ImageBackground } from "react-native";
+
+const HEADER_MAX_HEIGHT = 420;
 const HEADER_MIN_HEIGHT = height * 0.25;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const ReciterSearch = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const headerTranslate = scrollY.interpolate({
-    inputRange: [0, 500],
-    outputRange: [0, -500],
-    extrapolate: "clamp",
-  });
-
   const smallHeaderOpacity = scrollY.interpolate({
     inputRange: [
-      0, // Start of scroll
-      HEADER_SCROLL_DISTANCE / 2, // Midpoint
-      HEADER_SCROLL_DISTANCE, // End of scroll
+      HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
+      HEADER_SCROLL_DISTANCE,
+      RFValue(350),
     ],
-    outputRange: [0, 0.5, 1],
+    outputRange: [0, 1, 1],
     extrapolate: "clamp",
   });
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, 290], // Strictly increasing
-    outputRange: [290, 0], // Descending output
+    inputRange: [0, 300], // Strictly increasing
+    outputRange: [500, 0], // Descending output
     extrapolate: "clamp",
   });
 
@@ -54,11 +59,11 @@ const ReciterSearch = () => {
     playTrack,
     setTrackList,
     color2,
-    togglePlayback
-   
+    togglePlayback,
+    loading, setloading
   } = useGlobalContext();
 
-  const [loading, setloading] = useState(false);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -67,7 +72,7 @@ const ReciterSearch = () => {
 
   const scrollToTop = () => {
     if (flashListRef.current) {
-      flashListRef.current.scrollToOffset({ offset: 0, animated: true });
+      flashListRef.current.scrollTo({ offset: 0, animated: true });
     }
   };
 
@@ -76,8 +81,6 @@ const ReciterSearch = () => {
     fetchAudioUrl(id);
 
     if (searchQuery.length > 1) {
-      
-
       fetchChater(searchQuery)
         .then((suwarData) => {
           const filteredRecitations = suwarData.chapters.filter(
@@ -94,8 +97,7 @@ const ReciterSearch = () => {
         })
         .catch((error) => {
           console.error("Error fetching recitations: ", error);
-        })
-       
+        });
     }
 
     const trackList = dataAudio.map((data) => ({
@@ -105,7 +107,7 @@ const ReciterSearch = () => {
       artistAR: arab_name,
     }));
     setTrackList(trackList);
-  }, [languages, searchQuery, id, color2]);
+  }, [languages, searchQuery, id, color2,loading]);
 
   const getChapter = async () => {
     try {
@@ -153,13 +155,11 @@ const ReciterSearch = () => {
       trackId
     );
   };
-  const playAuto = (
-   
-  ) => {
+  const playAuto = () => {
     playTrack(
       {
         id: id,
-        
+
         title: chapters,
         artist: name,
         artistAR: arab_name,
@@ -181,56 +181,113 @@ const ReciterSearch = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="transparent" />
+
+      {/* Small Header */}
+      <Animated.View
+        style={[
+          styles.smallHeader,
+          {
+            opacity: smallHeaderOpacity,
+          },
+        ]}
+      >
+        <View
+          style={styles.chapterSmall}
+          
+        >
+          <View style={{width:180}} >
+            <Text
+              style={[
+                styles.chapterTextSmall,
+                { fontSize: 20, textAlign: "left" },
+              ]}
+            >
+               {languages ? arab_name?.length>10?arab_name.slice(0,20)+"...":arab_name : name?.length>20?name.slice(0,20)+"...":name}
+            </Text>
+            <Text
+              style={{
+                color: Colors.textGray,
+                fontSize: 14,
+                textAlign: "left",
+              }}
+            >
+              114 {languages ? "سورة" : "Surah"}
+            </Text>
+          </View>
+
+          {isPlaying ? (
+            <View style={{}}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={togglePlayback}
+                style={styles.playPauseButtonSmall}
+              >
+                <MaterialIcons name="pause" size={24} color="#00D1FF" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{}}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={playAuto}
+                style={styles.playPauseButtonSmall}
+              >
+                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Animated.View>
+
       <TouchableRipple
         onPress={() => router.back()}
         rippleColor="rgba(255, 255, 255, 0.2)"
         style={styles.backButton}
         borderless={true}
       >
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <MaterialIcons name="arrow-back" size={24} color="white" />
       </TouchableRipple>
 
-      <Animated.View
-        style={[
-          styles.header,
-          {
-            transform: [{ translateY: headerTranslate }],
-          },
-        ]}
+      {/* Scroll Header */}
+
+      <Animated.ScrollView
+        ref={flashListRef}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
       >
-        <Animated.View style={[styles.headerImage, {}]}>
-          <Image
-            source={{
-              uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-            }}
-            blurRadius={20}
-            style={[styles.headerImage]}
-          />
-        </Animated.View>
+        <ImageBackground
+          source={{
+            uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+          }}
+          blurRadius={20}
+          style={styles.headerImage}
+        >
+          <View style={[styles.imageContainer, {}]}>
+            <Image
+            contentFit="cover"
+              source={{
+                uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+              }}
+              style={styles.image}
+            />
+          </View>
 
-        <Animated.View style={[styles.imageContainer, {}]}>
-          <Image
-            resizeMode="cover"
-            style={[styles.image]}
-            source={{
-              uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-            }}
-          />
-        </Animated.View>
-
-        <Animated.View style={[styles.headerTitle]}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={[styles.chapterNameText]}>
-              <Text style={[styles.chapterNameText]}>
-                {languages ? arab_name : name}
+          <View style={styles.BotHeader}>
+            <View style={{width:285}}>
+              <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
+              
+              {languages?arab_name:name}
               </Text>
-              <Text style={{ color: Colors.textGray }}>
+              <Text
+                style={{
+                  color: Colors.textGray,
+                  fontSize: 16,
+                  textAlign: "left",
+                }}
+              >
                 114 {languages ? "سورة" : "Surah"}
               </Text>
             </View>
@@ -243,7 +300,7 @@ const ReciterSearch = () => {
                   style={styles.playPauseButton}
                   borderless={true}
                 >
-                  <FontAwesome5 name="pause" size={20} color="#00D1FF" />
+                  <MaterialIcons name="pause" size={24} color="#00D1FF" />
                 </TouchableRipple>
               </View>
             ) : (
@@ -254,164 +311,105 @@ const ReciterSearch = () => {
                   style={styles.playPauseButton}
                   borderless={true}
                 >
-                  <Entypo name="controller-play" size={24} color="#00D1FF" />
+                  <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
                 </TouchableRipple>
               </View>
             )}
           </View>
 
-          <View style={{ marginTop: 4 }}>
-            <SearchBar
-              title={languages ? "ابحث عن سورة" : "Search Chapter"}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              filteredData={memoizedFilteredData}
-            />
-          </View>
-        </Animated.View>
-        <LinearGradient
-          colors={[
-            "transparent",
-            "rgba(24,26,60,1)",
-            "rgba(24,26,60,1)",
-            "rgba(24,26,60,1)",
-          ]}
-          style={{
-            width: width,
-            height: height * 0.2,
-            position: "absolute",
-            zIndex: 1,
-            top: "75%",
-          }}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-        />
-      </Animated.View>
+          <LinearGradient
+            colors={[
+              "transparent",
+              "rgba(24,26,60,1)",
+              "rgba(24,26,60,1)",
+              "rgba(24,26,60,1)",
+            ]}
+            style={{
+              width: width,
+              height: height * 0.1,
+              position: "absolute",
+              zIndex: 1,
+              bottom: 0,
+            }}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 2 }}
+          />
+        </ImageBackground>
 
-      {/* Small Header */}
-
-      <Animated.View
-        style={[
-          styles.smallHeader,
-          {
-            opacity: smallHeaderOpacity,
-          },
-        ]}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            left: 30,
-            justifyContent: "space-between",
-          }}
-        >
-          <View style={[styles.chapterNameText]}>
-            <Text style={[styles.chapterNameText]}>
-              {languages ? arab_name : name}
-            </Text>
-            <Text style={{ color: Colors.textGray }}>
-              114 {languages ? "سورة" : "Surah"}
-            </Text>
-          </View>
-
-          {isPlaying ? (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={"pauseAudio"}
-                style={styles.playPauseButton}
-              >
-                <FontAwesome5 name="pause" size={20} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={"playAuto"}
-                style={styles.playPauseButton}
-              >
-                <Entypo name="controller-play" size={24} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
-          )}
+        <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
+          <SearchBar
+            title={languages ? "ابحث عن سورة" : "Search Chapter"}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredData={memoizedFilteredData}
+          />
         </View>
-      </Animated.View>
 
-      {searchQuery.length > 1 ? (
-        <FlashList
-          contentContainerStyle={{
-            paddingBottom: 150,
-            paddingTop: HEADER_MAX_HEIGHT,
-          }}
-          data={memoizedFilteredData}
-          ref={flashListRef}
-          estimatedItemSize={50}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <SuratReader
-              chapteID={item.id}
-              id={id}
-              setIsPlaying={setIsPlaying}
-              dataAudio={dataAudio}
-              reciterName={name}
-              data={item}
-              setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              loading={loading}
-              arab_name={arab_name}
-              chapterAr={item.name_arabic}
-              chapterName={item.name_simple}
-              playSound={playSound}
-              languages={languages}
-              color={color2}
-            />
-          )}
-        />
-      ) : (
-        <FlashList
-          contentContainerStyle={{
-            paddingBottom: 150,
-            paddingTop: HEADER_MAX_HEIGHT,
-          }}
-          data={chapters}
-          ref={flashListRef}
-          estimatedItemSize={75}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <SuratReader
-              chapteID={item.id}
-              id={id}
-              setIsPlaying={setIsPlaying}
-              dataAudio={dataAudio}
-              reciterName={name}
-              data={item}
-              setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              loading={loading}
-              arab_name={arab_name}
-              chapterAr={item.name_arabic}
-              chapterName={item.name_simple}
-              // playSound={playSound}
-              playAudio={playSound}
-              languages={languages}
-              color={color2}
-              setloading={setloading}
-            />
-          )}
-        />
-      )}
+        {searchQuery.length > 1 ? (
+          <FlashList
+            contentContainerStyle={{
+              paddingBottom: 150,
+            }}
+            data={memoizedFilteredData}
+            estimatedItemSize={50}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <SuratReader
+                chapteID={item.id}
+                id={id}
+                setIsPlaying={setIsPlaying}
+                dataAudio={dataAudio}
+                reciterName={name}
+                data={item}
+                setSearchQuery={setSearchQuery}
+                setIDchapter={setIDchapter}
+                loading={loading}
+                arab_name={arab_name}
+                chapterAr={item.name_arabic}
+                chapterName={item.name_simple}
+                playAudio={playSound}
+                languages={languages}
+                color={color2}
+                setloading={setloading}
+              />
+            )}
+          />
+        ) : (
+          <FlashList
+            contentContainerStyle={{
+              paddingBottom: 150,
+            }}
+            data={chapters}
+            estimatedItemSize={75}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <SuratReader
+                chapteID={item.id}
+                id={id}
+                setIsPlaying={setIsPlaying}
+                dataAudio={dataAudio}
+                reciterName={name}
+                data={item}
+                setSearchQuery={setSearchQuery}
+                setIDchapter={setIDchapter}
+                loading={loading}
+                arab_name={arab_name}
+                chapterAr={item.name_arabic}
+                chapterName={item.name_simple}
+                // playSound={playSound}
+                playAudio={playSound}
+                languages={languages}
+                color={color2}
+                setloading={setloading}
+              />
+            )}
+          />
+        )}
+      </Animated.ScrollView>
+
       <Animated.View
         style={[
+          styles.buttonScroll,
           {
             transform: [{ translateX: ButtonTranslate }],
           },
@@ -423,64 +421,86 @@ const ReciterSearch = () => {
           style={styles.button}
           borderless={true}
         >
-          <Ionicons name="arrow-up" size={24} color="white" />
+          <MaterialIcons name="arrow-upward" size={24} color="white" />
         </TouchableRipple>
       </Animated.View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const {ids, styles} = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#181A3C",
-  },
-  header: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: HEADER_MAX_HEIGHT,
-    backgroundColor: "#181A3C",
-    zIndex: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  flashListContainer: {
-    paddingBottom: 50,
+
   },
 
   button: {
-    position: "absolute",
-    bottom: height * 0.25,
-    right: 20,
+    width:48,
+    height:48,
+    right: 16,
+    borderRadius:50,
+    position:"absolute",
+    zIndex:999,
     backgroundColor: Colors.tint,
-    borderRadius: 50,
-    padding: 15,
-    elevation: 5,
+    bottom: 170,
+    alignItems:"center",
+    justifyContent:"center",
+    elevation: 50,
+    
+    
+    '@media (min-width: 700px)': {
+            right:32
+        },
   },
-  headerImage: {
+
+  chapterSmall:{
+
+    flexDirection: "row",
+    justifyContent: "space-between",
     width: "100%",
-    height: "100%",
-    position: "absolute",
+    paddingTop: 30,
+    paddingLeft: 80,
+    paddingRight: 16,
+    alignItems: "center",
+    '@media (min-width: 768px)': {
+    paddingRight:32,
+    paddingLeft: 100,
+
+  }
+},
+  headerImage: {
+    width:"100%",
+    height:366,
+    alignItems:"center",
+    justifyContent:"center",
+    position:"relative"
   },
 
   imageContainer: {
     shadowColor: "#000", // Shadow color for iOS
     shadowOffset: { width: 0, height: 5 }, // Shadow offset for iOS
     shadowOpacity: 0.3, // Shadow opacity for iOS
-    shadowRadius: 20, // Shadow blur radius for iOS
+    shadowRadius: 100,
     elevation: 10,
-    // Shadow for Android
-    // Background for shadow visibility
-    // Optional: Rounded corners
-    // Ensures rounded corners are applied to the image
+    width:146,
+    height:146,
+    overflow:"hidden",
+    borderRadius:2
   },
   image: {
-    width: 146,
-    height: 146,
+   width:"100%",
+   height:"100%",
+   overflow:"hidden",
+    elevation:100,
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "bold",
 
+    '@media (min-width: 700px)': {
+      width:140,
+      height:146,
+        },
     // Match borderRadius of the container for consistent rounding
   },
   smallHeader: {
@@ -488,91 +508,77 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
-    height: "16%",
+    height:108,
     backgroundColor: Colors.background,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,
   },
-  smallHeaderTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  
+  chapterTextSmall:{
     color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  
+  BotHeader:{
+      position:"absolute",
+      bottom:0,
+      width:"100%",
+      zIndex:99,
+      paddingHorizontal:16,
+      flexDirection:"row",
+      justifyContent:"space-between",
+
+      '@media (min-width: 700px)': {
+      paddingHorizontal:32,
+        },
   },
 
   chapterNameText: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
-    width: width * 0.6,
   },
   playPauseButton: {
-    width: 50,
-    height: 50,
+    width:45,
+    height:45,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-  },
-  headerTitle: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
-    position: "absolute",
-    zIndex: 999,
-    bottom: 10,
   },
 
-  backButton: {
+  playPauseButtonSmall: {
+    width:48,
+    height:48,
+    backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    top: 45,
-    left: 20,
-    position: "absolute",
-    width: 48,
+  },
+  
+  backButton: {
+    position:"absolute",
+    width:48,
+    height:48,
+    top:44,
+    left:16,
+    zIndex:99,
     elevation: 50,
-    height: 48,
-    zIndex: 99,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#454B8C",
+    borderRadius: 50,
+    '@media (min-width: 700px)': {
+            left:32
+        },
   },
-  itemContainer: {
-    flexDirection: "row",
-    padding: 16,
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#333",
-  },
-  itemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-  },
-  itemText: {
-    color: "#fff",
-    marginLeft: 16,
-    fontSize: 16,
-  },
-  centeredView: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  modalView: {
-    height: "100%",
-    width: "100%",
-    backgroundColor: Colors.background,
-  },
-  menuContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: 48,
-  },
+ 
+
 });
+
 
 export default ReciterSearch;

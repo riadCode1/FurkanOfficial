@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, FlatList,  } from "react-native";
+import { View, Text, FlatList,  } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Image } from 'expo-image';
 import { fetchChater } from "../app/API/QuranApi";
 import { useGlobalContext } from "../context/GlobalProvider";
-
+import StyleSheet from 'react-native-media-query';
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
@@ -12,7 +12,7 @@ import LottieView from "lottie-react-native";
 
 const ChapterFilter = () => {
   const [chapter, setChapter] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const {languages,} = useGlobalContext();
 
@@ -81,7 +81,7 @@ const ChapterFilter = () => {
                     <Image
                       contentFit="contain"
                       style={styles.image}
-                      source={require("../assets/images/quranLogo.png")}
+                      source={require("../assets/images/quranLogo.jpeg")}
                     />
                   </View>
 
@@ -103,19 +103,22 @@ const ChapterFilter = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    
     paddingVertical: 8,
   },
 
   playButton: {
     width:"100%",
     paddingVertical:12,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    '@media (min-width: 768px)': {
+      paddingHorizontal: 32,
+  
+    }
   },
   imageContainer: {
     overflow: "hidden",

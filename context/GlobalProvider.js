@@ -37,16 +37,23 @@ const GlobalProvider = memo(({ children }) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
   const [color, setColor] = useState(0);
   const [color2, setColor2] = useState(0);
+  const [loading, setloading] = useState(false)
+  const [track, setTrack] = useState(null)
 
-  useEffect(() => {
+
+
+ useEffect(() => {
     const initializeState = async () => {
       try {
-        const [savedChecked, savedReciter, savedChapterId, savedIdReader] =
+        const [savedChecked, savedReciter, savedChapter, savedIdReader,savedReciterAR,savedChapterID,savedChapterAr] =
           await Promise.all([
             AsyncStorage.getItem("checked"),
             AsyncStorage.getItem("reciter"),
             AsyncStorage.getItem("chapterId"),
             AsyncStorage.getItem("idReader"),
+            AsyncStorage.getItem("reciterAR"),
+            AsyncStorage.getItem("idChapter"),
+            AsyncStorage.getItem("chapterAR"),
           ]);
 
         if (savedChecked) {
@@ -54,8 +61,11 @@ const GlobalProvider = memo(({ children }) => {
           setLanguages(savedChecked === "first");
         }
         if (savedReciter) setReciter(savedReciter);
-        if (savedChapterId) setChapterID(savedChapterId);
+        if (savedReciterAR) setReciterAR(savedReciterAR);
+        if (savedChapter) setChapterID(savedChapter);
         if (savedIdReader) setIDreader(Number(savedIdReader));
+        if (savedChapterID) setIDchapter(Number(savedChapterID));
+        if (savedChapterAr) setArabicCH(savedChapterAr)
       } catch (error) {
         console.error("Error loading data from AsyncStorage:", error);
       }
@@ -89,6 +99,21 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
+  const reciterARSaved = useCallback(async (newName) => {
+    try {
+      if (newName == null) {
+        console.warn(
+          "reciterSaved: Passed value is null or undefined. Skipping save."
+        );
+        return;
+      }
+      setReciterAR(newName);
+      await AsyncStorage.setItem("reciterAR", newName);
+    } catch (error) {
+      console.error("Error saving name to AsyncStorage:", error);
+    }
+  }, []);
+
   const chapterSaved = useCallback(async (newName) => {
     try {
       setChapterID(newName);
@@ -98,10 +123,28 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
+  const chapterArSaved = useCallback(async (newName) => {
+    try {
+      setArabicCH(newName);
+      await AsyncStorage.setItem("chapterAR", newName);
+    } catch (error) {
+      console.error("Error saving name to AsyncStorage:", error);
+    }
+  }, []);
+
   const idReciterSaved = useCallback(async (newName) => {
     try {
       setIDreader(newName);
       await AsyncStorage.setItem("idReader", String(newName));
+    } catch (error) {
+      console.error("Error saving name to AsyncStorage:", error);
+    }
+  }, []);
+
+  const idChapterSaved = useCallback(async (newName) => {
+    try {
+      setIDchapter(newName);
+      await AsyncStorage.setItem("idChapter", String(newName));
     } catch (error) {
       console.error("Error saving name to AsyncStorage:", error);
     }
@@ -144,25 +187,26 @@ const GlobalProvider = memo(({ children }) => {
   // Play a specific track
 
   const playTrack = async (track, index) => {
-    console.log(track,index)
-    setCurrentTrack(track);
+    console.log(track)
+    
     setColor2(index);
     setColor(track.id);
-    setIDreader(track.id);
+    idReciterSaved(track.id);
     setCurrentReciter(track.id);
-    setCurrentTrackIndex(index);
-    setChapterID(
+    
+    chapterSaved(
       track.title ? track.title[index - 1].name_simple : track.chapter
     );
-    setArabicCH(
+    chapterArSaved(
       track.title ? track.title[index - 1].name_arabic : track.titleAR
     );
-    setReciter(track.artist);
-    setReciterAR(track.artistAR);
-    setIDchapter(index);
+    reciterSaved(track.artist);
+    reciterARSaved(track.artistAR);
+    idChapterSaved(index);
 
      await TrackPlayer.reset();
     const uri = await getAudio(track.id, index);
+    await AsyncStorage.setItem('currentTrackUri', uri);
 
     const tracker = {
       id: track.id,
@@ -175,15 +219,18 @@ const GlobalProvider = memo(({ children }) => {
         ? track.titleAR
         : track.chapter,
       artist: languages ? track.artistAR : track.artist,
-      artwork: track.id
-        ? dataArray[track.id].image
-        : require("../assets/images/icon.png"),
+      artwork:require("../assets/images/icon.png")
+      // artwork: track.id
+      //   ? dataArray[track.id].image
+      //   : require("../assets/images/icon.png"),
       // or a remote URL
     };
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
-
+    setCurrentTrackIndex(index);
+     setTrack(uri)
+    setCurrentTrack(track);
     setIsPlaying(true);
   };
 
@@ -191,14 +238,14 @@ const GlobalProvider = memo(({ children }) => {
 
   const playTrackSkip = async (track, index) => {
 
-   
+    console.log('skip',track);
 
     setColor(track[index].artist[index].id);
-    setIDreader(track[index].artist[index].id);
-    setReciter( track[index].artist[index].reciter_name);
-    setChapterID(track[index].title);
-    setArabicCH(track[index].titleAR)
-    setReciterAR(track[index].artist[index].translated_name.name)
+    idReciterSaved(track[index].artist[index].id);
+    reciterSaved( track[index].artist[index].reciter_name);
+    chapterSaved(track[index].title);
+    chapterArSaved(track[index].titleAR)
+    reciterARSaved(track[index].artist[index].translated_name.name)
 
      await TrackPlayer.reset();
     const uri = await getAudio(track[index].artist[index].id, track[index].id);
@@ -211,7 +258,8 @@ const GlobalProvider = memo(({ children }) => {
       url: uri, // or a remote URL
       title: languages? track[index].titleAR:track[index].title,   
       artist: languages? track[index].artist[index].translated_name.name : track[index].artist[index].reciter_name,
-      artwork:dataArray[track[index].artist[index].id].image
+      artwork:require("../assets/images/icon.png")
+      // artwork: dataArray[track[index].artist[index].id].image
         
       // or a remote URL
     };
@@ -322,7 +370,9 @@ const GlobalProvider = memo(({ children }) => {
         isPlaying,
         setIsPlaying,
         color, setColor,
-        color2, setColor2
+        color2, setColor2,
+        loading, setloading,
+        track, setTrack
       }}
     >
       {children}

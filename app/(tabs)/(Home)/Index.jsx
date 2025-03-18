@@ -2,11 +2,10 @@ import {
   View,
   Text,
   ScrollView,
-  Image,
-  StyleSheet,
   Modal,
   StatusBar,
 } from "react-native";
+import StyleSheet from 'react-native-media-query';
 import React, { useEffect, useState } from "react";
 import ReaderCard from "../../../components/ReaderCard";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,23 +15,24 @@ import { NewData } from "../../../constants/NewData";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import ModalAudio from "../../../components/ModalAudio";
 import { Colors } from "../../../constants/Colors";
+import { Image } from "expo-image";
 
 
 const Index = () => {
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
 
-  const { setLanguages, languages, modalVisible, } =
+  const { setLanguages, languages, modalVisible,loading } =
     useGlobalContext();
 
   useEffect(() => {
     getReciter();
     getChapter();
-  }, []);
+  }, [loading]);
 
   const getReciter = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const data = await fetchSuwar();
       if (data && data.recitations) {
@@ -42,12 +42,12 @@ const Index = () => {
     } catch (error) {
       console.error("Error fetching recitations:", error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   const getChapter = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const data = await fetchChater();
       if (data && data.chapters) {
@@ -56,7 +56,7 @@ const Index = () => {
     } catch (error) {
       console.error("Error fetching chapters:", error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -65,19 +65,15 @@ const Index = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Top */}
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
+          
             <Image
+            contentFit="cover"
               style={styles.logo}
-              source={require("../../../assets/images/Logo.png")}
+              
+              source={require("../../../assets/images/indexLogo.png")}
             />
-            <Text  style={styles.logoText}>Furqan</Text>
-
-            <Image
-              style={styles.logo}
-              resizeMode="contain"
-              source={require("../../../assets/images/الفرقان.png")}
-            />
-          </View>
+           
+          
 
      
         </View>
@@ -88,7 +84,7 @@ const Index = () => {
             {languages ? "استمع للقرآن الكريم من " : "Listen to Quran by"}
           </Text>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal contentContainerStyle={{gap:10,paddingLeft:16}} showsHorizontalScrollIndicator={false}>
             {quranData?.slice(2, 8).map((item) => (
               <ReaderCard
                 key={item.index}
@@ -109,12 +105,13 @@ const Index = () => {
           <Text style={styles.sectionTitle}>
             {languages ? "أفضل سور القرآن الكريم" : "Best Quran Chapters"}
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal contentContainerStyle={{gap:10,paddingLeft:16}} showsHorizontalScrollIndicator={false}>
             {chapter?.slice(2, 8).map((item) => (
               <ReadingSurah
                 key={item.index}
                 item={item}
                 languages={languages}
+                loading={loading}
                 name={item.name_simple}
                 arab_name={item.translated_name.name}
                 chapter_arab={item.name_arabic}
@@ -145,7 +142,7 @@ const Index = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const {ids, styles} = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -154,19 +151,22 @@ const styles = StyleSheet.create({
     paddingBottom: 200,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
+    
+    justifyContent: "flex-start",
+    width:160,
+    height:50,
     marginTop: 20,
-    alignItems: "center",
+    alignSelf:"flex-start",
+    
+    
   },
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   logo: {
-    width: 48,
-    height: 48,
+    width:"100%",
+    height: "100%",
   },
   logoText: {
     color: "#01F4FF",
@@ -184,16 +184,21 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   section: {
-    marginTop: 40,
-    marginLeft: 16,
+    marginTop: 32,
+    
   },
   sectionTitle: {
     color: "white",
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 16,
-    paddingRight: 16,
-    fontFamily: 'lucida grande'
+    marginLeft: 16,
+    marginRight: 16,
+    fontFamily: 'lucida grande',
+    '@media (min-width: 700px)': {
+      fontSize:30
+  },
+    
   },
   centeredView: {
     flex: 1,

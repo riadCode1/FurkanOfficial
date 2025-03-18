@@ -1,15 +1,28 @@
 import { View, Text, Image, ImageBackground, StyleSheet, StatusBar } from 'react-native';
 import React, { useEffect } from 'react';
-import { router } from 'expo-router';
-import { Colors } from '../constants/Colors';
+import { router, useFocusEffect } from 'expo-router';
+
 
 
 const Index = () => {
-  useEffect(() => {
-    setTimeout(() => {
-      router.navigate("Index");
-    }, 3000);
-  }, []);
+   useEffect(() => {
+     setTimeout(() => {
+       router.navigate("Index");
+      
+     }, 3000);
+   }, []);
+
+   useFocusEffect(
+     React.useCallback(() => {
+        
+       setTimeout(() => {
+         router.navigate("Index");
+        
+       }, 2000);
+     }, [])
+   );
+
+  
 
   return (
     <>
@@ -19,13 +32,13 @@ const Index = () => {
       source={require("../assets/images/SplashFK.png")}
       style={styles.imageBackground}
     >
-      <StatusBar barStyle={Colors.tint} backgroundColor={Colors.background}/>
+      
       
       <View style={styles.container}>
         <Image
           style={styles.logo}
           resizeMode="contain"
-          source={require("../assets/images/Logo.png")}
+          source={require("../assets/images/logoIndex.png")}
         />
         <View style={styles.textContainer}>
           <Text style={styles.title}>Furqan</Text>
@@ -65,7 +78,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   arabicText: {
-    // Style the Arabic text image as needed
+   width:75,
+   height:42
   },
 });
 

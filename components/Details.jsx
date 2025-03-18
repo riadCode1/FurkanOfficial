@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { View, Text, ScrollView, Dimensions } from "react-native";
 import React from "react";
-
+import StyleSheet from 'react-native-media-query';
 let { width, height } = Dimensions.get("window");
 
 const Details = ({ info, }) => {
@@ -15,13 +15,15 @@ const Details = ({ info, }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
    
     paddingHorizontal: 16,
-    position:"absolute",
-    top:height*0.6,
     zIndex:99,
+    '@media (min-width: 700px)': {
+      
+     paddingHorizontal:32
+        },
     
 
   },
@@ -32,7 +34,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   scrollView: {
-    height: 200, // Adjust the height as needed
+   paddingBottom:200 // Adjust the height as needed
   },
   scrollContent: {
     paddingBottom: height*0.2,

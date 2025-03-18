@@ -2,8 +2,7 @@ import { View, StyleSheet, Animated, Dimensions } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { Colors } from "../constants/Colors";
-import { TouchableRipple } from "react-native-paper";
-import { Ionicons } from "@expo/vector-icons";
+
 import ListenComp from "./ListenComp";
 import { FlashList } from "@shopify/flash-list";
 
@@ -105,7 +104,7 @@ const Listen = ({
         contentContainerStyle={{
           paddingBottom: 200,
           
-          paddingTop: HEADER_MAX_HEIGHT,
+          
         }}
         data={searchQuery.length > 1 ? filteredData : quranData}
         estimatedItemSize={75} // Render fewer items initially
@@ -136,24 +135,9 @@ const Listen = ({
           />
         )}
       />
-      <Animated.View
-        style={[
-          {
-            transform: [{ translateX: ButtonTranslate }],
-          },
-        ]}
-      >
-        <TouchableRipple
-          onPress={scrollToTop}
-          rippleColor="rgba(255, 255, 255, 0.2)"
-          style={styles.button}
-          borderless={true}
-        >
-          <Ionicons name="arrow-up" size={24} color="white" />
-        </TouchableRipple>
-      </Animated.View>
+    
 
-      {/* Modal */}
+     
     </View>
   );
 };

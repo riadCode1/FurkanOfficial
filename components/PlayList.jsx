@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, StyleSheet, Modal, StatusBar } from "react-native";
+import { View, Text, FlatList, Image, Modal, StatusBar } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dropmenu from "./Dropmenu";
@@ -8,6 +8,7 @@ import { Colors } from "../constants/Colors";
 import SearchBar from "./SearchBar";
 import { TouchableRipple } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
+import StyleSheet from 'react-native-media-query';
 
 
 const PlayList = () => {
@@ -23,12 +24,7 @@ const PlayList = () => {
    const {
      
       languages,
-      setIsPlaying,
-      setChapterID,
-      setArabicCH,
-      setReciter,
-      setIDreader,
-      setReciterAR,
+     
      
       playTrack
     } = useGlobalContext();
@@ -52,7 +48,7 @@ const PlayList = () => {
 
       fetchBookMark();
     }
-  }, [ isFocused]);
+  }, [playlist, isFocused]);
 
 
   
@@ -93,7 +89,9 @@ const PlayList = () => {
           item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase())
       );
 
-      setFilteredData(filteredRecitations);
+      setFilteredData(filteredRecitations); 
+     
+
     }
   }, [languages, searchQuery]);
 
@@ -128,12 +126,7 @@ const playSound = (
   );
 
   
-  setChapterID(chapterName);
-  setArabicCH(arabicCh);
-  setIsPlaying(true);
-  setReciter(name);
-  setIDreader(idReciter);
-  setReciterAR(arabName);
+  
 };
 
 
@@ -147,7 +140,7 @@ const playSound = (
 
   return (
     <View className=" items-center">
-      <View style={{ marginBottom: 16 }}>
+      <View style={{ marginBottom: 16,alignItems:"center" }}>
         <SearchBar
           title={languages ? "ابحث عن مدخراتك" : "Search your savings"}
           searchQuery={searchQuery}
@@ -347,20 +340,24 @@ const playSound = (
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flex: 1,
   },
   flatlistContent: {
     paddingBottom: 450,
-
     marginTop: 16,
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 16,
+    height:75,
+    paddingHorizontal:16,
     paddingVertical: 8,
+    '@media (min-width: 768px)': {
+      paddingHorizontal: 40,
+  
+    }
   },
   itemContent: {
     flexDirection: "row",
@@ -461,15 +458,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-  closeButton: {
-    backgroundColor: Colors.blue,
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
+  
   centeredView: {
     position: "absolute",
     justifyContent: "center",

@@ -138,8 +138,8 @@ export const dataArray = [
 
   {
     id: 24,
-    name: "",
-    image: "",
+    name: "twfik",
+    image: "https://quran-uni.com/wp-content/uploads/tawfiq-alsaigh.jpg",
   },
   {
     id: 25,
@@ -155,7 +155,7 @@ export const dataArray = [
   {
     id: 27,
     name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    image: "https://i.servimg.com/u/f39/18/05/26/73/mohame10.png",
   },
   {
     id: 28,
@@ -164,8 +164,9 @@ export const dataArray = [
   },
   {
     id: 29,
-    name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    name: "",
+    image:
+      "https://-tbn0.gstatic.com/images?q=tbn:ANd9GcR5yRnvSKl7p8s2OA175b3zHsLjcIdM9Jni3g&s",
   },
   {
     id: 30,
@@ -247,26 +248,30 @@ export const dataArray = [
   {
     id: 45,
     name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgfO076h8JQWDmw3ZnKzWYkS5QtQxeIujpW0dLDBVFY3KS9AZ2ZJ0WEs95gTvpXezkRJY&usqp=CAU",
   },
   {
     id: 46,
-    name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    name: "",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgfO076h8JQWDmw3ZnKzWYkS5QtQxeIujpW0dLDBVFY3KS9AZ2ZJ0WEs95gTvpXezkRJY&usqp=CAU",
   },
   {
     id: 47,
-    name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    name: " ",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgfO076h8JQWDmw3ZnKzWYkS5QtQxeIujpW0dLDBVFY3KS9AZ2ZJ0WEs95gTvpXezkRJY&usqp=CAU",
   },
   {
     id: 48,
-    name: "maher muiqli",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    name: " ",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgfO076h8JQWDmw3ZnKzWYkS5QtQxeIujpW0dLDBVFY3KS9AZ2ZJ0WEs95gTvpXezkRJY&usqp=CAU",
   },
   {
     id: 49,
-    name: "maher muiqli",
+    name: " ",
     image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
   },
   {
@@ -326,13 +331,15 @@ export const dataArray = [
   },
   {
     id: 61,
-    name: " ",
-    image: "https://fr.assabile.com/media/person/280x219/maher-al-mueaqly.png",
+    name: " soufi",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVDVlGWweFeDeQkgRtafD2ICDrPviQ1EmoxA&s",
   },
   {
     id: 62,
-    name: " ",
-    image: "https://i.pinimg.com/564x/6a/29/c5/6a29c5161a3aefb4a91be2710a19c33d.jpg",
+    name: " soufi",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVDVlGWweFeDeQkgRtafD2ICDrPviQ1EmoxA&s",
   },
   {
     id: 63,
@@ -346,8 +353,8 @@ export const dataArray = [
   },
   {
     id: 65,
-    name: " ",
-    image: "",
+    name: " حمد سنان",
+    image: "https://static.old.islamway.net/uploads/scholars/hamd-sannan.jpg",
   },
   {
     id: 66,
@@ -366,8 +373,9 @@ export const dataArray = [
   },
   {
     id: 69,
-    name: " ",
-    image: "",
+    name: " dulaimi",
+    image:
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEghf9QuBetIYTAE5QMFUFkYrPS6WPsNB5lwtfyFb_5Sm9zcFYItAOU-IdM1F0ltET0PWrgG2yS-Tqau7sVSwls7pxYeqaqzg34kuuLLpThcf14wJoRNiao61UHNvaJ_m9SAThHuQoIzpm8c/s1600/ZG6bLEkz.jpg",
   },
   {
     id: 70,
@@ -379,17 +387,20 @@ export const dataArray = [
   {
     id: 71,
     name: "muhammad abdulkareem ",
-    image: "https://lh3.googleusercontent.com/proxy/UH2EkhWVF5OcUaMQ8YGpK8cTlIydRKcGgzGdHjLzxMl4dC5CW_kNEs7lqNz045cLD6VGhOG-OKK2QtUhKai9H-flMtho9ZWZuRDdJWXBlD7DD1xkQ-M",
+    image:
+      "https://lh3.googleusercontent.com/proxy/UH2EkhWVF5OcUaMQ8YGpK8cTlIydRKcGgzGdHjLzxMl4dC5CW_kNEs7lqNz045cLD6VGhOG-OKK2QtUhKai9H-flMtho9ZWZuRDdJWXBlD7DD1xkQ-M",
   },
   {
     id: 72,
-    name: " ",
-    image: "",
+    name: "3iwazi ",
+    image:
+      "https://upload.wikimedia.org/wikipedia/ar/3/38/%D9%85%D8%B5%D8%B7%D9%81%D9%8A_%D8%B1%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D8%B2%D8%A7%D9%88%D9%8A.jpg",
   },
   {
     id: 73,
-    name: " ",
-    image: "",
+    name: "khayat ",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR9Fqpx87Yd8zR00qBSaVMmnMLqp8SYrBlyA&s",
   },
   {
     id: 74,
@@ -414,13 +425,23 @@ export const dataArray = [
 
   { id: 78, name: " ", image: "" },
   { id: 79, name: " ", image: "" },
-  { id: 80, name: " ", image: "" },
-  { id: 81, name: " ", image: "" },
+  {
+    id: 80,
+    name: "hassan ",
+    image: "https://fr.assabile.com/media/person/280x219/mohamed-hassan.png",
+  },
+
+  { id: 81,
+     name: "hashim ",
+      image: "https://fr.assabile.com/media/person/280x219/salah-al-hashem.png" 
+    },
   { id: 82, name: " ", image: "" },
   { id: 83, name: " ", image: "" },
   { id: 84, name: " ", image: "" },
   { id: 85, name: " ", image: "" },
-  { id: 86, name: " ", image: "" },
+  { id: 86,
+     name: " hatem",
+      image: "https://lh6.googleusercontent.com/proxy/QZz3LVrRCKRSAutSB711bXvNiFTzIZUzCCurzHDHkQG822JlHhgvr3npMS_C8wTl7cXk7YqlMYbEIcu6J7pmtzKfcL7rPzDVAGamOaI0gblvsv676w" },
   { id: 87, name: " ", image: "" },
   { id: 88, name: " ", image: "" },
   { id: 89, name: " ", image: "" },
@@ -434,14 +455,19 @@ export const dataArray = [
 
   { id: 97, name: " ", image: "" },
 
-  { id: 98, name: " ", image: "https://fr.assabile.com/media/photo/full_size/yasser-al-dossari-1093.jpg" },
+  {
+    id: 98,
+    name: " ",
+    image:
+      "https://fr.assabile.com/media/photo/full_size/yasser-al-dossari-1093.jpg",
+  },
   { id: 99, name: " ", image: "" },
   { id: 100, name: " ", image: "" },
   { id: 101, name: " ", image: "" },
   { id: 102, name: " ", image: "" },
   { id: 103, name: " ", image: "" },
   { id: 104, name: " ", image: "" },
-  { id: 105, name: " ", image: "" },
+  { id: 105, name: "al katami ", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdGpr5-un8DzddeRAWk8Z-wMqtwJOOryA9tqGhyBNf8XvnL2f_2A09mzyDl9T1dEwmvQE&usqp=CAU" },
   { id: 106, name: " ", image: "" },
   { id: 107, name: " ", image: "" },
   { id: 108, name: " ", image: "" },
@@ -451,7 +477,7 @@ export const dataArray = [
   { id: 112, name: " ", image: "" },
   { id: 113, name: " ", image: "" },
   { id: 114, name: " ", image: "" },
-  { id: 115, name: " ", image: "" },
+  { id: 115, name: "houdaifi ", image: "https://lh4.googleusercontent.com/proxy/orx9LuixT2ZoCBsdkoTQtFiBWHyvbq1yzRdQoH15AYyIUvQN5QyVlYKjMcrEeGPIP2kyVPNZQXzw9SlYTqct-aapkR6crorP4wytMc9A6g" },
   { id: 116, name: " ", image: "" },
   { id: 117, name: " ", image: "" },
   { id: 118, name: "", image: "" },
@@ -466,7 +492,12 @@ export const dataArray = [
   { id: 127, name: " ", image: "" },
   { id: 128, name: " ", image: "" },
   { id: 129, name: " ", image: "" },
-  { id: 130, name: " ", image: "https://i1.sndcdn.com/artworks-gd2VK9TkQ11WYC4l-66KqcQ-t500x500.jpg" },
+  {
+    id: 130,
+    name: " ",
+    image:
+      "https://i1.sndcdn.com/artworks-gd2VK9TkQ11WYC4l-66KqcQ-t500x500.jpg",
+  },
   { id: 131, name: " ", image: "" },
   { id: 132, name: " ", image: "" },
   { id: 133, name: " ", image: "" },
@@ -497,8 +528,29 @@ export const dataArray = [
   { id: 158, name: " ", image: "" },
   { id: 159, name: " ", image: "" },
   { id: 160, name: " ", image: "" },
-  { id: 161, name: "Bandar Balila ", image: "https://api2.quran-pro.com/images/bandar-baleela/bandar-baleela-medium.webp?version=1686737784305" },
- 
- 
-  
+  {
+    id: 161,
+    name: "Bandar Balila ",
+    image:
+      "https://api2.quran-pro.com/images/bandar-baleela/bandar-baleela-medium.webp?version=1686737784305",
+  },
+
+  {
+    id: 162,
+    name: " ",
+    image:""
+  },
+
+  {
+    id: 163,
+    name: "juhayni ",
+    image:"https://www.islamicity.org/wp-content/plugins/blueprint-timthumb/timthumb.php?src=http://media.islamicity.org/wp-content/uploads/2019/06/Juhany.jpg&w=350&h=350"
+  },
+
+  {
+    id: 161,
+    name: "Bandar Balila ",
+    image:
+      "https://api2.quran-pro.com/images/bandar-baleela/bandar-baleela-medium.webp?version=1686737784305",
+  },
 ];

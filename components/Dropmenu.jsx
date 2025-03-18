@@ -8,9 +8,11 @@ import {
   Modal,
   
 } from "react-native";
-import {  Ionicons } from "@expo/vector-icons";
+import {  MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
+
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const Dropmenu = ({
   reciterName,
@@ -105,9 +107,9 @@ const Dropmenu = ({
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
-          width: 60,
-          height: 48,
-          alignItems: "center",
+          width: RFValue(45),
+          height: (45),
+          alignItems: "flex-end",
           justifyContent: "center",
         }}
         onPress={() => {
@@ -117,13 +119,13 @@ const Dropmenu = ({
         }}
       >
         {isSaved ? (
-          <Ionicons
+          <MaterialIcons
             name="bookmark"
             size={24}
             color={Colors.blue} // Color changes when saved
           />
         ) : (
-          <Ionicons
+          <MaterialIcons
             name="bookmark-outline"
             size={24}
             color={Colors.blue} // Color changes when saved
@@ -160,9 +162,10 @@ const Dropmenu = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: 48,
+    width: RFValue(48),
     height: 48,
     alignItems: "center",
+    
   },
   modalOverlay: {
     flex: 1,

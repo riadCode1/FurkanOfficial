@@ -1,13 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, BackHandler, Alert } from "react-native";
 import { Image } from 'expo-image';
-import React, { useEffect, useState } from "react";
-import { Entypo, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import React, { useCallback, useEffect, useState } from "react";
+import {  MaterialIcons } from "@expo/vector-icons";
 import { useGlobalContext } from "../context/GlobalProvider";
-import { Colors } from "../constants/Colors";
+import { Colors, } from "../constants/Colors";
 import Slider from "@react-native-community/slider";
 import { TouchableRipple } from "react-native-paper";
 import TrackPlayer, { useProgress } from "react-native-track-player";
 import Dropmenu from "./Dropmenu";
+import StyleSheet from 'react-native-media-query';
+import { dataArray } from "../constants/RecitersImages";
+import { Video } from "expo-av";
+
 
 
 
@@ -20,6 +24,7 @@ const ModalAudio = ({ }) => {
     reciter,
     reciterAR,
     isPlaying,
+    setIsPlaying,
     languages,
     setShuffle,
     arabicCH,
@@ -28,7 +33,8 @@ const ModalAudio = ({ }) => {
     togglePlayback,
     shuffle,
     IDchapter,
-    idReader
+    idReader,
+    modalVisible
     
   } = useGlobalContext();
  
@@ -67,6 +73,38 @@ const ModalAudio = ({ }) => {
       return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
     }
   };
+
+  const handleBackPress = useCallback(() => {
+    if (modalVisible) {
+      setModalVisible(false);
+      return true; // Prevent default back action
+    }
+    return false; // Allow default back action
+  }, [modalVisible]);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
+  
+   useEffect(() => {
+     // Handle play events
+     const playListener = TrackPlayer.addEventListener('remote-play', () => {
+       setIsPlaying(true);
+     });
+   
+     // Handle pause events
+     const pauseListener = TrackPlayer.addEventListener('remote-pause', () => {
+       setIsPlaying(false);
+     });
+   
+     // Cleanup both listeners
+     return () => {
+       playListener.remove();
+       pauseListener.remove();
+     };
+   }, []);
   
   return (
     <View style={styles.container}>
@@ -79,6 +117,8 @@ const ModalAudio = ({ }) => {
         >
           <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
         </TouchableRipple>
+
+        
 
         <Dropmenu
                 chapter={chapterId}
@@ -93,10 +133,12 @@ const ModalAudio = ({ }) => {
 
       <View style={styles.imageContainer}>
         <View style={styles.imageWrapper}>
-          <Image
+           <Image
             style={styles.image}
-            source={require("../assets/images/moon.png")}
-          />
+            contentFit="cover"
+            source={require('../assets/images/gif.gif')}
+          /> 
+          <Video isLooping={true} shouldPlay={true}   style={styles.image} source={require('../assets/images/Moon.mp4')} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.chapterText}>
@@ -130,7 +172,7 @@ const ModalAudio = ({ }) => {
 
         <View style={styles.controlsContainer}>
           <TouchableOpacity activeOpacity={0.7} onPress={playPrevious}>
-            <MaterialIcons name="skip-previous" size={40} color="white" />
+            <MaterialIcons name="skip-previous" size={(38)} color="white" />
           </TouchableOpacity>
 
           
@@ -140,15 +182,15 @@ const ModalAudio = ({ }) => {
             style={styles.playPauseButton}
           >
             {isPlaying?
-             <FontAwesome name="pause" size={24} color="white" />
+             <MaterialIcons name="pause" size={(35)} color="white" />
             :
-            <FontAwesome name="play" size={24} color="white" /> }
+            <MaterialIcons name="play-arrow" size={35} color="white" /> }
             
           </TouchableOpacity>
      
 
           <TouchableOpacity activeOpacity={0.7} onPress={playNext}>
-            <MaterialIcons name="skip-next" size={40} color="white" />
+            <MaterialIcons name="skip-next" size={(38)} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -158,14 +200,14 @@ const ModalAudio = ({ }) => {
               {
                 backgroundColor:
                   shuffle === true ? Colors.backgroundTint : "transparent",
-                padding: 10,
+                padding: (10),
                 borderRadius: 5,
               },
             ]}
             onPress={handleShuffle}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="shuffle" size={30} color="#00D1FF" />
+            <MaterialIcons name="shuffle" size={(30)} color="#00D1FF" />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -173,14 +215,14 @@ const ModalAudio = ({ }) => {
               {
                 backgroundColor:
                   shuffle === false ? Colors.backgroundTint : "transparent",
-                padding: 10,
+                  padding: (10),
                 borderRadius: 5,
               },
             ]}
             onPress={handlerepeat}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="repeat" size={30} color="#00D1FF" />
+            <MaterialIcons name="repeat" size={(30)} color="#00D1FF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -188,7 +230,7 @@ const ModalAudio = ({ }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flex: 1,
     
@@ -202,6 +244,9 @@ const styles = StyleSheet.create({
     paddingHorizontal:16,
     justifyContent: "space-between",
     alignItems: "center",
+    '@media (min-width: 700px)': {
+      paddingHorizontal:32
+        },
   },
   iconButton: {
     justifyContent: "center",
@@ -230,8 +275,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#00D1FF",
     width: "90%",
-    height: 294,
+    height: (294),
     alignItems: "center",
+    '@media (min-width: 768ppx)': {
+      
+      height:600,
+        },
   },
   image: {
     width: "100%",
@@ -270,6 +319,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     color: "white",
+    fontSize:12
   },
   controlsContainer: {
     flexDirection: "row",
@@ -277,6 +327,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal:67,
     width: "100%",
+
+    '@media (min-width: 768px)': {
+      paddingHorizontal:120
+        },
   },
   playPauseButton: {
     backgroundColor: "#00D1FF",
@@ -284,7 +338,7 @@ const styles = StyleSheet.create({
     height: 64,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 32,
+    borderRadius: 90,
   },
   shuffleRepeatContainer: {
     flexDirection: "row",

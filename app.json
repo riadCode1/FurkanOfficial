@@ -5,45 +5,65 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "furkan",
     "userInterfaceStyle": "automatic",
-    
+    "newArchEnabled": false,
     "ios": {
+      "newArchEnabled": false,
       "supportsTablet": true,
       "runtimeVersion": {
         "policy": "appVersion"
-      }
+      },
+      "bundleIdentifier": "com.riadp1.Quran"
     },
     "android": {
-
+      
       "permissions": [
-        
         "android.permission.FOREGROUND_SERVICE",
-         "FOREGROUND_SERVICE",
-        "FOREGROUND_SERVICE"
+        "FOREGROUND_SERVICE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-    
       "package": "com.riadp1.Quran",
       "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
+      "enabled": false,
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://node-1-gtzm.onrender.com"
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.furkanApp",
+          "publishableKey": "pk_live_51Qx6WlKIGwNk6vSfewuYLo7tqMlm5t7YDvlKwrmhbvJka612oP474cJPteSkdqERfWw2acJ7fPnSO3R4P6HhcEc3004QRGAm2O"
+        }
+      ],
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash.png",
-          "imageWidth": 200,
+          "imageWidth": 144,
           "resizeMode": "contain",
-          "backgroundColor":"#ffffff"
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
         }
       ],
       [
@@ -58,15 +78,15 @@
       "typedRoutes": true
     },
     "updates": {
-      "url": "https://u.expo.dev/cbe9cf2f-9ea8-42aa-b932-9734c937d229"
+      "url": "https://u.expo.dev/53349fe7-dd8a-4df8-a9c5-fe0fd5c0d96f"
     },
-    "owner": "riadp1",
+    "owner": "riadp1996",
     "extra": {
       "router": {
-        "origin": false
+        "origin": "https://node-1-gtzm.onrender.com"
       },
       "eas": {
-        "projectId": "cbe9cf2f-9ea8-42aa-b932-9734c937d229"
+        "projectId": "f8329f84-5542-459b-8e13-a532adc1dc41"
       }
     }
   }

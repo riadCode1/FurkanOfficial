@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import React, { useMemo } from "react";
 import Dropmenu from "./Dropmenu";
 import { Image } from 'expo-image';
@@ -7,12 +7,10 @@ import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 import LottieView from "lottie-react-native";
 import { useGlobalContext } from "../context/GlobalProvider";
-
-const { width, height } = Dimensions.get("window");
+import StyleSheet from 'react-native-media-query';
 
 const ListenComp = React.memo(({
   languages,
-  loading,
   handleReciterSelect,
   id,
   mp3,
@@ -26,12 +24,13 @@ const ListenComp = React.memo(({
 }) => {
    const {
       color,
+      loading
     } = useGlobalContext();
 
   // Memoize formatted names
   const formattedName = useMemo(() => {
     const name = languages ? arabName : reciterName;
-    return name.length > 25 ? `${name.slice(0, 25)}...` : name;
+    return name.length > 25 ? `${name.slice(0, 20)}...` : name;
   }, [languages, arabName, reciterName]);
 
 
@@ -43,6 +42,8 @@ const ListenComp = React.memo(({
 
   // Memoize the main content to prevent unnecessary re-renders
   const mainContent = useMemo(() => (
+
+    
     <View style={color === id ? styles.Color : null}>
       <TouchableRipple
         onPress={() => {
@@ -95,21 +96,22 @@ const ListenComp = React.memo(({
   return (
     <View>
       {loading ? (
-        <View style={styles.loadingContainer}>
+
+        <View style={styles.lottie}>
           <LottieView
-            source={require("../assets/images/Loading.json")}
-            style={styles.lottie}
-            autoPlay
-            loop
-            resizeMode="cover"
-          />
+             source={require("../assets/images/Loading.json")}
+             style={{ width: "100%", height: "100%"}}
+             autoPlay
+             loop
+           />
         </View>
+        
       ) : mainContent}
     </View>
   );
 });
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -119,15 +121,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lottie: {
-    width: 400,
+    right:70,
+    width: "100%",
     height: 50,
-    transform: [{ translateX: -90 }],
+    '@media (min-width: 768px)': {
+      
+      right:270,
+      width: "100%",
+  },
+    
   },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 16,
+    width: "100%",
+    height: 75,
+    justifyContent:"center",
     paddingVertical: 8,
+    paddingHorizontal:16,
+     '@media (min-width: 768px)': {
+      
+     paddingHorizontal:32
+  },
   },
   itemContent: {
     flexDirection: "row",
@@ -169,10 +184,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   menuContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: 48,
-    height: 48,
+    
+    
   },
 });
 

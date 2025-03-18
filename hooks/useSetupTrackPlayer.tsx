@@ -2,8 +2,13 @@ import { useEffect, useRef } from 'react'
 import TrackPlayer, { AddTrack, AppKilledPlaybackBehavior, Capability, RatingType, RepeatMode } from 'react-native-track-player'
 
 const setupPlayer = async () => {
+
+	
 	await TrackPlayer.setupPlayer({
 		maxCacheSize: 1024 * 10,
+		
+		
+		
 	})
 
 	await TrackPlayer.updateOptions({
@@ -15,6 +20,8 @@ const setupPlayer = async () => {
 			// Capability.SkipToNext,
 			// Capability.SkipToPrevious,
 			Capability.Stop,
+			
+			
 		],
 		
 
@@ -26,6 +33,7 @@ const setupPlayer = async () => {
 		compactCapabilities: [
             Capability.Play,
             Capability.Pause,
+			
         ],
 		
 		
@@ -45,6 +53,8 @@ const setupPlayer = async () => {
 
 	await TrackPlayer.setVolume(0.5) // not too loud
 	await TrackPlayer.setRepeatMode(RepeatMode.Track)
+
+	
 }
 
 export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
@@ -70,3 +80,4 @@ export const playTrack = async (tracks: AddTrack[], index = 0) => {
 	await TrackPlayer.skip(index);
 	await TrackPlayer.play();
   };
+  
