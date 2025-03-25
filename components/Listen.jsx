@@ -16,28 +16,17 @@ const Listen = ({
   chapterAr,
   quranData,
   Chapterid,
-  ButtonTranslate,
   scrollY,
-  HEADER_MAX_HEIGHT,
   chapterName,
 }) => {
   const [audioUri, setAudioUri] = useState(null);
   const [mp3, setMp3] = useState(null);
   const flashListRef = useRef(null);
 
-  const scrollToTop = () => {
-    if (flashListRef.current) {
-      flashListRef.current.scrollToOffset({ offset: 0, animated: true });
-    }
-  };
+ 
 
-  const {
-    setTrackList,
-    setIDreader,
-    playTrack,
-    color,
-    setColor
-  } = useGlobalContext();
+  const { setTrackList, setIDreader, playTrack, color, setColor } =
+    useGlobalContext();
 
   // Fetch audio URL based on reciter ID
   const getAudio = async (reciterId) => {
@@ -55,18 +44,15 @@ const Listen = ({
 
   // Handle reciter selection
   const handleReciterSelect = async (reciterId) => {
-    
-   
-
     playTrack(
       {
-        
         id: reciterId,
         chapterID: Chapterid,
         chapter: chapterName,
-        chapterAr:chapterAr,
+        chapterAr: chapterAr,
         artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
-        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name.name,
+        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
+          .name,
         titleAR: chapterAr,
       },
       Chapterid
@@ -80,31 +66,31 @@ const Listen = ({
     setMp3(audio);
   };
 
-  
-
   // Play on the Background
   useEffect(() => {
     const trackList = quranData.map((data) => ({
       id: Chapterid,
-      titleAR:chapterAr,
+      titleAR: chapterAr,
       title: chapterName,
       artist: quranData,
     }));
     setTrackList(trackList);
   }, [searchQuery, Chapterid, quranData, chapterName]);
 
-  const handleClick = useCallback((id) => {
-    setColor(id);
-  }, [color]);
+  const handleClick = useCallback(
+    (id) => {
+      setColor(id);
+    },
+    [color]
+  );
 
   return (
     <View style={styles.container}>
       <FlashList
+        scrollEnabled={false}
         ref={flashListRef}
         contentContainerStyle={{
           paddingBottom: 200,
-          
-          
         }}
         data={searchQuery.length > 1 ? filteredData : quranData}
         estimatedItemSize={75} // Render fewer items initially
@@ -135,9 +121,6 @@ const Listen = ({
           />
         )}
       />
-    
-
-     
     </View>
   );
 };
@@ -146,7 +129,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    marginTop:14
+    marginTop: 14,
   },
   flashList: {
     paddingBottom: 100,

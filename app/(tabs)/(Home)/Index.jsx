@@ -1,30 +1,21 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Modal,
-  StatusBar,
-} from "react-native";
-import StyleSheet from 'react-native-media-query';
-import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView } from "react-native";
+import StyleSheet from "react-native-media-query";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReaderCard from "../../../components/ReaderCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ReadingSurah from "../../../components/ReadingSurah";
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
 import { NewData } from "../../../constants/NewData";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import ModalAudio from "../../../components/ModalAudio";
 import { Colors } from "../../../constants/Colors";
 import { Image } from "expo-image";
-
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 const Index = () => {
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
-  
 
-  const { setLanguages, languages, modalVisible,loading } =
-    useGlobalContext();
+  const { setLanguages, languages, modalVisible, loading } = useGlobalContext();
 
   useEffect(() => {
     getReciter();
@@ -60,22 +51,18 @@ const Index = () => {
     }
   };
 
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Top */}
         <View style={styles.header}>
-          
-            <Image
+          <Image
             contentFit="cover"
-              style={styles.logo}
-              
-              source={require("../../../assets/images/indexLogo.png")}
-            />
-           
-          
-
-     
+            style={styles.logo}
+            source={require("../../../assets/images/indexLogo.png")}
+          />
         </View>
 
         {/* Listen */}
@@ -84,7 +71,11 @@ const Index = () => {
             {languages ? "استمع للقرآن الكريم من " : "Listen to Quran by"}
           </Text>
 
-          <ScrollView horizontal contentContainerStyle={{gap:10,paddingLeft:16}} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ gap: 10, paddingLeft: 16 }}
+            showsHorizontalScrollIndicator={false}
+          >
             {quranData?.slice(2, 8).map((item) => (
               <ReaderCard
                 key={item.index}
@@ -105,7 +96,11 @@ const Index = () => {
           <Text style={styles.sectionTitle}>
             {languages ? "أفضل سور القرآن الكريم" : "Best Quran Chapters"}
           </Text>
-          <ScrollView horizontal contentContainerStyle={{gap:10,paddingLeft:16}} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ gap: 10, paddingLeft: 16 }}
+            showsHorizontalScrollIndicator={false}
+          >
             {chapter?.slice(2, 8).map((item) => (
               <ReadingSurah
                 key={item.index}
@@ -120,29 +115,16 @@ const Index = () => {
               />
             ))}
           </ScrollView>
-          {/* Modal */}
 
-          <View style={styles.centeredView}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-            >
-              <StatusBar backgroundColor="#181A3C" />
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <ModalAudio />
-                </View>
-              </View>
-            </Modal>
-          </View>
+        
         </View>
       </ScrollView>
+    
     </SafeAreaView>
   );
 };
 
-const {ids, styles} = StyleSheet.create({
+const {  styles } = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -151,21 +133,18 @@ const {ids, styles} = StyleSheet.create({
     paddingBottom: 200,
   },
   header: {
-    
     justifyContent: "flex-start",
-    width:160,
-    height:50,
+    width: 160,
+    height: 50,
     marginTop: 20,
-    alignSelf:"flex-start",
-    
-    
+    alignSelf: "flex-start",
   },
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   logo: {
-    width:"100%",
+    width: "100%",
     height: "100%",
   },
   logoText: {
@@ -185,7 +164,6 @@ const {ids, styles} = StyleSheet.create({
   },
   section: {
     marginTop: 32,
-    
   },
   sectionTitle: {
     color: "white",
@@ -194,11 +172,10 @@ const {ids, styles} = StyleSheet.create({
     marginBottom: 16,
     marginLeft: 16,
     marginRight: 16,
-    fontFamily: 'lucida grande',
-    '@media (min-width: 700px)': {
-      fontSize:30
-  },
-    
+    fontFamily: "lucida grande",
+    "@media (min-width: 700px)": {
+      fontSize: 30,
+    },
   },
   centeredView: {
     flex: 1,
@@ -211,6 +188,20 @@ const {ids, styles} = StyleSheet.create({
     height: "100%",
     width: "100%",
     backgroundColor: Colors.background,
+  },
+  handleContainer: {
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: Colors.textTab,
+    borderRadius: 2,
+  },
+  sheetContent: {
+    flex: 1,
+    paddingHorizontal: 16,
   },
 });
 

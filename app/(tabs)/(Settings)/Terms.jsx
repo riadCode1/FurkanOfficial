@@ -12,7 +12,7 @@ const Terms  = () => {
 
       <Text style={styles.title}>شروط الخدمة</Text>
       <Text style={styles.text}>
-        <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [أدخل التاريخ]
+        <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [23-03-2025]
         {"\n\n"}
         باستخدام تطبيق الفرقان ، فإنك توافق على شروط الخدمة هذه. إذا لم توافق، يرجى عدم استخدام التطبيق.
         {"\n\n"}
@@ -68,7 +68,7 @@ const Terms  = () => {
       
         <Text style={styles.title}>Terms of Service</Text>
         <Text style={styles.text}>
-          <Text style={styles.bold}>Last Updated:</Text> [Insert Date]
+          <Text style={styles.bold}>Last Updated:</Text> [23-03-2025]
           {"\n\n"}
           By using Furkan App, you agree to these Terms of Service. If you do not agree, please do not use the App.
           {"\n\n"}

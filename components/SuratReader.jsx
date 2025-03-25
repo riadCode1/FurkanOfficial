@@ -1,5 +1,5 @@
-import { View, Text, } from "react-native";
-import { Image } from 'expo-image';
+import { View, Text } from "react-native";
+import { Image } from "expo-image";
 import React from "react";
 import Dropmenu from "./Dropmenu";
 import { dataArray } from "@/constants/RecitersImages";
@@ -7,7 +7,7 @@ import { Colors } from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
 
 import LottieView from "lottie-react-native";
-import StyleSheet from 'react-native-media-query';
+import StyleSheet from "react-native-media-query";
 import { useGlobalContext } from "../context/GlobalProvider";
 
 const SuratReader = ({
@@ -23,13 +23,9 @@ const SuratReader = ({
   id,
   playAudio,
   data,
- 
 }) => {
-const {
-     
-      loading
-    } = useGlobalContext();
-  
+  const { loading } = useGlobalContext();
+
   const handlePlay = () => {
     playAudio(
       dataAudio[chapteID - 1]?.audio_url,
@@ -38,43 +34,37 @@ const {
       reciterName,
       arab_name,
       id,
-      chapterAr, index
+      chapterAr,
+      index
     );
-    
-    
   };
-
 
   return (
     <View>
       {loading ? (
         <View style={styles.lottie}>
-         <LottieView
-      source={require("../assets/images/Loading.json")}
-      style={{ width: "100%", height: "100%"}}
-      autoPlay
-      
-      loop
-    />
+          <LottieView
+            source={require("../assets/images/Loading.json")}
+            style={{ width: "100%", height: "100%" }}
+            autoPlay
+            loop
+          />
         </View>
       ) : (
-        <View style={[color===chapteID && styles.Color, styles.container]}>
+        <View style={[color === chapteID && styles.Color, styles.container]}>
           <TouchableRipple
             onPress={handlePlay}
             rippleColor="rgba(200, 200, 200, 0.1)"
             style={styles.playButton}
           >
             <View style={styles.buttonContent}>
-
-              <View style={{flexDirection:"row"}} >
+              <View style={{ flexDirection: "row" }}>
                 <View style={styles.imageContainer}>
                   <Image
                     contentFit="cover"
                     style={styles.image}
                     source={{
-                      uri: dataArray[id]?.image
-                        ? dataArray[id]?.image
-                        : "",
+                      uri: dataArray[id]?.image ? dataArray[id]?.image : "",
                     }}
                   />
                 </View>
@@ -98,7 +88,7 @@ const {
                 chapterAr={chapterAr}
                 data={data}
                 chapteID={chapteID}
-                handlePlay={handlePlay}                  
+                handlePlay={handlePlay}
                 mp3={dataAudio[chapteID - 1]?.audio_url}
               />
             </View>
@@ -109,12 +99,11 @@ const {
   );
 };
 
-const {styles} = StyleSheet.create({
+const { styles } = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    
   },
   Color: {
     backgroundColor: Colors.tint,
@@ -122,16 +111,15 @@ const {styles} = StyleSheet.create({
   },
 
   lottie: {
-    right:70,
+    right: 70,
     width: "100%",
     height: 50,
-   
-    '@media (min-width: 768px)': {
-      
-      right:270,
+
+    "@media (min-width: 768px)": {
+      right: 270,
       width: "100%",
-  },}
-,    
+    },
+  },
   playButton: {
     borderRadius: 8,
     width: "100%",
@@ -139,25 +127,21 @@ const {styles} = StyleSheet.create({
     overflow: "hidden", // Ensures ripple stays within bounds
     alignContent: "center",
     justifyContent: "center",
-    paddingHorizontal: (16),
-    '@media (min-width: 768px)': {
-      
-      paddingHorizontal:32
-  },
+    paddingHorizontal: 16,
+    "@media (min-width: 768px)": {
+      paddingHorizontal: 32,
+    },
   },
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    
-    
-  
   },
   imageContainer: {
     overflow: "hidden",
     borderColor: "#00BCE5",
     borderWidth: 1,
-    marginRight:8,
+    marginRight: 8,
     width: 50,
     height: 50,
     borderRadius: 25,

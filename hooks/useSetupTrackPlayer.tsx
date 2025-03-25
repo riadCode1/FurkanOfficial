@@ -5,8 +5,8 @@ const setupPlayer = async () => {
 
 	
 	await TrackPlayer.setupPlayer({
-		maxCacheSize: 1024 * 10,
-		
+		maxCacheSize: 100 * 1024 * 1024, 
+		autoUpdateMetadata: false,
 		
 		
 	})
@@ -38,7 +38,7 @@ const setupPlayer = async () => {
 		
 		
 		
-		icon:require("../assets/images/notifIcon.png"),
+		
 		android: {
 			
 			alwaysPauseOnInterruption:true,
@@ -47,6 +47,8 @@ const setupPlayer = async () => {
 			
 			
 		},
+
+		icon:require("../assets/images/notifIcon.png"),
 		
 		
 	})

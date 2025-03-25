@@ -82,11 +82,11 @@ export const NewData = {
         },
       },
       {
-        id: 20,
-        reciter_name: "sodais_and_shuraim",
+        id: 74,
+        reciter_name: "Shawqy Hamed",
         style: "Murattal",
         translated_name: {
-          name: "السديس والشريم",
+          name: "شوقي حامد",
           language_name: "arabic",
         },
       },
@@ -340,15 +340,26 @@ export const NewData = {
            },
          },
 
+        //  {
+        //   id: 162,
+        //   reciter_name: "juhaini",
+        //   style: "Murattal",
+        //   translated_name: {
+        //     name: " عبد الله بصفر",
+        //     language_name: "arabic",
+        //   },
+        // },
          {
-          id: 162,
-          reciter_name: "Abdullah Al-Juhani",
+          id: 163,
+          reciter_name: "Abdullah Basfar",
           style: "Murattal",
           translated_name: {
-            name: "عبد الله عواد الجهني",
+            name: " عبد الله بصفر",
             language_name: "arabic",
           },
         },
+
+         
      
   ],
 };

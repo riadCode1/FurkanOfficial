@@ -9,7 +9,7 @@ import { Colors } from "../constants/Colors";
 
 const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
 
-  console.log(loading)
+ 
 
   const handleNavigate = () => {
     router.push({ pathname: `/ReaderSurah/`, params: { arab_name, name, id } });

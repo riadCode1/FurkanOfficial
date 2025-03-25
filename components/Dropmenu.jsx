@@ -1,14 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-  
-} from "react-native";
-import {  MaterialIcons } from "@expo/vector-icons";
+import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -42,7 +35,7 @@ const Dropmenu = ({
 
   const saveToPlaylist = async (list) => {
     setIsSaved(true);
-    
+
     await AsyncStorage.getItem("playList").then((token) => {
       const res = JSON.parse(token);
 
@@ -71,12 +64,14 @@ const Dropmenu = ({
   };
 
   const removeFromPlaylist = async (item) => {
-    
     setIsSaved(false);
     const bookMark = await AsyncStorage.getItem("playList").then((token) => {
       const res = JSON.parse(token);
-      return res.filter((id) => !(id.reciterID === item.reciterID && id.id === item.id) );
-    });!(item.id === chapteID && item.reciterID === reciterID)
+      return res.filter(
+        (id) => !(id.reciterID === item.reciterID && id.id === item.id)
+      );
+    });
+    !(item.id === chapteID && item.reciterID === reciterID);
 
     await AsyncStorage.setItem("playList", JSON.stringify(bookMark));
     setAlertVisible2(true);
@@ -86,8 +81,6 @@ const Dropmenu = ({
     }, 2000);
   };
   const renderBookmark = async (list) => {
-
-    
     await AsyncStorage.getItem("playList").then((token) => {
       const res = JSON.parse(token);
       if (res) {
@@ -108,7 +101,7 @@ const Dropmenu = ({
         activeOpacity={0.8}
         style={{
           width: RFValue(45),
-          height: (45),
+          height: 45,
           alignItems: "flex-end",
           justifyContent: "center",
         }}
@@ -165,7 +158,6 @@ const styles = StyleSheet.create({
     width: RFValue(48),
     height: 48,
     alignItems: "center",
-    
   },
   modalOverlay: {
     flex: 1,

@@ -5,11 +5,10 @@ import {
   Dimensions,
   FlatList,
   SafeAreaView,
-  
 } from "react-native";
-import { Image } from 'expo-image';
+import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
-import StyleSheet from 'react-native-media-query';
+import StyleSheet from "react-native-media-query";
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
 import { router } from "expo-router";
 import { dataArray } from "@/constants/RecitersImages";
@@ -22,7 +21,6 @@ import ReaderFilter from "../../../components/ReaderFilter";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import SearchBar from "../../../components/SearchBar";
 
-const Ios = Platform.OS == "ios";
 let { width, height } = Dimensions.get("window");
 
 const Search = () => {
@@ -118,7 +116,11 @@ const Search = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         filteredData={filteredData}
-        title={languages?"ابحث عن السورة أو القارئ...":" Search Chapter or Reciter..."}
+        title={
+          languages
+            ? "ابحث عن السورة أو القارئ..."
+            : " Search Chapter or Reciter..."
+        }
       />
 
       {/* results */}
@@ -179,20 +181,23 @@ const Search = () => {
           />
         </View>
       ) : (
-        <View style={{width:"100%"}}>
+        <View style={{ width: "100%" }}>
           <View style={styles.filters}>
             <Button
               mode="contained" // Use "outlined" or "text" for other styles
               onPress={() => handleButtonPress("button1")}
               contentStyle={[
-                
                 { backgroundColor: getBackgroundColor("button1") },
                 styles.filter,
-                
               ]}
             >
-              <Text  style={[  { color: activeButton=== "button1"? "white":"#A3A8C5" }]}>{languages ? "قراء" : "Readers"}</Text>
-              
+              <Text
+                style={[
+                  { color: activeButton === "button1" ? "white" : "#A3A8C5" },
+                ]}
+              >
+                {languages ? "قراء" : "Readers"}
+              </Text>
             </Button>
 
             <Button
@@ -203,10 +208,13 @@ const Search = () => {
                 styles.filter,
               ]}
             >
-              <Text  style={[  { color: activeButton=== "button2"? "white":"#A3A8C5" }]}>
+              <Text
+                style={[
+                  { color: activeButton === "button2" ? "white" : "#A3A8C5" },
+                ]}
+              >
                 {languages ? "سور" : "Chapters"}
               </Text>
-              
             </Button>
           </View>
 
@@ -218,7 +226,7 @@ const Search = () => {
   );
 };
 
-const { styles} = StyleSheet.create({
+const { styles } = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
@@ -230,17 +238,15 @@ const { styles} = StyleSheet.create({
     borderRadius: 8,
   },
   filters: {
-   
     height: 48,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
     marginTop: 16,
-    '@media (min-width: 768px)': {
+    "@media (min-width: 768px)": {
       paddingHorizontal: 32,
-  
-    }
+    },
   },
   filter: {
     alignItems: "center",
@@ -257,7 +263,6 @@ const { styles} = StyleSheet.create({
   resultsText: {
     color: "white",
     marginLeft: 16,
-    
   },
   flatlistContainer: {
     paddingBottom: 200,
@@ -274,11 +279,9 @@ const { styles} = StyleSheet.create({
     height: 65,
     width: "100%",
     paddingHorizontal: 16,
-    '@media (min-width: 768px)': {
+    "@media (min-width: 768px)": {
       paddingHorizontal: 32,
-  
-    }
-    
+    },
   },
   imageContainer: {
     borderColor: "#00BCE5",

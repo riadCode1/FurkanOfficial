@@ -1,16 +1,11 @@
-import { View, Text, Image, ImageBackground, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, Image, StyleSheet, StatusBar } from 'react-native';
 import React, { useEffect } from 'react';
 import { router, useFocusEffect } from 'expo-router';
+import { ImageBackground } from 'expo-image';
 
 
 
 const Index = () => {
-   useEffect(() => {
-     setTimeout(() => {
-       router.navigate("Index");
-      
-     }, 3000);
-   }, []);
 
    useFocusEffect(
      React.useCallback(() => {
@@ -28,7 +23,8 @@ const Index = () => {
     <>
       
     <ImageBackground
-      resizeMode="cover"
+      contentFit="cover"
+      
       source={require("../assets/images/SplashFK.png")}
       style={styles.imageBackground}
     >

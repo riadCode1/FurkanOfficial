@@ -1,10 +1,5 @@
-import {
-  View,
-  Text,
-  Dimensions,
-  FlatList,
-} from "react-native";
-import { Image } from 'expo-image';
+import { View, Text, Dimensions, FlatList } from "react-native";
+import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
 import { fetchSuwar } from "../app/API/QuranApi";
 import { useGlobalContext } from "../context/GlobalProvider";
@@ -15,7 +10,7 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
-import StyleSheet from 'react-native-media-query';
+import StyleSheet from "react-native-media-query";
 let { width, height } = Dimensions.get("window");
 const ReaderFilter = () => {
   const [reader, setReader] = useState([]);
@@ -24,7 +19,10 @@ const ReaderFilter = () => {
   const { languages } = useGlobalContext();
 
   const handleNavigate = (arab_name, name, id) => {
-    router.push({ pathname: `/ReciterSearch/`, params: {id , arab_name, name, } });
+    router.push({
+      pathname: `/ReciterSearch/`,
+      params: { id, arab_name, name },
+    });
   };
 
   useEffect(() => {
@@ -59,7 +57,6 @@ const ReaderFilter = () => {
 
       const combinedData = [...uniqueFetchedData, ...uniqueNewData];
       setReader(combinedData.splice(1));
-      
     }
   };
 
@@ -109,7 +106,7 @@ const ReaderFilter = () => {
                         source={{
                           uri: dataArray[item.id]?.image
                             ? dataArray[item.id]?.image
-                            : dataArray[11]?.image,
+                            : require('../assets/images/noImage.jpg'),
                         }}
                       />
                     </View>
@@ -137,7 +134,7 @@ const ReaderFilter = () => {
   );
 };
 
-const {styles} = StyleSheet.create({
+const { styles } = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -149,10 +146,9 @@ const {styles} = StyleSheet.create({
     width: "100%",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    '@media (min-width: 768px)': {
+    "@media (min-width: 768px)": {
       paddingHorizontal: 32,
-  
-    }
+    },
   },
   imageContainer: {
     overflow: "hidden",
@@ -181,7 +177,6 @@ const {styles} = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-
 
   menuContainer: {
     justifyContent: "center",

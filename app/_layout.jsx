@@ -86,7 +86,7 @@ export default function RootLayout() {
                 name="(auth)"
                 options={{
                   statusBarBackgroundColor: "transparent",
-                  animation: "fade",
+                  animation: "slide_from_bottom",
                   headerShown: false,
                 }}
               />

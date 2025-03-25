@@ -38,7 +38,7 @@ export const dataArray = [
   },
   {
     id: 6,
-    name: " khalis hosri",
+    name: " khalil hosri",
     image: "https://i1.sndcdn.com/artworks-000534797073-h1ykj2-t500x500.jpg",
   },
   {
@@ -68,9 +68,7 @@ export const dataArray = [
   {
     id: 11,
     name: " abdul_muhsin_alqasim",
-    image:
-      "https://lh3.googleusercontent.com/proxy/5AiCu0gG4TOKPZC56PKK2jt1PMvzCR5il43L8UFMath1Zm5LjkkPcZBETuGhKofPLY8S_hzB1uDjTNbv2yy4LJMZe2g1k9dS03CEno4PSKMKX_DVSPc",
-  },
+    image:"https://i1.sndcdn.com/artworks-000170055048-ki6tg9-t500x500.jpg"  },
   {
     id: 12,
     name: " Mahmoud Khalil Al-Husary",
@@ -409,8 +407,8 @@ export const dataArray = [
   },
   {
     id: 75,
-    name: " ",
-    image: "",
+    name: "shawki hamad ",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4r0LqlN0UXbtsqoQcbUkguV-mXrSs1rnfQg&s",
   },
   {
     id: 76,
@@ -548,9 +546,8 @@ export const dataArray = [
   },
 
   {
-    id: 161,
-    name: "Bandar Balila ",
-    image:
-      "https://api2.quran-pro.com/images/bandar-baleela/bandar-baleela-medium.webp?version=1686737784305",
+    id: 164,
+    name: "Basfar ",
+    image:"https://storage.googleapis.com/way2quran_storage/imgs/abdullah-basfar.jpg"
   },
 ];

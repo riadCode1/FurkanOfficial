@@ -1,14 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import {
-  TouchableOpacity,
-  Dimensions,
-  StatusBar,
- 
-} from "react-native";
-import StyleSheet from 'react-native-media-query';
+import { TouchableOpacity, Dimensions, StatusBar } from "react-native";
+import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { Entypo, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 let { width, height } = Dimensions.get("window");
@@ -18,7 +12,7 @@ import { useGlobalContext } from "../../../context/GlobalProvider";
 import { fetchAudio, fetchChater } from "../../API/QuranApi";
 import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
-import { Colors,  } from "../../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 import { TouchableRipple } from "react-native-paper";
 
@@ -51,6 +45,8 @@ const ReaderSurah = () => {
 
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
+
+ 
   const {
     languages,
     setIsPlaying,
@@ -60,10 +56,10 @@ const ReaderSurah = () => {
     setTrackList,
     color2,
     togglePlayback,
-    loading, setloading
+    loading,
+    setloading,
   } = useGlobalContext();
 
-  
   const [searchQuery, setSearchQuery] = useState("");
   const [dataAudio, setDataAudio] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -100,14 +96,8 @@ const ReaderSurah = () => {
         });
     }
 
-    const trackList = dataAudio.map((data) => ({
-      id: id,
-      title: chapters,
-      artist: name,
-      artistAR: arab_name,
-    }));
-    setTrackList(trackList);
-  }, [languages, searchQuery, id, color2,loading]);
+   
+  }, [languages, searchQuery, id, color2, loading]);
 
   const getChapter = async () => {
     try {
@@ -138,22 +128,31 @@ const ReaderSurah = () => {
     uri,
     trackId,
     chapterName,
-    name,
+    names,
     arabName,
-    id,
+    Id,
     arabicCh
   ) => {
     playTrack(
       {
-        id: id,
+        id: Id,
         url: uri,
         title: chapters,
-        artist: name,
+        artist: names,
         artistAR: arabName,
         chapterID: trackId,
       },
       trackId
     );
+
+    const trackList = dataAudio.map((data) => ({
+      id: id,
+      title: chapters,
+      artist: name,
+      artistAR: arab_name,
+    }));
+    setTrackList(trackList);
+
   };
   const playAuto = () => {
     playTrack(
@@ -192,18 +191,21 @@ const ReaderSurah = () => {
           },
         ]}
       >
-        <View
-          style={styles.chapterSmall}
-          
-        >
-          <View style={{width:180}} >
+        <View style={styles.chapterSmall}>
+          <View style={{ width: 200, }}>
             <Text
               style={[
                 styles.chapterTextSmall,
                 { fontSize: 20, textAlign: "left" },
               ]}
             >
-               {languages ? arab_name?.length>10?arab_name.slice(0,20)+"...":arab_name : name?.length>20?name.slice(0,20)+"...":name}
+              {languages
+                ? arab_name?.length > 15
+                  ? arab_name.slice(0, 15) + "..."
+                  : arab_name
+                : name?.length > 15
+                ? name.slice(0, 15) + "..."
+                : name}
             </Text>
             <Text
               style={{
@@ -267,7 +269,7 @@ const ReaderSurah = () => {
         >
           <View style={[styles.imageContainer, {}]}>
             <Image
-            contentFit="contain"
+              contentFit="contain"
               source={{
                 uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
               }}
@@ -276,10 +278,9 @@ const ReaderSurah = () => {
           </View>
 
           <View style={styles.BotHeader}>
-            <View style={{width:285}}>
+            <View style={{ width: 285 }}>
               <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
-              
-              {languages?arab_name:name}
+                {languages ? arab_name : name}
               </Text>
               <Text
                 style={{
@@ -347,6 +348,7 @@ const ReaderSurah = () => {
 
         {searchQuery.length > 1 ? (
           <FlashList
+            scrollEnabled={false}
             contentContainerStyle={{
               paddingBottom: 150,
             }}
@@ -376,6 +378,7 @@ const ReaderSurah = () => {
           />
         ) : (
           <FlashList
+            scrollEnabled={false}
             contentContainerStyle={{
               paddingBottom: 150,
             }}
@@ -428,34 +431,31 @@ const ReaderSurah = () => {
   );
 };
 
-const {ids, styles} = StyleSheet.create({
+const { ids, styles } = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#181A3C",
-
   },
 
   button: {
-    width:48,
-    height:48,
+    width: 48,
+    height: 48,
     right: 16,
-    borderRadius:50,
-    position:"absolute",
-    zIndex:999,
+    borderRadius: 50,
+    position: "absolute",
+    zIndex: 999,
     backgroundColor: Colors.tint,
     bottom: 170,
-    alignItems:"center",
-    justifyContent:"center",
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 50,
-    
-    
-    '@media (min-width: 700px)': {
-            right:32
-        },
+
+    "@media (min-width: 700px)": {
+      right: 32,
+    },
   },
 
-  chapterSmall:{
-
+  chapterSmall: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
@@ -463,18 +463,17 @@ const {ids, styles} = StyleSheet.create({
     paddingLeft: 80,
     paddingRight: 16,
     alignItems: "center",
-    '@media (min-width: 768px)': {
-    paddingRight:32,
-    paddingLeft: 100,
-
-  }
-},
+    "@media (min-width: 768px)": {
+      paddingRight: 32,
+      paddingLeft: 100,
+    },
+  },
   headerImage: {
-    width:"100%",
-    height:366,
-    alignItems:"center",
-    justifyContent:"center",
-    position:"relative"
+    width: "100%",
+    height: 366,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
 
   imageContainer: {
@@ -483,23 +482,23 @@ const {ids, styles} = StyleSheet.create({
     shadowOpacity: 0.3, // Shadow opacity for iOS
     shadowRadius: 100,
     elevation: 10,
-    width:146,
-    height:146,
-    overflow:"hidden",
-    borderRadius:2
+    width: 146,
+    height: 146,
+    overflow: "hidden",
+    borderRadius: 2,
   },
   image: {
-    width:"100%",
-    height:"100%",
-    elevation:100,
+    width: "100%",
+    height: "100%",
+    elevation: 100,
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "bold",
 
-    '@media (min-width: 700px)': {
-      width:140,
-      height:146,
-        },
+    "@media (min-width: 700px)": {
+      width: 140,
+      height: 146,
+    },
     // Match borderRadius of the container for consistent rounding
   },
   smallHeader: {
@@ -509,31 +508,31 @@ const {ids, styles} = StyleSheet.create({
     right: 0,
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
-    height:108,
+    height: 108,
     backgroundColor: Colors.background,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,
   },
-  
-  chapterTextSmall:{
+
+  chapterTextSmall: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
   },
-  
-  BotHeader:{
-      position:"absolute",
-      bottom:0,
-      width:"100%",
-      zIndex:99,
-      paddingHorizontal:16,
-      flexDirection:"row",
-      justifyContent:"space-between",
 
-      '@media (min-width: 700px)': {
-      paddingHorizontal:32,
-        },
+  BotHeader: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    zIndex: 99,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+    "@media (min-width: 700px)": {
+      paddingHorizontal: 32,
+    },
   },
 
   chapterNameText: {
@@ -542,8 +541,8 @@ const {ids, styles} = StyleSheet.create({
     fontWeight: "bold",
   },
   playPauseButton: {
-    width:45,
-    height:45,
+    width: 45,
+    height: 45,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
@@ -551,35 +550,30 @@ const {ids, styles} = StyleSheet.create({
   },
 
   playPauseButtonSmall: {
-    width:48,
-    height:48,
+    width: 48,
+    height: 48,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   backButton: {
-    position:"absolute",
-    width:48,
-    height:48,
-    top:44,
-    left:16,
-    zIndex:99,
+    position: "absolute",
+    width: 48,
+    height: 48,
+    top: 44,
+    left: 16,
+    zIndex: 99,
     elevation: 50,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#454B8C",
     borderRadius: 50,
-    '@media (min-width: 700px)': {
-            left:32
-        },
+    "@media (min-width: 700px)": {
+      left: 32,
+    },
   },
- 
-
 });
-
-
-
 
 export default ReaderSurah;

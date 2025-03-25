@@ -19,7 +19,7 @@ const GlobalProvider = memo(({ children }) => {
   const [reciter, setReciter] = useState("");
   const [IDchapter, setIDchapter] = useState(0);
   const [reciterAR, setReciterAR] = useState("");
-  const [languages, setLanguages] = useState(false);
+  const [languages, setLanguages] = useState(true);
   const [idReader, setIDreader] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [chapterId, setChapterID] = useState(null);
@@ -187,7 +187,7 @@ const GlobalProvider = memo(({ children }) => {
   // Play a specific track
 
   const playTrack = async (track, index) => {
-    console.log(track)
+    console.log(track,index)
     
     setColor2(index);
     setColor(track.id);
@@ -203,10 +203,12 @@ const GlobalProvider = memo(({ children }) => {
     reciterSaved(track.artist);
     reciterARSaved(track.artistAR);
     idChapterSaved(index);
+    
 
      await TrackPlayer.reset();
     const uri = await getAudio(track.id, index);
-    await AsyncStorage.setItem('currentTrackUri', uri);
+   
+    
 
     const tracker = {
       id: track.id,
@@ -219,11 +221,11 @@ const GlobalProvider = memo(({ children }) => {
         ? track.titleAR
         : track.chapter,
       artist: languages ? track.artistAR : track.artist,
-      artwork:require("../assets/images/icon.png")
-      // artwork: track.id
-      //   ? dataArray[track.id].image
-      //   : require("../assets/images/icon.png"),
-      // or a remote URL
+      // artwork:require("../assets/images/icon.png")
+       artwork: track.id
+         ? dataArray[track.id].image
+         : require("../assets/images/icon.png"),
+       
     };
 
     await TrackPlayer.add(tracker);
@@ -238,7 +240,7 @@ const GlobalProvider = memo(({ children }) => {
 
   const playTrackSkip = async (track, index) => {
 
-    console.log('skip',track);
+    
 
     setColor(track[index].artist[index].id);
     idReciterSaved(track[index].artist[index].id);
@@ -258,12 +260,13 @@ const GlobalProvider = memo(({ children }) => {
       url: uri, // or a remote URL
       title: languages? track[index].titleAR:track[index].title,   
       artist: languages? track[index].artist[index].translated_name.name : track[index].artist[index].reciter_name,
-      artwork:require("../assets/images/icon.png")
-      // artwork: dataArray[track[index].artist[index].id].image
+      // artwork:require("../assets/images/icon.png")
+       artwork: dataArray[track[index].artist[index].id].image,
+       
         
-      // or a remote URL
+      
     };
-    console.log(tracker);
+    
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
@@ -284,10 +287,10 @@ const GlobalProvider = memo(({ children }) => {
     const nextReciter = currentReciter;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-    console.log(tracks.length);
+    
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      console.log("track");
+      console.log("track",nextTrack);
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter);
       console.log("skipper");
@@ -300,7 +303,7 @@ const GlobalProvider = memo(({ children }) => {
     const nextReciter = currentReciter - 2;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-    console.log(nextTrackSkip.id);
+  
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
       console.log("track");
@@ -313,6 +316,8 @@ const GlobalProvider = memo(({ children }) => {
   // Set the list of tracks
   const setTrackList = (trackList) => {
     setTracks(trackList);
+    console.log(trackList)
+    
     
   };
 

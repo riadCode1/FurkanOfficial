@@ -80,7 +80,7 @@
        const { error } = await presentPaymentSheet();
 
        if (error) {
-         Alert.alert(`Error code: ${error.code}`, error.message);
+         
        } else {
          Alert.alert(
            languages?"تم":"Success",
@@ -240,15 +240,19 @@
                  <TouchableOpacity
                    style={[styles.button, styles.ButtonD]}
                      onPress={async () => {
-                      setLoading(true)
+                      if(payableAmount>0){
+
+                         setLoading(true)
                        await initializePaymentSheet().then(async () => {
                          openPaymentSheet();
                        });
+                      }
+                     
                      }}
                 
                  >
                    <Text style={styles.buttonText}>
-                    {load? languages? "الرجاء الانتظار...":"Please wait.." : 
+                    {load? languages? "الرجاء الانتظار...":"Please wait..." : 
                         languages
                        ? "تبرع"
                        : "Donate"}

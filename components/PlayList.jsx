@@ -86,7 +86,10 @@ const PlayList = () => {
       const filteredRecitations = playlist.filter(
         (item) =>
           item.chapter?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
-          item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase())
+          item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase())||
+          item.arabName?.toLowerCase()?.includes(searchQuery.toLowerCase())||
+          item.chapterAr?.toLowerCase()?.includes(searchQuery.toLowerCase())
+          
       );
 
       setFilteredData(filteredRecitations); 
@@ -272,7 +275,7 @@ const playSound = (
                         />
                       </View>
 
-                      <View>
+                      <View style={{alignItems:"flex-start"}}>
                         <Text style={styles.chapterText}>
                           {languages ? item.chapterAr : item?.chapter}
                         </Text>

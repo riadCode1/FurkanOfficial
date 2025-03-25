@@ -10,7 +10,7 @@ const Privacy  = () => {
          <ScrollView contentContainerStyle={{paddingBottom:200}} style={styles.container}>
       <Text style={styles.title}>سياسة الخصوصية</Text>
       <Text style={styles.text}>
-        <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [أدخل التاريخ]
+        <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [23-03-2025]
         {"\n\n"}
         نشكرك على استخدام تطبيق الفرقان 
         . توضح سياسة الخصوصية هذه كيفية جمعنا واستخدامنا وحماية معلوماتك عند استخدام التطبيق. باستخدام التطبيق، فإنك توافق على الشروط الواردة في هذه السياسة.
@@ -77,7 +77,7 @@ const Privacy  = () => {
         <ScrollView contentContainerStyle={{paddingBottom:200}} style={styles.container}>
         <Text style={styles.title}>Privacy Policy</Text>
         <Text style={styles.text}>
-          <Text style={styles.bold}>Last Updated:</Text> [Insert Date]
+          <Text style={styles.bold}>Last Updated:</Text> [23-03-2025]
           {"\n\n"}
           Thank you for using Furkan App. This Privacy Policy explains how we collect, use, and protect your information when you use our App. By using the App, you agree to the terms outlined in this policy.
           {"\n\n"}

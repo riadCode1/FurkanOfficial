@@ -1,23 +1,12 @@
-import {
-  View,
-  Text,
-  StyleSheet,
- 
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PlayList from "../../../components/PlayList";
 import { Colors } from "../../../constants/Colors";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 
-
-
 const Library = ({}) => {
- 
-
   const { languages } = useGlobalContext();
-
- 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,8 +21,6 @@ const Library = ({}) => {
       </View>
 
       {/* Modal */}
-
-     
     </SafeAreaView>
   );
 };

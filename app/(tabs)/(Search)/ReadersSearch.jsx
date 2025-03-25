@@ -1,33 +1,36 @@
 import React, { useEffect, useState, useRef } from "react";
-import { TouchableOpacity, Dimensions, ScrollView, StatusBar, } from "react-native";
-import { Image } from 'expo-image';
+import {
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  StatusBar,
+} from "react-native";
+import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { Entypo, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 let { width, height } = Dimensions.get("window");
 import { View, Text, Animated } from "react-native";
 import SearchBar from "../../../components/SearchBar";
 import { useGlobalContext } from "../../../context/GlobalProvider";
-import { Colors, } from "../../../constants/Colors";
+import { Colors } from "../../../constants/Colors";
 import Read from "../../../components/Read";
 import Details from "../../../components/Details";
 import Listen from "../../../components/Listen";
 import { fetChapterInfo, fetchSuwar } from "../../API/QuranApi";
 import { NewData } from "../../../constants/NewData";
 import { TouchableRipple } from "react-native-paper";
-import StyleSheet from 'react-native-media-query';
-import {  RFValue } from "react-native-responsive-fontsize";
+import StyleSheet from "react-native-media-query";
+import { RFValue } from "react-native-responsive-fontsize";
 import { ImageBackground } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const HEADER_MAX_HEIGHT =( height * 0.65);
+const HEADER_MAX_HEIGHT = height * 0.65;
 const HEADER_MIN_HEIGHT = height * 0.3;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const ReaderSearch = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  
- 
   const ButtonTranslate = scrollY.interpolate({
     inputRange: [0, RFValue(290)],
     outputRange: [700, 0],
@@ -44,13 +47,12 @@ const ReaderSearch = () => {
     extrapolate: "clamp",
   });
 
- 
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const { name, Chapterid,chapter_arab } = params;
+  const { name, Chapterid, chapter_arab } = params;
 
-  const { isPlaying, languages,togglePlayback,playTrack,loading } =
+  const { isPlaying, languages, togglePlayback, playTrack, loading } =
     useGlobalContext();
 
   const [activeButton, setActiveButton] = useState("button1");
@@ -59,7 +61,7 @@ const ReaderSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [quranData, setQuranData] = useState([]);
-  
+
   const flashListRef = useRef(null);
 
   const scrollToTop = () => {
@@ -74,7 +76,6 @@ const ReaderSearch = () => {
   }, []);
 
   const getReciter = async () => {
-    
     const data = await fetchSuwar();
 
     // Example of hardcoded data (NewData)
@@ -95,7 +96,7 @@ const ReaderSearch = () => {
           return false;
         }
         idSet.add(reciter.id);
-        
+
         return true;
       });
 
@@ -106,15 +107,12 @@ const ReaderSearch = () => {
       ); // Example conditions
 
       setQuranData(filteredData.splice(2));
-
-      
     }
   };
 
   const getChapterInfo = async (id) => {
     const data = await fetChapterInfo(id);
     if (data && data.chapter_info) setchapterInfo(data.chapter_info);
-    
   };
 
   const handleButtonPress = (button) => {
@@ -127,8 +125,6 @@ const ReaderSearch = () => {
 
   useEffect(() => {
     if (searchQuery.length > 1) {
-      
-
       fetchSuwar(searchQuery)
         .then((suwarData) => {
           const filteredRecitations = suwarData.recitations.filter(
@@ -159,36 +155,29 @@ const ReaderSearch = () => {
           );
 
           setFilteredData(uniqueRecitations);
-           
         })
         .catch((error) => {
           console.error("Error fetching recitations: ", error);
         })
-        .finally(() => {
-          
-        });
+        .finally(() => {});
     }
-  }, [searchQuery, ]);
+  }, [searchQuery]);
 
   const PlayAuto = async (reciterId) => {
-    
-  
-
     playTrack(
       {
-        
         id: reciterId,
         chapterID: Chapterid,
         chapter: name,
-        chapterAr:chapter_arab,
+        chapterAr: chapter_arab,
         artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
-        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name.name,
+        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
+          .name,
         titleAR: chapter_arab,
       },
       Chapterid
     );
   };
-  
 
   return (
     <View style={styles.container}>
@@ -203,7 +192,7 @@ const ReaderSearch = () => {
         ]}
       >
         <View style={styles.chapterSmall}>
-          <View style={{width:210,justifyContent:"center", }}>
+          <View style={{ width: 210, justifyContent: "center" }}>
             <Text
               style={[
                 styles.chapterTextSmall,
@@ -319,93 +308,91 @@ const ReaderSearch = () => {
           </View>
 
           <LinearGradient
-                      colors={[
-                        "transparent",
-                        "rgba(24,26,60,1)",
-                        "rgba(24,26,60,1)",
-                        "rgba(24,26,60,1)",
-                      ]}
-                      style={{
-                        width: width,
-                        height: height * 0.1,
-                        position: "absolute",
-                        zIndex: 1,
-                        bottom: 0,
-                      }}
-                      start={{ x: 0.5, y: 0 }}
-                      end={{ x: 0.5, y: 2 }}
-                    />
-
-          
+            colors={[
+              "transparent",
+              "rgba(24,26,60,1)",
+              "rgba(24,26,60,1)",
+              "rgba(24,26,60,1)",
+            ]}
+            style={{
+              width: width,
+              height: height * 0.1,
+              position: "absolute",
+              zIndex: 1,
+              bottom: 0,
+            }}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 2 }}
+          />
         </ImageBackground>
 
-{/* button group */}
-        <View style={{ alignItems: "center", marginTop: 24,  }}>
-           <View style={styles.relativeView}>
-              <View style={styles.buttonGroup}>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => handleButtonPress("button1")}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>
-                    {languages ? "استمع " : "Listen"}
-                  </Text>
-                  <View
-                    style={[
-                      { backgroundColor: getBackgroundColor("button1") },
-                      styles.buttonUnderline,
-                    ]}
-                  />
-                </TouchableOpacity>
+        {/* button group */}
+        <View style={{ alignItems: "center", marginTop: 24 }}>
+          <View style={styles.relativeView}>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleButtonPress("button1")}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>
+                  {languages ? "استمع " : "Listen"}
+                </Text>
+                <View
+                  style={[
+                    { backgroundColor: getBackgroundColor("button1") },
+                    styles.buttonUnderline,
+                  ]}
+                />
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => handleButtonPress("button2")}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>
-                    {languages ? "تفاصيل " : "Details"}
-                  </Text>
-                  <View
-                    style={[
-                      { backgroundColor: getBackgroundColor("button2") },
-                      styles.buttonUnderline,
-                    ]}
-                  />
-                </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleButtonPress("button2")}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>
+                  {languages ? "تفاصيل " : "Details"}
+                </Text>
+                <View
+                  style={[
+                    { backgroundColor: getBackgroundColor("button2") },
+                    styles.buttonUnderline,
+                  ]}
+                />
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => handleButtonPress("button3")}
-                  style={styles.button}
-                >
-                  <Text style={styles.buttonText}>
-                    {languages ? "اقراء " : "Read"}
-                  </Text>
-                  <View
-                    style={[
-                      { backgroundColor: getBackgroundColor("button3") },
-                      styles.buttonUnderline,
-                    ]}
-                  />
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleButtonPress("button3")}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>
+                  {languages ? "اقراء " : "Read"}
+                </Text>
+                <View
+                  style={[
+                    { backgroundColor: getBackgroundColor("button3") },
+                    styles.buttonUnderline,
+                  ]}
+                />
+              </TouchableOpacity>
             </View>
-
-            {activeButton === "button2" || activeButton === "button3" ? (
-              <View style={{}}></View>
-            ) : (
-              <SearchBar
-                title={languages ? "ابحث عن قارئ" : "Search Reciter"}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                filteredData={filteredData}
-              />
-            )}
-            <View style={{ width: width * 0.93 }}></View>
           </View>
-        
+
+          {activeButton === "button2" || activeButton === "button3" ? (
+            <View style={{}}></View>
+          ) : (
+            <SearchBar
+              title={languages ? "ابحث عن قارئ" : "Search Reciter"}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filteredData={filteredData}
+            />
+          )}
+          <View style={{ width: width * 0.93 }}></View>
+        </View>
+
         {activeButton === "button1" && (
           <Listen
             chapterName={name}
@@ -425,47 +412,46 @@ const ReaderSearch = () => {
           <Details
             scrollY={scrollY}
             languages={languages}
-            info={chapterInfo.short_text}
+            info={chapterInfo.text}
+            id={Chapterid}
           />
         )}
 
         {activeButton === "button3" && <Read id={Chapterid} />}
       </Animated.ScrollView>
 
-     <Animated.View
-             style={[
-               styles.buttonScroll,
-               {
-                 transform: [{ translateX: ButtonTranslate }],
-               },
-             ]}
-           >
-             <TouchableRipple
-               onPress={scrollToTop}
-               rippleColor="rgba(255, 255, 255, 0.2)"
-               style={styles.button}
-               borderless={true}
-             >
-               <MaterialIcons name="arrow-upward" size={24} color="white" />
-             </TouchableRipple>
-           </Animated.View>
+      <Animated.View
+        style={[
+          {
+            transform: [{ translateX: ButtonTranslate }],
+          },
+        ]}
+      >
+        <TouchableRipple
+          onPress={scrollToTop}
+          rippleColor="rgba(255, 255, 255, 0.2)"
+          style={styles.buttonScroll}
+          borderless={true}
+        >
+          <MaterialIcons name="arrow-upward" size={24} color="white" />
+        </TouchableRipple>
+      </Animated.View>
     </View>
   );
 };
 
-const {styles} = StyleSheet.create({
+const { styles } = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#181A3C",
   },
-  
 
   headerImage: {
-    width:"100%",
-    height:366,
-    alignItems:"center",
-    justifyContent:"center",
-    position:"relative"
+    width: "100%",
+    height: 366,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
 
   imageContainer: {
@@ -474,44 +460,47 @@ const {styles} = StyleSheet.create({
     shadowOpacity: 0.3, // Shadow opacity for iOS
     shadowRadius: 100,
     elevation: 10,
+    width: 146,
+    height: 146,
+    overflow: "hidden",
+    borderRadius: 2,
   },
   image: {
-   width:114,
-   height:126,
-    elevation:100,
+    width: "100%",
+    height: "100%",
+    elevation: 100,
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "bold",
 
-    '@media (min-width: 700px)': {
-      width:140,
-      height:146,
-        },
+    "@media (min-width: 700px)": {
+      width: 140,
+      height: 146,
+    },
     // Match borderRadius of the container for consistent rounding
   },
-  BotHeader:{
-    position:"absolute",
-    bottom:0,
-    width:"100%",
-    zIndex:99,
-    paddingHorizontal:16,
-    flexDirection:"row",
-    justifyContent:"space-between",
+  BotHeader: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    zIndex: 99,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
 
-    '@media (min-width: 768px)': {
-    paddingHorizontal:32,
-      },
-},
+    "@media (min-width: 768px)": {
+      paddingHorizontal: 32,
+    },
+  },
 
   relativeView: {
     justifyContent: "center",
     position: "relative",
-    alignItems:"center",
-    paddingHorizontal:16,
-    '@media (min-width: 768px)': {
-    paddingHorizontal:32,
-      },
-   
+    alignItems: "center",
+    paddingHorizontal: 16,
+    "@media (min-width: 768px)": {
+      paddingHorizontal: 32,
+    },
   },
 
   buttonGroup: {
@@ -519,7 +508,7 @@ const {styles} = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    
+
     bottom: 10,
   },
   button: {
@@ -528,22 +517,21 @@ const {styles} = StyleSheet.create({
   },
 
   buttonScroll: {
-    width:48,
-    height:48,
+    width: 48,
+    height: 48,
     right: 16,
-    borderRadius:50,
-    position:"absolute",
-    zIndex:999,
+    borderRadius: 50,
+    position: "absolute",
+    zIndex: 999,
     backgroundColor: Colors.tint,
     bottom: 170,
-    alignItems:"center",
-    justifyContent:"center",
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 50,
-    
-    
-    '@media (min-width: 700px)': {
-            right:32
-        },
+
+    "@media (min-width: 700px)": {
+      right: 32,
+    },
   },
   buttonText: {
     color: Colors.textGray,
@@ -563,26 +551,24 @@ const {styles} = StyleSheet.create({
     width: width * 0.6,
   },
   playPauseButton: {
-    width:45,
-    height:45,
+    width: 45,
+    height: 45,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    top:5
+    top: 5,
   },
- 
 
- 
   playPauseButtonSmall: {
-    width:48,
-    height:48,
+    width: 48,
+    height: 48,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
   },
-  chapterSmall:{
+  chapterSmall: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
@@ -590,32 +576,33 @@ const {styles} = StyleSheet.create({
     paddingLeft: 80,
     paddingRight: 16,
     alignItems: "center",
-    '@media (min-width: 768px)': {
-    paddingRight:32,
-    paddingLeft: 100,
-  },},
+    "@media (min-width: 768px)": {
+      paddingRight: 32,
+      paddingLeft: 100,
+    },
+  },
 
-  chapterTextSmall:{
+  chapterTextSmall: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
   },
 
   backButton: {
-    position:"absolute",
-    width:48,
-    height:48,
-    top:44,
-    left:16,
-    zIndex:99,
+    position: "absolute",
+    width: 48,
+    height: 48,
+    top: 44,
+    left: 16,
+    zIndex: 99,
     elevation: 50,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#454B8C",
     borderRadius: 50,
-    '@media (min-width: 700px)': {
-            left:32
-        },
+    "@media (min-width: 700px)": {
+      left: 32,
+    },
   },
 
   smallHeader: {
@@ -625,23 +612,12 @@ const {styles} = StyleSheet.create({
     right: 0,
     borderBottomWidth: 1,
     borderBottomColor: Colors.tint,
-    height:108,
+    height: 108,
     backgroundColor: Colors.background,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,
   },
-  
-
 });
-
-
-
-
-
-
-
-
-
 
 export default ReaderSearch;
