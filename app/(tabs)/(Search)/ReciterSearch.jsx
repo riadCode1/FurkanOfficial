@@ -46,7 +46,7 @@ const ReciterSearch = () => {
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
 
-
+ 
   const {
     languages,
     setIsPlaying,
@@ -133,6 +133,7 @@ const ReciterSearch = () => {
     Id,
     arabicCh
   ) => {
+  
     playTrack(
       {
         id: Id,
@@ -153,10 +154,7 @@ const ReciterSearch = () => {
     }));
     setTrackList(trackList);
 
-
   };
-
-  
   const playAuto = () => {
     playTrack(
       {
@@ -169,6 +167,14 @@ const ReciterSearch = () => {
       },
       1
     );
+
+    const trackList = dataAudio.map((data) => ({
+      id: id,
+      title: chapters,
+      artist: name,
+      artistAR: arab_name,
+    }));
+    setTrackList(trackList);
   };
 
   //  Memoizing filtered data
@@ -195,7 +201,7 @@ const ReciterSearch = () => {
         ]}
       >
         <View style={styles.chapterSmall}>
-          <View style={{ width: 200 }}>
+          <View style={{ width: 200, }}>
             <Text
               style={[
                 styles.chapterTextSmall,
@@ -222,25 +228,27 @@ const ReciterSearch = () => {
           </View>
 
           {isPlaying ? (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={togglePlayback}
-                style={styles.playPauseButtonSmall}
-              >
-                <MaterialIcons name="pause" size={24} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={playAuto}
-                style={styles.playPauseButtonSmall}
-              >
-                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
+            <View>
+            <TouchableRipple
+              onPress={togglePlayback}
+              rippleColor="rgba(0, 209, 255, 0.2)"
+              style={styles.playPauseButton}
+              borderless={true}
+            >
+              <MaterialIcons name="pause" size={24} color="#00D1FF" />
+            </TouchableRipple>
+          </View>
+        ) : (
+          <View>
+            <TouchableRipple
+              onPress={playAuto}
+              rippleColor="rgba(0, 209, 255, 0.2)"
+              style={styles.playPauseButton}
+              borderless={true}
+            >
+              <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
+            </TouchableRipple>
+          </View>
           )}
         </View>
       </Animated.View>
@@ -272,7 +280,7 @@ const ReciterSearch = () => {
         >
           <View style={[styles.imageContainer, {}]}>
             <Image
-              contentFit="contain"
+              contentFit="cover"
               source={{
                 uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
               }}
@@ -351,12 +359,12 @@ const ReciterSearch = () => {
 
         {searchQuery.length > 1 ? (
           <FlashList
-            scrollEnabled={false}
+            
             contentContainerStyle={{
               paddingBottom: 150,
             }}
             data={memoizedFilteredData}
-            estimatedItemSize={50}
+            estimatedItemSize={70}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <SuratReader
@@ -381,11 +389,11 @@ const ReciterSearch = () => {
           />
         ) : (
           <FlashList
-            scrollEnabled={false}
+            
             contentContainerStyle={{
               paddingBottom: 150,
             }}
-            data={chapters}
+            data={memoizedChapters}
             estimatedItemSize={75}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -544,8 +552,8 @@ const { ids, styles } = StyleSheet.create({
     fontWeight: "bold",
   },
   playPauseButton: {
-    width: 45,
-    height: 45,
+    width: 48,
+    height: 48,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
@@ -578,5 +586,8 @@ const { ids, styles } = StyleSheet.create({
     },
   },
 });
+
+
+
 
 export default ReciterSearch;

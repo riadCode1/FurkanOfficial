@@ -19,7 +19,7 @@ const GlobalProvider = memo(({ children }) => {
   const [reciter, setReciter] = useState("");
   const [IDchapter, setIDchapter] = useState(0);
   const [reciterAR, setReciterAR] = useState("");
-  const [languages, setLanguages] = useState(true);
+  const [languages, setLanguages] = useState(false);
   const [idReader, setIDreader] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [chapterId, setChapterID] = useState(null);
@@ -166,7 +166,7 @@ const GlobalProvider = memo(({ children }) => {
     checkTrackEnd();
     return () => clearInterval(interval);
     
-  }, [position,duration,playNext,shuffle]);
+  }, [position,duration,playNext,shuffle,]);
 
 
 
@@ -187,7 +187,7 @@ const GlobalProvider = memo(({ children }) => {
   // Play a specific track
 
   const playTrack = async (track, index) => {
-    console.log(track,index)
+    console.log(track.index)
     
     setColor2(index);
     setColor(track.id);
@@ -232,7 +232,7 @@ const GlobalProvider = memo(({ children }) => {
     await TrackPlayer.play();
     setCurrentTrackIndex(index);
      setTrack(uri)
-    setCurrentTrack(track);
+    setCurrentTrack(track.index);
     setIsPlaying(true);
   };
 
@@ -240,7 +240,7 @@ const GlobalProvider = memo(({ children }) => {
 
   const playTrackSkip = async (track, index) => {
 
-    
+    console.log(index)
 
     setColor(track[index].artist[index].id);
     idReciterSaved(track[index].artist[index].id);
@@ -271,7 +271,7 @@ const GlobalProvider = memo(({ children }) => {
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
 
-    setCurrentTrack(track);
+    setCurrentTrack(index);
     setCurrentReciter(track[index].artist[index].id);
     setCurrentTrackIndex(index);
     setIsPlaying(true);
@@ -283,40 +283,46 @@ const GlobalProvider = memo(({ children }) => {
   // Play the next track
 
   const playNext = async () => {
-    const nextIndex = currentTrackIndex + 1;
-    const nextReciter = currentReciter;
-    const nextTrack = tracks[nextIndex - 1];
-    const nextTrackSkip = tracks;
+    console.log('track1')
+    const nextIndex = Number(currentTrackIndex)+1;
     
-    if (tracks.length === 114) {
+    const nextReciter =Number(currentTrack)+1;
+    const nextTrack = tracks[nextIndex ];
+    const nextTrackSkip = tracks;
+    const tracker =tracks[currentReciter].titleAR;
+    
+    
+    if (tracker === undefined) {
       await playTrack(nextTrack, nextIndex);
-      console.log("track",nextTrack);
+      console.log('track')
+     
+      
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter);
-      console.log("skipper");
+      console.log('skip')
     }
   };
 
   // Play the previous track
   const playPrevious = async () => {
     const nextIndex = currentTrackIndex - 1;
-    const nextReciter = currentReciter - 2;
+    const nextReciter = Number(currentTrack)- 1;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
   
     if (tracks.length === 114) {
       await playTrack(nextTrack, nextIndex);
-      console.log("track");
+     
     } else {
-      await playTrackSkip(nextTrackSkip, nextReciter - 1);
-      console.log("skipper");
+      await playTrackSkip(nextTrackSkip, nextReciter);
+      
     }
   };
 
   // Set the list of tracks
   const setTrackList = (trackList) => {
     setTracks(trackList);
-    console.log(trackList)
+    
     
     
   };

@@ -17,11 +17,14 @@
       "bundleIdentifier": "com.riadp1.Quran"
     },
     "android": {
+      
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
         "FOREGROUND_SERVICE",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
+         
+        
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -74,7 +77,6 @@
       "expo-font",
       [
         "expo-notifications"
-       
       ],
       "expo-video"
     ],
@@ -84,13 +86,13 @@
     "updates": {
       "url": "https://u.expo.dev/53349fe7-dd8a-4df8-a9c5-fe0fd5c0d96f"
     },
-    "owner": "riadp1996",
+    "owner": "riadp1",
     "extra": {
       "router": {
         "origin": "https://node-1-gtzm.onrender.com"
       },
       "eas": {
-        "projectId": "f8329f84-5542-459b-8e13-a532adc1dc41"
+        "projectId": "53349fe7-dd8a-4df8-a9c5-fe0fd5c0d96f"
       }
     }
   }

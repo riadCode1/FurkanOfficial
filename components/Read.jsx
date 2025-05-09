@@ -104,7 +104,8 @@ const Read = ({ id }) => {
 const {styles} = StyleSheet.create({
   container: { 
     
-    backgroundColor: "#FFF5C9",
+    backgroundColor: "#FFF9E4",
+    paddingVertical:200,
     paddingHorizontal: 16,
     paddingTop:16,
     '@media (min-width: 768px)': {
@@ -116,7 +117,7 @@ const {styles} = StyleSheet.create({
   },
   listContent: {
    
-    paddingBottom: (200),
+    
     paddingHorizontal:16
   },
   text: {

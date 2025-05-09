@@ -155,80 +155,80 @@ const playSound = (
       {playlist[0] ? (
         searchQuery.length > 1 ? (
           <FlatList
-            data={filteredData}
-            showsVerticalScrollIndicator={false}
-            estimatedItemSize={70}
-            keyExtractor={(item, index) => item?.id?.toString()}
-            contentContainerStyle={styles.flatlistContent}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  color2 === item.reciterID && idColor === item.id
-                    ? styles.Color
-                    : "",
-                ]}
+          data={playlist}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={70}
+          keyExtractor={(item, index) => item?.id?.toString()}
+          contentContainerStyle={styles.flatlistContent}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                color2 === item.reciterID && idColor === item.id
+                  ? styles.Color
+                  : "",
+              ]}
+            >
+              <TouchableRipple
+                onPress={() => {
+                  playSound(
+                    item?.reciterID,
+                    item?.id,
+                    item?.chapter,
+                    item?.reciterName,
+                    item?.arabName,
+                    item?.chapterAr
+                  ),
+                    setColor2(item.reciterID),
+                    setIdColor(item.id);
+                }}
+                activeOpacity={0.7}
+                rippleColor="rgba(200, 200, 200, 0.1)"
+                style={[styles.listItem]}
               >
-                <TouchableRipple
-                  onPress={() => {
-                    playSound(
-                      item?.reciterID,
-                      item?.id,
-                      item?.chapter,
-                      item?.reciterName,
-                      item?.arabName,
-                      item?.chapterAr
-                    ),
-                      setColor2(item.reciterID),
-                      setIdColor(item.id);
-                  }}
-                  activeOpacity={0.7}
-                  rippleColor="rgba(200, 200, 200, 0.1)"
-                  style={[styles.listItem]}
-                >
-                  <View style={[styles.itemContent]}>
-                    <View style={styles.buttonContent}>
-                      <View style={styles.imageContainer}>
-                        <Image
-                          resizeMode="cover"
-                          style={styles.image}
-                          source={{
-                            uri: dataArray[item?.reciterID]?.image
-                              ? dataArray[item?.reciterID]?.image
-                              : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBeNtIDXrucypAOP8APKT6-wuwPcJ8epwNvNMd4QbNlyWi9EfS",
-                          }}
-                        />
-                      </View>
-
-                      <View>
-                        <Text style={styles.chapterText}>
-                          {languages ? item.chapterAr : item?.chapter}
-                        </Text>
-
-                        <Text numberOfLines={1} style={styles.nameText}>
-                          {languages ? item.arabName : item?.reciterName}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.menuContainer}>
-                      <Dropmenu
-                        playSound={playSound}
-                        RemoveItem={true}
-                        dataSave={item}
-                        reciterName={item.reciterName}
-                        reciterID={item.reciterID}
-                        chapteID={item.id}
-                        arabName={item.arabName}
-                        chapter={item.chapter}
-                        chapterAr={item.chapterAr}
-                        Remove={Remove}
+                <View style={[styles.itemContent]}>
+                  <View style={styles.buttonContent}>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        resizeMode="cover"
+                        style={styles.image}
+                        source={{
+                          uri: dataArray[item?.reciterID]?.image
+                            ? dataArray[item?.reciterID]?.image
+                            : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBeNtIDXrucypAOP8APKT6-wuwPcJ8epwNvNMd4QbNlyWi9EfS",
+                        }}
                       />
                     </View>
+
+                    <View style={{alignItems:"flex-start"}}>
+                      <Text style={styles.chapterText}>
+                        {languages ? item.chapterAr : item?.chapter}
+                      </Text>
+
+                      <Text numberOfLines={1} style={styles.nameText}>
+                        {languages ? item.arabName : item?.reciterName}
+                      </Text>
+                    </View>
                   </View>
-                </TouchableRipple>
-              </View>
-            )}
-          />
+
+                  <View style={styles.menuContainer}>
+                    <Dropmenu
+                      playSound={playSound}
+                      RemoveItem={true}
+                      dataSave={item}
+                      reciterName={item.reciterName}
+                      reciterID={item.reciterID}
+                      chapteID={item.id}
+                      arabName={item.arabName}
+                      chapter={item.chapter}
+                      chapterAr={item.chapterAr}
+                      Remove={Remove}
+                    />
+                  </View>
+                </View>
+              </TouchableRipple>
+            </View>
+          )}
+        />
         ) : (<>
           <FlatList
             data={playlist}
@@ -320,8 +320,8 @@ const playSound = (
           <Text
             style={{ color: Colors.text, fontWeight: "600", marginTop: 20 }}
           >
-            {" "}
-            No Savings Yet
+            {languages?" لا يوجد مدخرات":" No Savings Yet"}
+           
           </Text>
         </View>
       )}

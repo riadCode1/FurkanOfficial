@@ -73,10 +73,10 @@ const Index = () => {
 
           <ScrollView
             horizontal
-            contentContainerStyle={{ gap: 10, paddingLeft: 16 }}
+            contentContainerStyle={{ gap: 10, paddingLeft: 16,paddingRight:16 }}
             showsHorizontalScrollIndicator={false}
           >
-            {quranData?.slice(2, 8).map((item) => (
+            {quranData?.slice(6,12).map((item) => (
               <ReaderCard
                 key={item.index}
                 item={item}
@@ -94,11 +94,11 @@ const Index = () => {
         {/* Chapters */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {languages ? "أفضل سور القرآن الكريم" : "Best Quran Chapters"}
+            {languages ? " سور القرآن الكريم" : "Quran Chapters"}
           </Text>
           <ScrollView
             horizontal
-            contentContainerStyle={{ gap: 10, paddingLeft: 16 }}
+            contentContainerStyle={{ gap: 10, paddingLeft: 16,paddingRight:16 }}
             showsHorizontalScrollIndicator={false}
           >
             {chapter?.slice(2, 8).map((item) => (

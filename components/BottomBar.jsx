@@ -2,11 +2,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   BackHandler,
 } from "react-native";
 import React, { useEffect, useMemo, useRef } from "react";
-import { Image } from "expo-image";
+import { Image, ImageBackground } from "expo-image";
+import StyleSheet from "react-native-media-query";
 import { dataArray } from "@/constants/RecitersImages";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
@@ -79,7 +79,7 @@ const BottomBar = ({
   };
 
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ["1%", "100%"], []);
+  const snapPoints = useMemo(() => [1, "100%"], []);
 
   const handleOpenBottomSheet = () => {
     bottomSheetRef.current?.expand();
@@ -87,10 +87,11 @@ const BottomBar = ({
 
   return (
     <>
-      <TouchableOpacity
-        activeOpacity={1}
+      <TouchableRipple
+        rippleColor="rgba(200, 200, 200, 0.1)"
         onPress={handleOpenBottomSheet}
         style={styles.container}
+        borderless
       >
         <View style={styles.row}>
           <TouchableRipple onPress={() => handleNavigate()}>
@@ -102,13 +103,14 @@ const BottomBar = ({
                     ? dataArray[idReader]?.image
                     : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
                 }}
-                contentFit="cover" // Adjusts the scaling of the image (similar to resizeMode)
-                // Optional: Placeholder image while loading
+                contentFit="cover"
               />
             </View>
           </TouchableRipple>
 
-          <View style={styles.textContainer}>
+
+                <View style={styles.playText}>
+                  <View style={styles.textContainer}>
             <Text style={styles.chapterText}>
               {languages ? arabicCH : chapterId}
             </Text>
@@ -116,22 +118,24 @@ const BottomBar = ({
               {languages ? reciterAR : name}
             </Text>
           </View>
-        </View>
 
-        <TouchableRipple
-          rippleColor="rgba(200, 200, 200, 0.1)"
-          onPress={togglePlayback}
-          borderRadius={20}
-          borderless
-          style={styles.iconButton}
-        >
-          {isPlaying ? (
-            <MaterialIcons name="pause" size={30} color="#00D1FF" />
-          ) : (
-            <MaterialIcons name="play-arrow" size={30} color="#00D1FF" />
-          )}
-        </TouchableRipple>
-      </TouchableOpacity>
+          <TouchableRipple
+            rippleColor="rgba(200, 200, 200, 0.1)"
+            onPress={togglePlayback}
+            borderRadius={20}
+            borderless
+            style={styles.iconButton}
+          >
+            {isPlaying ? (
+              <MaterialIcons name="pause" size={30} color="#00D1FF" />
+            ) : (
+              <MaterialIcons name="play-arrow" size={30} color="#00D1FF" />
+            )}
+          </TouchableRipple>
+                </View>
+          
+        </View>
+      </TouchableRipple>
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -140,20 +144,24 @@ const BottomBar = ({
         enableContentPanningGesture={true}
         enableHandlePanningGesture={true}
         overDragResistanceFactor={0}
-        backgroundStyle={{ backgroundColor: Colors.background }}
+        enableOverDrag={false}
+        
         handleComponent={() => <View style={styles.handleContainer}></View>}
       >
-        <BottomSheetView style={styles.sheetContent}>
+        <ImageBackground style={{width:"100%", height:"100%",borderTopLeftRadius:15,borderTopRightRadius:15,overflow:"hidden"}} source={require('../assets/images/SplashFK.png')}>
+           <BottomSheetView style={styles.sheetContent}>
           <Modals handleCloseBottomSheet={handleCloseBottomSheet} />
         </BottomSheetView>
+        </ImageBackground>
+       
       </BottomSheet>
     </>
   );
 };
 
-const styles = StyleSheet.create({
+const {styles} = StyleSheet.create({
   container: {
-    width: "95%",
+    marginHorizontal:8,
     position: "absolute",
     bottom: 85,
     flexDirection: "row",
@@ -170,6 +178,10 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    
+    width:"100%"
+    
+    
   },
 
   handleContainer: {
@@ -179,7 +191,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     backgroundColor: Colors.textTab,
-    borderRadius: 2,
+    
   },
   sheetContent: {
     flex: 1,
@@ -196,7 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 16,
     alignItems: "flex-start",
-    width: 210,
+    
   },
   chapterText: {
     fontSize: 16,
@@ -210,10 +222,18 @@ const styles = StyleSheet.create({
   iconButton: {
     justifyContent: "center",
     alignItems: "center",
-
     height: 58,
     width: 58,
   },
+  playText:{
+    justifyContent:"space-between",
+    flexDirection:"row",
+    alignItems:"center",
+    width:"82%",
+    "@media (min-width: 700px)": {
+      width:"90%",
+    },
+  }
 });
 
-export default BottomBar;
+export default BottomBar; 

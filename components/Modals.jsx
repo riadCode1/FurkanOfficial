@@ -1,17 +1,11 @@
 import { View, Text, TouchableOpacity, BackHandler } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-
-
 import { TouchableRipple } from "react-native-paper";
 import TrackPlayer, { useProgress } from "react-native-track-player";
-
 import StyleSheet from "react-native-media-query";
-import { Video } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
-import { Slider} from '@rneui/themed';
-
-import { router } from "expo-router";
+import { Slider } from '@rneui/themed'; 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../context/GlobalProvider";
 import Dropmenu from "./Dropmenu";
@@ -106,6 +100,7 @@ const Modals = ({handleCloseBottomSheet}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+     
       <View style={styles.header}>
         <TouchableRipple
           onPress={handleCloseBottomSheet}
@@ -131,9 +126,9 @@ const Modals = ({handleCloseBottomSheet}) => {
           <LinearGradient
             colors={[
               "transparent",
-              "rgba(24,26,60,1)",
+              "rgba(24,26,60,0.6)",
               
-              "rgba(24,26,60,0.5)",
+              "rgba(24,26,60,0.1)",
             ]}
             style={{
               width: "100%",
@@ -146,18 +141,19 @@ const Modals = ({handleCloseBottomSheet}) => {
             end={{ x: 0.5, y: 2 }}
           />
           <LinearGradient
+          
             colors={[
               "transparent",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
+              "rgba(146, 148, 180, 0.1)",
+              
+              "rgba(24,26,60,0.5)",
             ]}
             style={{
               width: "100%",
               height: 50,
               position: "absolute",
               zIndex: 1,
-              top: -30,
+              top: 0,
             }}
             start={{ x: 0.5, y: 1 }}
             end={{ x: 0.5, y: 0 }}
@@ -174,7 +170,13 @@ const Modals = ({handleCloseBottomSheet}) => {
                          // Optional: Placeholder image while loading
                        />
         </View>
-        <View style={styles.textContainer}>
+       
+      </View>
+
+      {/* Progress bar and time display */}
+      <View style={styles.progressContainer}>
+
+      <View style={styles.textContainer}>
           <Text style={styles.chapterText}>
             {languages ? arabicCH : chapterId}
           </Text>
@@ -182,10 +184,6 @@ const Modals = ({handleCloseBottomSheet}) => {
             {languages ? reciterAR : reciter}
           </Text>
         </View>
-      </View>
-
-      {/* Progress bar and time display */}
-      <View style={styles.progressContainer}>
         {/* Slider for progress */}
         <Slider
           value={position}
@@ -238,8 +236,9 @@ const Modals = ({handleCloseBottomSheet}) => {
             style={[
               {
                 backgroundColor:
-                  shuffle === true ? Colors.backgroundTint : "transparent",
-                padding: 10,
+                  shuffle === true ? "white" : "transparent",
+                padding: 5,
+                alignItems:"center",
                 borderRadius: 5,
               },
             ]}
@@ -253,8 +252,9 @@ const Modals = ({handleCloseBottomSheet}) => {
             style={[
               {
                 backgroundColor:
-                  shuffle === false ? Colors.backgroundTint : "transparent",
-                padding: 10,
+                  shuffle === false ? "white" : "transparent",
+                  padding: 5,
+                  alignItems:"center",
                 borderRadius: 5,
               },
             ]}
@@ -265,6 +265,24 @@ const Modals = ({handleCloseBottomSheet}) => {
           </TouchableOpacity>
         </View>
       </View>
+      <LinearGradient
+            colors={[
+              "transparent",
+              "rgb(118, 122, 204)",
+              
+              "rgba(24,26,60,0.1)",
+            ]}
+            style={{
+              width: "100%",
+              height: 120,
+              position: "absolute",
+              zIndex: -1,
+              bottom: 0,
+            }}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 2 }}
+          />
+      
     </SafeAreaView>
   );
 };
@@ -272,8 +290,10 @@ const Modals = ({handleCloseBottomSheet}) => {
 const { styles } = StyleSheet.create({
   container: {
     flex: 1,
-
-    backgroundColor: Colors.background,
+    
+    borderTopRightRadius: 100,
+    borderTopLeftRadius: 50,
+    
   },
   header: {
     width: "100%",
@@ -282,7 +302,7 @@ const { styles } = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: "space-between",
     alignItems: "center",
-    "@media (min-width: 700px)": {
+    "@media (min-width: 768px)": {
       paddingHorizontal: 32,
     },
   },
@@ -307,16 +327,20 @@ const { styles } = StyleSheet.create({
     alignItems: "center",
   },
   imageWrapper: {
-    width: "100%",
-    height: 294,
+    width: "90%",
+    height: "70%",
     alignItems: "center",
     "@media (min-width: 768ppx)": {
-      height: 600,
+      height: "75%",
+      
     },
   },
   image: {
     width: "100%",
     height: "100%",
+    borderWidth:3,
+    borderColor:Colors.blue,
+    borderRadius:10
   },
   textContainer: {
     alignItems: "center",
@@ -335,6 +359,14 @@ const { styles } = StyleSheet.create({
   progressContainer: {
     marginTop: 16,
     alignItems: "center",
+    position:"absolute",bottom:10,
+
+    "@media (min-height: 700px)": {
+      bottom: 42,
+    },
+
+    
+   
   },
   slider: {
     width: "90%",
@@ -352,7 +384,7 @@ const { styles } = StyleSheet.create({
   },
   controlsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between", 
     alignItems: "center",
     paddingHorizontal: 67,
     width: "100%",

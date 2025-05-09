@@ -63,7 +63,7 @@
     "react-native-awesome-slider": "^2.9.0",
     "react-native-config": "^1.5.5",
     "react-native-dotenv": "^3.4.11",
-    "react-native-gesture-handler": "~2.20.2",
+    "react-native-gesture-handler": "^2.24.0",
     "react-native-media-query": "^2.0.1",
     "react-native-modals": "^0.22.3",
     "react-native-paper": "^5.13.1",
@@ -75,7 +75,7 @@
     "react-native-track-player": "^4.1.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.18.0",
-    "react-native-webview": "13.12.5",
+    "react-native-webview": "^13.12.5",
     "shaka-player": "^4.13.8",
     "stripe": "^17.7.0"
   },

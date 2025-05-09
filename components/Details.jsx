@@ -1,93 +1,112 @@
-import { View, Text, ScrollView, Dimensions } from "react-native";
+import { View, Text, ScrollView, Dimensions, Linking } from "react-native";
 import React, { useEffect, useState } from "react";
 import StyleSheet from "react-native-media-query";
 import { useGlobalContext } from "../context/GlobalProvider";
 import RenderHTML from "react-native-render-html";
+import { Colors } from "../constants/Colors";
+import { fetChapterID } from "../app/API/QuranApi";
 let { width, height } = Dimensions.get("window");
 
-const Details = ({ info, id }) => {
-  const [surahs, setSurahs] = useState([]);
-  const { languages } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
+const Details = ({ id,languages }) => {
+ 
+  const [text, setText] = useState(null);
+  
 
   useEffect(() => {
-    const API_URL = `http://api.quran-tafseer.com/tafseer/4/${id}/1/`; // Removed extra space
+  getChapter(id)
+  }, []);
 
-    const getSurahs = async () => {
+   const getChapter = async (id) => {
+      // setLoading(true);
       try {
-        setLoading(true);
-        const response = await fetch(API_URL);
-
-        if (!response.ok) throw new Error("Failed to fetch data");
-
-        const data = await response.json();
-        setSurahs(data);
+        const data = await fetChapterID(id);
+       
+          setText(data.chapter);
+        
+       
       } catch (error) {
-        console.error("Error fetching Quran data:", error);
-        setError(error.message);
+        console.error("Error fetching chapters:", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
-    getSurahs();
-  }, [id]);
+ 
+ 
 
   return (
     <View style={styles.container}>
       {languages ? (
-        <Text style={styles.title}>تفاصيل السورة</Text>
+        <Text style={styles.title}>معلومات عن السورة</Text>
       ) : (
-        <Text style={styles.title}>About Chapter</Text>
+        <Text style={styles.title}>Chapter info</Text>
       )}
 
-      {languages ? (
+    {languages ? (
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.text}>{surahs.text}</Text>
+         
+            <View style={{gap:5}}>
+              <Text style={[styles.title,{fontSize:16}]}>الاسم: <Text style={styles.text} >{text?.name_arabic}</Text> </Text>
+              <Text style={[styles.title,{fontSize:16}]}> عدد الآيات: <Text style={styles.text} > {text?.verses_count}</Text> </Text>
+              <Text style={[styles.title,{fontSize:16}]}>عدد الصفحات :<Text style={styles.text}>{text?.pages?.[0]} - {text?.pages?.[1]}</Text></Text>
+              <Text style={[styles.title,{fontSize:16}]}>الترتيب الزمني للسورة: <Text style={styles.text} > {text?.revelation_order}</Text> </Text>
+              <Text style={[styles.title,{fontSize:16}]}>مكان الوحي:  <Text style={styles.text} >{text?.revelation_place === "makkah"
+                  ? languages? "مكة المكرمة" :"Makkah"
+                  : languages? "المدينة المنورة" :"Madinah"}</Text>
+              </Text>
+
+              <Text style={[styles.title,{fontSize:16}]}>
+               قم بزيارة هذا الرابط لمزيد من التفاصيل عن السورة
+                <Text
+                  style={{ color: Colors.blue,textDecorationLine:"underline",textDecorationStyle:"dotted" }}
+                  onPress={() =>
+                    Linking.openURL(
+                      `https://quran.com/surah/${id}/info`
+                    )
+                  }
+                > website  </Text>
+                  
+              
+              </Text>
+            </View>
+          
         </ScrollView>
       ) : (
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-        >
-          <RenderHTML
-            tagsStyles={{
-              h2: {
-                color: "#fff", // Orange color
-                fontSize: 18, // Larger font size
-                fontWeight: "bold", // Bold text
-                marginBottom: 10, // Add margin below the heading
-              },
-              h3: {
-                color: "#fff", // Orange color
-                fontSize: 18, // Larger font size
-                fontWeight: "bold", // Bold text
-                marginBottom: 10, // Add margin below the heading
-              },
-              ol: {
-                color: "#fff", // Orange color
-                fontSize: 14, // Font size
-                lineHeight: 24,
-              },
-              p: {
-                color: "#fff", // Dark gray color
-                fontSize: 14, // Font size
-                lineHeight: 24, // Line height for better readability
-              },
-              a: {
-                color: "#fff", // Dark gray color
-                fontSize: 14, // Font size
-                lineHeight: 24, // Line height for better readability
-              },
-            }}
-            contentWidth={300} // Width of the content area
-            source={{ html: info }}
-          />
-        </ScrollView>
-      )}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+       
+          <View style={{gap:5}}>
+            <Text style={[styles.title,{fontSize:16}]}>Name: <Text style={styles.text}>{text?.name_simple}</Text></Text>
+            <Text style={[styles.title,{fontSize:16}]}>Number of Ayahs: <Text style={styles.text}>{text?.verses_count}</Text></Text>
+            <Text style={[styles.title,{fontSize:16}]}>Number of pages :<Text style={styles.text}>{text?.pages?.[0]} - {text?.pages?.[1]}</Text></Text>
+            <Text style={[styles.title,{fontSize:16}]}>The chronological order of surah: <Text style={styles.text} > {text?.revelation_order}</Text> </Text>
+            <Text style={[styles.title,{fontSize:16}]}>Revelation place: <Text style={styles.text}>
+              {text?.revelation_place === "Meccan"
+                ? "Mecca"
+                : "Medina"}
+            </Text>
+            </Text>
+      
+            <Text style={[styles.title,{fontSize:16}]}>
+              Visit this link for more details about the Surah
+              <Text
+                style={{ color: Colors.blue, textDecorationLine: "underline", textDecorationStyle: "dotted" }}
+                onPress={() =>
+                  Linking.openURL(
+                    `https://quran.com/surah/${id}/info`
+                  )
+                }
+              > website </Text>
+            </Text>
+          </View>
+      
+      </ScrollView>
+      )} 
     </View>
   );
 };
@@ -107,7 +126,8 @@ const { styles } = StyleSheet.create({
     color: "white",
   },
   scrollView: {
-    paddingBottom: 200, // Adjust the height as needed
+    paddingBottom: 50,
+    marginTop:20 // Adjust the height as needed
   },
   scrollContent: {
     paddingBottom: height * 0.2,
@@ -115,6 +135,7 @@ const { styles } = StyleSheet.create({
   text: {
     color: "#D1D1D1", // Gray color for the text
     fontSize: 14,
+    fontWeight:500
   },
 });
 

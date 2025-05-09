@@ -22,6 +22,7 @@ const Listen = ({
   const [audioUri, setAudioUri] = useState(null);
   const [mp3, setMp3] = useState(null);
   const flashListRef = useRef(null);
+  const [i, setI] = useState(null);
 
  
 
@@ -43,7 +44,7 @@ const Listen = ({
   };
 
   // Handle reciter selection
-  const handleReciterSelect = async (reciterId) => {
+  const handleReciterSelect = async (reciterId,index) => {
     playTrack(
       {
         id: reciterId,
@@ -54,9 +55,17 @@ const Listen = ({
         artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
           .name,
         titleAR: chapterAr,
+        index
       },
       Chapterid
     );
+    const trackList = quranData.map((data) => ({
+      id: Chapterid,
+      titleAR: chapterAr,
+      title: chapterName,
+      artist: quranData,
+    }));
+    setTrackList(trackList);
   };
 
   const handleReciterDrop = async (reciterId) => {
@@ -68,13 +77,7 @@ const Listen = ({
 
   // Play on the Background
   useEffect(() => {
-    const trackList = quranData.map((data) => ({
-      id: Chapterid,
-      titleAR: chapterAr,
-      title: chapterName,
-      artist: quranData,
-    }));
-    setTrackList(trackList);
+    // 
   }, [searchQuery, Chapterid, quranData, chapterName]);
 
   const handleClick = useCallback(
@@ -102,10 +105,11 @@ const Listen = ({
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
-        keyExtractor={(item) => item.id} // No need for toString() if id is already a string
-        renderItem={({ item }) => (
+        keyExtractor={( item) => item.id?.toString()} // No need for toString() if id is already a string
+        renderItem={({ item, index  }) => (
           <ListenComp
             id={item.id}
+            index={index}
             loading={loading}
             handleReciterSelect={handleReciterSelect}
             arabName={item?.translated_name.name}

@@ -9,6 +9,7 @@ const setupPlayer = async () => {
 		autoUpdateMetadata: false,
 		
 		
+		
 	})
 
 	await TrackPlayer.updateOptions({
@@ -55,7 +56,7 @@ const setupPlayer = async () => {
 
 	await TrackPlayer.setVolume(0.5) // not too loud
 	await TrackPlayer.setRepeatMode(RepeatMode.Track)
-
+	
 	
 }
 

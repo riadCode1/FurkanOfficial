@@ -8,6 +8,7 @@ import {
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import {MaterialIcons} from "@expo/vector-icons";
 let { width, height } = Dimensions.get("window");
 import { View, Text, Animated } from "react-native";
 import SearchBar from "../../../components/SearchBar";
@@ -22,7 +23,6 @@ import { TouchableRipple } from "react-native-paper";
 import StyleSheet from "react-native-media-query";
 import { RFValue } from "react-native-responsive-fontsize";
 import { ImageBackground } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 
 const HEADER_MAX_HEIGHT = height * 0.65;
 const HEADER_MIN_HEIGHT = height * 0.3;
@@ -57,10 +57,11 @@ const ReaderSearch = () => {
 
   const [activeButton, setActiveButton] = useState("button1");
 
-  const [chapterInfo, setchapterInfo] = useState([]);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [quranData, setQuranData] = useState([]);
+ 
 
   const flashListRef = useRef(null);
 
@@ -72,48 +73,64 @@ const ReaderSearch = () => {
 
   useEffect(() => {
     getReciter();
-    getChapterInfo(Chapterid);
+   
   }, []);
 
+
+  //get surah info
+
+  
+
   const getReciter = async () => {
-    const data = await fetchSuwar();
-
-    // Example of hardcoded data (NewData)
-
-    if (data && data.recitations) {
-      const idSet = new Set();
-
-      const uniqueFetchedData = data.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) {
-          return false;
-        }
-        idSet.add(reciter.id);
-        return true;
-      });
-
-      const uniqueNewData = NewData.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) {
-          return false;
-        }
-        idSet.add(reciter.id);
-
-        return true;
-      });
-
-      const combinedData = [...uniqueFetchedData, ...uniqueNewData];
-
-      const filteredData = combinedData.filter(
-        (item) => item.id !== 10 && item.status !== "inactive"
-      ); // Example conditions
-
-      setQuranData(filteredData.splice(2));
+    try {
+      const data = await fetchSuwar();
+      
+      if (!data?.recitations || !NewData?.recitations) {
+        console.warn("Missing recitations data");
+        return;
+      }
+  
+      // Create a Map to ensure unique IDs
+      const uniqueReciters = new Map();
+  
+      // Helper function to process recitations
+      const processRecitations = (recitations) => {
+        recitations.forEach(reciter => {
+          // Skip if reciter is invalid or has inactive status
+          if (!reciter?.id || reciter.status === "inactive") return;
+          
+          // Only add if ID doesn't exist
+          if (!uniqueReciters.has(reciter.id)) {
+            uniqueReciters.set(reciter.id, reciter);
+          }
+        });
+      };
+  
+      // Process both data sources
+      processRecitations(data.recitations);
+      processRecitations(NewData.recitations);
+  
+      // Convert to array, filter, sort, and add position
+      const filteredData = Array.from(uniqueReciters.values())
+        .filter(item => item.id !== 8)
+        .sort((a, b) => a.id - b.id) // Sort by ID to ensure consistent order
+        .map((item, index) => ({
+          ...item,
+          position: index + 1 // Add 1-based position number
+        }));
+  
+      setQuranData(filteredData);
+      
+      // For debugging:
+      console.log('Processed data:', filteredData.map(item => 
+        `Pos: ${item.position}, ID: ${item.id}, Name: ${item.name}`));
+        
+    } catch (error) {
+      console.error("Error fetching reciters:", error);
+      // Optionally set error state here
     }
   };
-
-  const getChapterInfo = async (id) => {
-    const data = await fetChapterInfo(id);
-    if (data && data.chapter_info) setchapterInfo(data.chapter_info);
-  };
+  
 
   const handleButtonPress = (button) => {
     setActiveButton(button);
@@ -123,6 +140,7 @@ const ReaderSearch = () => {
     return activeButton === button ? "#00D1FF" : "transparent";
   };
 
+  //search Query
   useEffect(() => {
     if (searchQuery.length > 1) {
       fetchSuwar(searchQuery)
@@ -213,25 +231,27 @@ const ReaderSearch = () => {
           </View>
 
           {isPlaying ? (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={togglePlayback}
-                style={styles.playPauseButtonSmall}
-              >
-                <MaterialIcons name="pause" size={24} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={{}}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => PlayAuto(1)}
-                style={styles.playPauseButtonSmall}
-              >
-                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-              </TouchableOpacity>
-            </View>
+            <View>
+            <TouchableRipple
+              onPress={togglePlayback}
+              rippleColor="rgba(0, 209, 255, 0.2)"
+              style={styles.playPauseButton}
+              borderless={true}
+            >
+              <MaterialIcons name="pause" size={24} color="#00D1FF" />
+            </TouchableRipple>
+          </View>
+        ) : (
+          <View>
+            <TouchableRipple
+              onPress={() => PlayAuto(1)}
+              rippleColor="rgba(0, 209, 255, 0.2)"
+              style={styles.playPauseButton}
+              borderless={true}
+            >
+              <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
+            </TouchableRipple>
+          </View>
           )}
         </View>
       </Animated.View>
@@ -352,7 +372,7 @@ const ReaderSearch = () => {
                 style={styles.button}
               >
                 <Text style={styles.buttonText}>
-                  {languages ? "تفاصيل " : "Details"}
+                  {languages ? "معلومات " : "Info"}
                 </Text>
                 <View
                   style={[
@@ -412,7 +432,8 @@ const ReaderSearch = () => {
           <Details
             scrollY={scrollY}
             languages={languages}
-            info={chapterInfo.text}
+            
+            
             id={Chapterid}
           />
         )}
@@ -551,13 +572,13 @@ const { styles } = StyleSheet.create({
     width: width * 0.6,
   },
   playPauseButton: {
-    width: 45,
-    height: 45,
+    width: 48,
+    height: 48,
     backgroundColor: "#454B8C",
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    top: 5,
+    
   },
 
   playPauseButtonSmall: {
@@ -619,5 +640,7 @@ const { styles } = StyleSheet.create({
     zIndex: 2,
   },
 });
+
+
 
 export default ReaderSearch;

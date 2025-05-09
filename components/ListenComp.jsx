@@ -20,12 +20,14 @@ const ListenComp = React.memo(({
   chapterName,
   chapterAr,
   Chapterid,
+  index,
   handleClick
 }) => {
    const {
       color,
       loading
     } = useGlobalContext();
+   
 
   // Memoize formatted names
   const formattedName = useMemo(() => {
@@ -48,7 +50,9 @@ const ListenComp = React.memo(({
       <TouchableRipple
         onPress={() => {
           handleClick(id);
-          handleReciterSelect(id);
+          handleReciterSelect(id,index);
+          
+         
         }}
         activeOpacity={0.7}
         rippleColor="rgba(200, 200, 200, 0.1)"

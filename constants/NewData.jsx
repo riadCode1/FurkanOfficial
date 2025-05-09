@@ -167,15 +167,7 @@ export const NewData = {
       
      
 
-      {
-        id: 53,
-        reciter_name: "Muhammad Al-Luhaidan",
-        style: "Murattal",
-        translated_name: {
-          name: "محمد اللحيدان",
-          language_name: "arabic",
-        },
-      },
+     
 
       {
         id: 53,
@@ -340,21 +332,23 @@ export const NewData = {
            },
          },
 
-        //  {
-        //   id: 162,
-        //   reciter_name: "juhaini",
-        //   style: "Murattal",
-        //   translated_name: {
-        //     name: " عبد الله بصفر",
-        //     language_name: "arabic",
-        //   },
-        // },
+         
          {
           id: 163,
           reciter_name: "Abdullah Basfar",
           style: "Murattal",
           translated_name: {
             name: " عبد الله بصفر",
+            language_name: "arabic",
+          },
+        },
+
+        {
+          id: 170,
+          reciter_name: "Khaled Al Jalil",
+          style: "Murattal",
+          translated_name: {
+            name: "خالد الجليل",
             language_name: "arabic",
           },
         },

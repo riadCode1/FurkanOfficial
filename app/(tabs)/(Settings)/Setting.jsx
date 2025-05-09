@@ -9,6 +9,7 @@
    Button,
    Alert,
    TextInput,
+   Linking,
  } from "react-native";
 
  import React, { useEffect, useState } from "react";
@@ -32,64 +33,69 @@
      const { initPaymentSheet, presentPaymentSheet, loading } = usePaymentSheet();
    const [load, setLoading] = useState(false);
 
-     const API_URL = "https:node-1-gtzm.onrender.com";
+    //  const API_URL = "https://node-yjsv.onrender.com";
 
-     const fetchPaymentSheetParams = async () => {
-       const response = await fetch(`${API_URL}/payment-sheet`, {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           amount: Math.round(parseFloat(payableAmount) * 100),
-         }),
-       });
-       console.log(response);
-       const { paymentIntent, ephemeralKey, customer } = await response.json();
+    //  const fetchPaymentSheetParams = async () => {
+    //    const response = await fetch(`${API_URL}/payment-sheet`, {
+    //      method: "POST",
+    //      headers: {
+    //        "Content-Type": "application/json",
+    //      },
+    //      body: JSON.stringify({
+    //        amount: Math.round(parseFloat(payableAmount) * 100),
+    //      }),
+    //    });
+    //    console.log(response);
+    //    const { paymentIntent, ephemeralKey, customer } = await response.json();
 
-       return {
-         paymentIntent,
-         ephemeralKey,
-         customer,
-       };
-     };
+    //    return {
+    //      paymentIntent,
+    //      ephemeralKey,
+    //      customer,
+    //    };
+    //  };
 
-     const initializePaymentSheet = async () => {
+    //  const initializePaymentSheet = async () => {
      
-       const { paymentIntent, ephemeralKey, customer } =
-         await fetchPaymentSheetParams();
+    //    const { paymentIntent, ephemeralKey, customer } =
+    //      await fetchPaymentSheetParams();
 
-       const { error } = await initPaymentSheet({
-         merchantDisplayName: "riad zer",
-         customerId: customer,
-         customerEphemeralKeySecret: ephemeralKey,
-         paymentIntentClientSecret: paymentIntent,
+    //    const { error } = await initPaymentSheet({
+    //      merchantDisplayName: "riad zer",
+    //      customerId: customer,
+    //      customerEphemeralKeySecret: ephemeralKey,
+    //      paymentIntentClientSecret: paymentIntent,
          
-         allowsDelayedPaymentMethods: true,
-         defaultBillingDetails: {
-           name: "riad Doe",
-         },
-       });
-       if (!error) {
-         setLoading(true);
-       }
-       setLoading(false)
-     };
+    //      allowsDelayedPaymentMethods: true,
+    //      defaultBillingDetails: {
+    //        name: "riad Doe",
+    //      },
+    //    });
+    //    if (!error) {
+    //      setLoading(true);
+    //    }
+    //    setLoading(false)
+    //  };
 
-     const openPaymentSheet = async () => {
-       const { error } = await presentPaymentSheet();
+    //  const openPaymentSheet = async () => {
+    //    const { error } = await presentPaymentSheet();
 
-       if (error) {
+    //    if (error) {
          
-       } else {
-         Alert.alert(
-           languages?"تم":"Success",
-           languages
-             ? " 🕊️بارك الله لك في مالك وأهلك وولدك "
-             : "May Allah bless you in your wealth, your family, and your children.🕊️"
-         );
-       }
-     };
+    //    } else {
+    //      Alert.alert(
+    //        languages?"تم":"Success",
+    //        languages
+    //          ? " 🕊️بارك الله لك في مالك وأهلك وولدك "
+    //          : "May Allah bless you in your wealth, your family, and your children.🕊️"
+    //      );
+    //    }
+    //  };
+     
+    //  useEffect(() => {
+    //   initializePaymentSheet()
+    //  }, [])
+     
 
    return (
      <SafeAreaView style={styles.container}>
@@ -127,7 +133,7 @@
              </View>
 
              <TouchableOpacity
-               onPress={() => setIsVisible(true)}
+               onPress={() => Linking.openURL('https://www.paypal.com/ncp/payment/N47ELNDDGHLVC')}
                style={styles.donateButton}
              >
                <Text style={styles.donateButtonText}>
@@ -215,7 +221,7 @@
            </View>
          </TouchableRipple>
 
-         <Modal
+         {/* <Modal
            visible={isVisible}
            animationType="slide"
            transparent={true}
@@ -270,7 +276,7 @@
                </View>
              </View>
            </View>
-         </Modal>
+         </Modal> */}
        </ScrollView>
      </SafeAreaView>
    );
@@ -305,7 +311,7 @@
    imageBackground: {
      width: "100%",
      height: "100%",
-     alignSelf: "center",
+     
    },
    imageContent: {
      alignItems: "center",
@@ -330,12 +336,12 @@
      textAlign: "center",
    },
    donateButton: {
-     width: 310,
+     width: "50%",
      height: 40,
      justifyContent: "center",
      alignItems: "center",
      backgroundColor: "#00BCE5",
-     borderRadius: 24,
+     borderRadius: 20,
      marginTop: 20,
      alignSelf: "center",
    },
@@ -353,13 +359,15 @@
      flexDirection: "row",
      alignItems: "center",
      justifyContent: "space-between",
-     paddingHorizontal: 20,
+     paddingHorizontal: 16,
      width: "100%",
+     
    },
    optionTextContainer: {
      flexDirection: "row",
      gap: 12,
      alignItems: "center",
+     
    },
    optionText: {
      fontSize: 18,
@@ -369,7 +377,8 @@
    modalContainer: {
      justifyContent: "center",
      alignItems: "center",
-     backgroundColor: "rgba(0,0,0,0.5)",
+    
+     height:"100%"
    },
    modalContent: {
      width: "80%",

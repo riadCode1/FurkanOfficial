@@ -18,21 +18,21 @@
       }
     },
     "preview": {
-      // "distribution": "internal",
-      // "channel": "preview",
-      "android": {
-        "buildType": "apk"
-      }
+       "distribution": "internal"
+     
         },
     "production": {
-      
-      "distribution": "internal",
-      "channel": "production"
-     
-
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {}
+    
+    "production": {
+      
+      "android": {
+        "serviceAccountKeyPath": "./FurkanApp.json",
+        "track": "internal"
+      }
+    }
   }
 }

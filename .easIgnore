@@ -11,7 +11,7 @@ dist/
 web-build/
 expo-env.d.ts
 
-FurkanApp.json
+
 
 # Native
 *.orig.*

@@ -89,7 +89,7 @@ const Search = () => {
   const handlePress = (item) => {
     if (item.name_simple) {
       router.push({
-        pathname: `/Readers/`,
+        pathname: `/ReadersSearch/`,
         params: {
           Chapterid: item.id,
           chapter_arab: item.name_arabic,
@@ -137,7 +137,7 @@ const Search = () => {
             renderItem={({ item }) => (
               <TouchableRipple
                 activeOpacity={1}
-                rippleColor="rgba(53, 53, 151, 0.5)"
+                 rippleColor="rgba(200, 200, 200, 0.1)"
                 onPress={() => handlePress(item)}
                 style={styles.touchable}
               >
@@ -267,16 +267,13 @@ const { styles } = StyleSheet.create({
   flatlistContainer: {
     paddingBottom: 200,
   },
-  resultItemContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-  },
+  
   touchable: {
     flexDirection: "row",
     gap: 12,
     alignItems: "center",
-    height: 65,
+    
+    paddingVertical: 12,
     width: "100%",
     paddingHorizontal: 16,
     "@media (min-width: 768px)": {
@@ -297,7 +294,8 @@ const { styles } = StyleSheet.create({
     overflow: "hidden",
   },
   textContainer: {
-    justifyContent: "flex-start",
+    justifyContent: "center",
+    
   },
   nameText: {
     fontSize: 16,
@@ -307,6 +305,7 @@ const { styles } = StyleSheet.create({
   arabicText: {
     fontSize: 14,
     color: "white",
+    textAlign:"left"
   },
   dropmenuContainer: {
     justifyContent: "center",
