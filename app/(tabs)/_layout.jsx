@@ -14,7 +14,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Colors } from "../../constants/Colors";
 import NetInfo from "@react-native-community/netinfo";
 import { TouchableRipple } from "react-native-paper";
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions, Platform } from 'react-native';
 
 export default function Layout() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -22,6 +23,13 @@ export default function Layout() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertVisible2, setAlertVisible2] = useState(false);
   const { loading, setloading } = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
+const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
+
+const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
 
   
 
@@ -84,30 +92,29 @@ export default function Layout() {
   return (
     <View style={{ flex: 1 }}>
       {/* Tabs Component */}
-      <Tabs
-        screenOptions={{
-          tabBarLabelPosition: "below-icon",
-          tabBarActiveTintColor: Colors.blue,
-          tabBarInactiveTintColor: Colors.textTab,
-          tabBarLabelStyle: {
-            fontSize: 12,
-            // Use your custom font
-          },
-          headerShown: false,
+     <Tabs
+  screenOptions={{
+    tabBarLabelPosition: "below-icon",
+    tabBarActiveTintColor: Colors.blue,
+    tabBarInactiveTintColor: Colors.textTab,
+    tabBarLabelStyle: {
+      fontSize: 12,
+    },
+    headerShown: false,
+   
 
-          tabBarStyle: {
-            display: isKeyboardVisible ? "none" : "flex",
-            height: 74,
-            position: "absolute",
-            alignItems: "center",
-            borderTopWidth: 0,
-            elevation: 50,
-
-            flex: 1,
-            backgroundColor: Colors.barbottom,
-          },
-        }}
-      >
+    tabBarStyle: {
+      display: isKeyboardVisible ? "none" : "flex",
+      height: TAB_BAR_HEIGHT + insets.bottom, // Fixed height + bottom padding
+      paddingBottom: insets.bottom, // Ensure it's not hidden behind gesture bar
+      backgroundColor: Colors.barbottom,
+      borderTopWidth: 0,
+      position: 'absolute',
+      elevation: 50,
+      alignItems: 'center',
+    },
+  }}
+>
         {/* Home Tab */}
         <Tabs.Screen
           name="(Home)"
@@ -275,6 +282,7 @@ export default function Layout() {
 
       {/* Component on top of Tabs */}
 
+    
       {isKeyboardVisible ? (
         ""
       ) : (

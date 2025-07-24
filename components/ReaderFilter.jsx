@@ -63,7 +63,7 @@ const ReaderFilter = () => {
   return (
     <View style={styles.container}>
       <FlashList
-        contentContainerStyle={{ paddingBottom: 450 }}
+        contentContainerStyle={{ paddingBottom: 320 }}
         data={reader}
         showsVerticalScrollIndicator={false}
         estimatedItemSize={75}

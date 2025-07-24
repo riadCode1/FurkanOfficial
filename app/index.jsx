@@ -20,7 +20,7 @@ const Index = () => {
   
 
   return (
-    <>
+    
       
     <ImageBackground
       contentFit="cover"
@@ -37,7 +37,7 @@ const Index = () => {
           source={require("../assets/images/logoIndex.png")}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Furqan</Text>
+          <Text style={styles.title}>Furkan</Text>
           <Image
             style={styles.arabicText}
             resizeMode="contain"
@@ -46,7 +46,7 @@ const Index = () => {
         </View>
       </View>
     </ImageBackground>
-    </>
+   
   );
 };
 

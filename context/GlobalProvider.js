@@ -37,24 +37,29 @@ const GlobalProvider = memo(({ children }) => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
   const [color, setColor] = useState(0);
   const [color2, setColor2] = useState(0);
-  const [loading, setloading] = useState(false)
-  const [track, setTrack] = useState(null)
+  const [loading, setloading] = useState(false);
+  const [track, setTrack] = useState(null);
 
-
-
- useEffect(() => {
+  useEffect(() => {
     const initializeState = async () => {
       try {
-        const [savedChecked, savedReciter, savedChapter, savedIdReader,savedReciterAR,savedChapterID,savedChapterAr] =
-          await Promise.all([
-            AsyncStorage.getItem("checked"),
-            AsyncStorage.getItem("reciter"),
-            AsyncStorage.getItem("chapterId"),
-            AsyncStorage.getItem("idReader"),
-            AsyncStorage.getItem("reciterAR"),
-            AsyncStorage.getItem("idChapter"),
-            AsyncStorage.getItem("chapterAR"),
-          ]);
+        const [
+          savedChecked,
+          savedReciter,
+          savedChapter,
+          savedIdReader,
+          savedReciterAR,
+          savedChapterID,
+          savedChapterAr,
+        ] = await Promise.all([
+          AsyncStorage.getItem("checked"),
+          AsyncStorage.getItem("reciter"),
+          AsyncStorage.getItem("chapterId"),
+          AsyncStorage.getItem("idReader"),
+          AsyncStorage.getItem("reciterAR"),
+          AsyncStorage.getItem("idChapter"),
+          AsyncStorage.getItem("chapterAR"),
+        ]);
 
         if (savedChecked) {
           setChecked(savedChecked);
@@ -65,7 +70,7 @@ const GlobalProvider = memo(({ children }) => {
         if (savedChapter) setChapterID(savedChapter);
         if (savedIdReader) setIDreader(Number(savedIdReader));
         if (savedChapterID) setIDchapter(Number(savedChapterID));
-        if (savedChapterAr) setArabicCH(savedChapterAr)
+        if (savedChapterAr) setArabicCH(savedChapterAr);
       } catch (error) {
         console.error("Error loading data from AsyncStorage:", error);
       }
@@ -150,6 +155,8 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
+  //progress
+
   useEffect(() => {
     const updateProgress = async () => {
       const progress = await TrackPlayer.getProgress();
@@ -157,19 +164,18 @@ const GlobalProvider = memo(({ children }) => {
       setDuration(progress.duration);
     };
 
-    const checkTrackEnd = async () => {
-      if (shuffle && position > 0 && duration > 0 && position >= duration) {
-        await playNext(); // Play the next track when the current one ends
+    console.log(duration,position,shuffle)
+
+    const checkTrackEnd =  () => {
+      
+      if (shuffle === true  && position >= duration) {
+         playNext(); // Play the next track when the current one ends
       }
     };
     const interval = setInterval(updateProgress, 1000);
     checkTrackEnd();
     return () => clearInterval(interval);
-    
-  }, [position,duration,playNext,shuffle,]);
-
-
-
+  }, [position, duration, shuffle]);
 
   const getAudio = useCallback(async (reciterId, chapterId) => {
     try {
@@ -184,16 +190,16 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
-  // Play a specific track
+  // //this for chapters skip or play
 
   const playTrack = async (track, index) => {
-    console.log(track.index)
-    
+    console.log("index", index);
+
     setColor2(index);
     setColor(track.id);
     idReciterSaved(track.id);
     setCurrentReciter(track.id);
-    
+
     chapterSaved(
       track.title ? track.title[index - 1].name_simple : track.chapter
     );
@@ -203,12 +209,9 @@ const GlobalProvider = memo(({ children }) => {
     reciterSaved(track.artist);
     reciterARSaved(track.artistAR);
     idChapterSaved(index);
-    
 
-     await TrackPlayer.reset();
+    await TrackPlayer.reset();
     const uri = await getAudio(track.id, index);
-   
-    
 
     const tracker = {
       id: track.id,
@@ -222,51 +225,41 @@ const GlobalProvider = memo(({ children }) => {
         : track.chapter,
       artist: languages ? track.artistAR : track.artist,
       // artwork:require("../assets/images/icon.png")
-       artwork: track.id
-         ? dataArray[track.id].image
-         : require("../assets/images/icon.png"),
-       
+      artwork: track.id
+        ? dataArray[track.id].image
+        : require("../assets/images/icon.png"),
     };
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
     setCurrentTrackIndex(index);
-     setTrack(uri)
+    setTrack(uri);
     setCurrentTrack(track.index);
     setIsPlaying(true);
   };
 
-  
-
+  //this for readers skip
   const playTrackSkip = async (track, index) => {
-
-    console.log(index)
-
     setColor(track[index].artist[index].id);
     idReciterSaved(track[index].artist[index].id);
-    reciterSaved( track[index].artist[index].reciter_name);
+    reciterSaved(track[index].artist[index].reciter_name);
     chapterSaved(track[index].title);
-    chapterArSaved(track[index].titleAR)
-    reciterARSaved(track[index].artist[index].translated_name.name)
+    chapterArSaved(track[index].titleAR);
+    reciterARSaved(track[index].artist[index].translated_name.name);
 
-     await TrackPlayer.reset();
+    await TrackPlayer.reset();
     const uri = await getAudio(track[index].artist[index].id, track[index].id);
-
-    
- 
 
     const tracker = {
       id: track[index].artist[index].id,
       url: uri, // or a remote URL
-      title: languages? track[index].titleAR:track[index].title,   
-      artist: languages? track[index].artist[index].translated_name.name : track[index].artist[index].reciter_name,
+      title: languages ? track[index].titleAR : track[index].title,
+      artist: languages
+        ? track[index].artist[index].translated_name.name
+        : track[index].artist[index].reciter_name,
       // artwork:require("../assets/images/icon.png")
-       artwork: dataArray[track[index].artist[index].id].image,
-       
-        
-      
+      artwork: dataArray[track[index].artist[index].id].image,
     };
-    
 
     await TrackPlayer.add(tracker);
     await TrackPlayer.play();
@@ -275,56 +268,43 @@ const GlobalProvider = memo(({ children }) => {
     setCurrentReciter(track[index].artist[index].id);
     setCurrentTrackIndex(index);
     setIsPlaying(true);
-   
-    
-    
   };
 
   // Play the next track
 
   const playNext = async () => {
-    console.log('track1')
-    const nextIndex = Number(currentTrackIndex)+1;
-    
-    const nextReciter =Number(currentTrack)+1;
-    const nextTrack = tracks[nextIndex ];
+    const nextIndex = currentTrackIndex + 1;
+    const nextReciter = Number(currentTrack) + 1;
+    const nextTrack = tracks[nextIndex + 1];
     const nextTrackSkip = tracks;
-    const tracker =tracks[currentReciter].titleAR;
-    
-    
-    if (tracker === undefined) {
+     console.log(tracks.length)
+
+    if (tracks.length >= 112 ) {
       await playTrack(nextTrack, nextIndex);
-      console.log('track')
-     
-      
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter);
-      console.log('skip')
     }
   };
 
   // Play the previous track
   const playPrevious = async () => {
     const nextIndex = currentTrackIndex - 1;
-    const nextReciter = Number(currentTrack)- 1;
+    const nextReciter = Number(currentTrack) - 1;
     const nextTrack = tracks[nextIndex - 1];
     const nextTrackSkip = tracks;
-  
-    if (tracks.length === 114) {
+    console.log(tracks.length)
+
+    if (tracks.length >= 112 ) {
       await playTrack(nextTrack, nextIndex);
-     
     } else {
       await playTrackSkip(nextTrackSkip, nextReciter);
-      
     }
+  
   };
 
   // Set the list of tracks
   const setTrackList = (trackList) => {
     setTracks(trackList);
-    
-    
-    
   };
 
   // Toggle playback (play/pause)
@@ -380,10 +360,14 @@ const GlobalProvider = memo(({ children }) => {
         setTrackList,
         isPlaying,
         setIsPlaying,
-        color, setColor,
-        color2, setColor2,
-        loading, setloading,
-        track, setTrack
+        color,
+        setColor,
+        color2,
+        setColor2,
+        loading,
+        setloading,
+        track,
+        setTrack,
       }}
     >
       {children}

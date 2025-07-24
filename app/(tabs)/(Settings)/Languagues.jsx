@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RadioButton, TouchableRipple } from "react-native-paper";
@@ -7,17 +7,31 @@ import { Colors } from "../../../constants/Colors";
 import StyleSheet from "react-native-media-query";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import * as Updates from 'expo-updates';
+
+
 const Languagues = () => {
   const { languages, checked, saveCheck, setLanguages } = useGlobalContext();
 
-  const handleFirst = () => {
+  const handleFirst =async () => {
     setLanguages(true);
     saveCheck("first");
+
+     try {
+      await Updates.reloadAsync(); // reloads the app like a restart
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleSecond = () => {
+  const handleSecond = async () => {
     setLanguages(false);
     saveCheck("second");
+    try {
+      await Updates.reloadAsync(); // reloads the app like a restart
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -30,6 +44,8 @@ const Languagues = () => {
       >
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableRipple>
+
+   
       <View style={styles.header}>
         <Text style={styles.headerText}>
           {languages ? "اللغة" : "Languages"}

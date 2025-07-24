@@ -145,7 +145,7 @@ const playSound = (
     <View className=" items-center">
       <View style={{ marginBottom: 16,alignItems:"center" }}>
         <SearchBar
-          title={languages ? "ابحث عن مدخراتك" : "Search your savings"}
+          title={languages ? "بحث... " : "Search your savings"}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           filteredData={filteredData}
@@ -320,7 +320,7 @@ const playSound = (
           <Text
             style={{ color: Colors.text, fontWeight: "600", marginTop: 20 }}
           >
-            {languages?" لا يوجد مدخرات":" No Savings Yet"}
+            {languages?"   لم تقم بحفظ أي شيء بعد":" No Savings Yet"}
            
           </Text>
         </View>

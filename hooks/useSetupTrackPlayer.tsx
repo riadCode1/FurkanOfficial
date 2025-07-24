@@ -49,7 +49,7 @@ const setupPlayer = async () => {
 			
 		},
 
-		icon:require("../assets/images/notifIcon.png"),
+		
 		
 		
 	})

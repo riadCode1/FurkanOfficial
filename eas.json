@@ -15,7 +15,7 @@
       "distribution": "internal",
       "ios":{
         "simulator":true
-      }
+      } 
     },
     "preview": {
        "distribution": "internal"
@@ -28,10 +28,13 @@
   "submit": {
     
     "production": {
+
+      
       
       "android": {
         "serviceAccountKeyPath": "./FurkanApp.json",
         "track": "internal"
+        
       }
     }
   }

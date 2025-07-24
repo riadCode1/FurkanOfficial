@@ -1,10 +1,11 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Dimensions } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors, TextH } from "../constants/Colors";
 import StyleSheet from "react-native-media-query";
+let { width, height } = Dimensions.get("window");
 const ReadingSurah = ({
   chapter_arab,
   arab_name,
@@ -50,7 +51,7 @@ const ReadingSurah = ({
           style={styles.cardContainer}
           borderless={true}
         >
-          <View>
+          <View style={{flexDirection:"row", alignItems:"center",gap:6}}>
             <View style={styles.imageContainer}>
               <Image
                 style={styles.image}
@@ -63,10 +64,11 @@ const ReadingSurah = ({
               <Text style={styles.chapterTitle}>
                 {languages ? chapter_arab : name}
               </Text>
-              <View>
+              <View style={{flexDirection:"row",gap:8}}>
                 <Text style={styles.subtitle}>
                   {verses} {languages ? "آية" : "Verse"}
                 </Text>
+                <Text style={styles.subtitle}>•</Text>
                 <Text style={styles.subtitle}>
                   {languages ? "السورة" : "Chapter"} {Chapterid}
                 </Text>
@@ -81,17 +83,28 @@ const ReadingSurah = ({
 
 const { ids, styles } = StyleSheet.create({
   cardContainer: {
-    width: 104,
+    width: width,
+    marginBottom:8,
+    
+    paddingVertical:8,
+    
+    flexDirection:"row",
     overflow: "hidden",
+    alignItems:"center",
+    
+
+
     "@media (min-width: 700px)": {
-      width: 156,
+      width: width*2,
     },
   },
   Loti:{
-    width: 104,
-            height: 104,
-            borderRadius: 8,
+    width: 60,
+            height: 60,
+            
             overflow: "hidden",
+            justifyContent:"space-between",
+            
 
             '@media (min-width: 768px)': {
               height:156,
@@ -101,12 +114,15 @@ const { ids, styles } = StyleSheet.create({
   },
 
   imageContainer: {
-    width: "100%",
-    height: 104,
+    width: 60,
+    height: 60,
+    borderColor:Colors.blue,
     borderRadius: 8,
+    borderWidth:1,
     overflow: "hidden",
     "@media (min-width: 700px)": {
-      height: 156,
+      height: 100,
+      width:100
     },
   },
   image: {
@@ -115,6 +131,7 @@ const { ids, styles } = StyleSheet.create({
   },
   textContainer: {
     marginTop: 8,
+    alignItems:"flex-start"
   },
   chapterTitle: {
     color: "#FFFFFF",

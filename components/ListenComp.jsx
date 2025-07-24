@@ -189,7 +189,7 @@ const {styles} = StyleSheet.create({
   },
   menuContainer: {
     
-    
+    marginTop:10
   },
 });
 

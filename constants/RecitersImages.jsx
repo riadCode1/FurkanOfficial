@@ -112,7 +112,7 @@ export const dataArray = [
     id: 19,
     name: " al ajmy",
     image:
-      "https://static.old.islamway.net/uploads/scholars/ahmad-bin-ali-al-ajmy.jpg",
+      "https://fr.assabile.com/media/photo/full_size/ahmed-al-ajmi-979.jpg",
   },
   {
     id: 20,

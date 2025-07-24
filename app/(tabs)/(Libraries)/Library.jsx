@@ -12,7 +12,7 @@ const Library = ({}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={{ color: Colors.text, fontSize: 20, fontWeight: "bold" }}>
-          {languages ? "مدخراتك" : "Your Savings"}
+          {languages ? "المكتبة" : "Library"}
         </Text>
       </View>
 

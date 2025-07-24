@@ -3,6 +3,10 @@
     "name": "Furkan",
     "slug": "Furkan",
     "version": "1.0.0",
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#000000"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "furkan",
@@ -17,14 +21,11 @@
       "bundleIdentifier": "com.riadp1.Quran"
     },
     "android": {
-      
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
         "FOREGROUND_SERVICE",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
-         
-        
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -78,7 +79,16 @@
       [
         "expo-notifications"
       ],
-      "expo-video"
+      "expo-video",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "targetSdkVersion": 35,
+            "compileSdkVersion": 35
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -86,7 +96,6 @@
     "updates": {
       "url": "https://u.expo.dev/53349fe7-dd8a-4df8-a9c5-fe0fd5c0d96f"
     },
-    "owner": "riadp1",
     "extra": {
       "router": {
         "origin": "https://node-1-gtzm.onrender.com"

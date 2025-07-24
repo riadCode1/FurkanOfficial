@@ -133,6 +133,7 @@ const ReaderSurah = () => {
     Id,
     arabicCh
   ) => {
+    console.log(trackId)
     playTrack(
       {
         id: Id,
@@ -154,18 +155,32 @@ const ReaderSurah = () => {
     setTrackList(trackList);
 
   };
-  const playAuto = () => {
+  const playAuto = ( uri,
+    trackId,
+    chapterName,
+    names,
+    arabName,
+    Id,
+    arabicCh) => {
     playTrack(
       {
-        id: id,
-
+       id: Id,
+        url: uri,
         title: chapters,
-        artist: name,
-        artistAR: arab_name,
-        chapterID: 1,
+        artist: names,
+        artistAR: arabName,
+        chapterID: trackId,
       },
       1
     );
+
+    const trackList = dataAudio.map((data) => ({
+      id: id,
+      title: chapters,
+      artist: name,
+      artistAR: arab_name,
+    }));
+    setTrackList(trackList);
   };
 
   //  Memoizing filtered data
@@ -192,7 +207,7 @@ const ReaderSurah = () => {
         ]}
       >
         <View style={styles.chapterSmall}>
-          <View style={{ width: 200, }}>
+          <View style={{ width: 200 }}>
             <Text
               style={[
                 styles.chapterTextSmall,
@@ -220,26 +235,37 @@ const ReaderSurah = () => {
 
           {isPlaying ? (
             <View>
-            <TouchableRipple
-              onPress={togglePlayback}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="pause" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
-        ) : (
-          <View>
-            <TouchableRipple
-              onPress={playAuto}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
+              <TouchableRipple
+                onPress={togglePlayback}
+                rippleColor="rgba(0, 209, 255, 0.2)"
+                style={styles.playPauseButton}
+                borderless={true}
+              >
+                <MaterialIcons name="pause" size={24} color="#00D1FF" />
+              </TouchableRipple>
+            </View>
+          ) : (
+            <View>
+              <TouchableRipple
+                onPress={() =>
+                    playAuto(
+                      dataAudio[1 - 1]?.audio_url,
+                      1,
+                      "Al-Fatihah",
+                      name,
+                      arab_name,
+                      id,
+                      "الفاتحة",
+                     
+                    )
+                  }
+                rippleColor="rgba(0, 209, 255, 0.2)"
+                style={styles.playPauseButton}
+                borderless={true}
+              >
+                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
+              </TouchableRipple>
+            </View>
           )}
         </View>
       </Animated.View>
@@ -271,7 +297,7 @@ const ReaderSurah = () => {
         >
           <View style={[styles.imageContainer, {}]}>
             <Image
-              contentFit="contain"
+              contentFit="cover"
               source={{
                 uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
               }}
@@ -309,7 +335,18 @@ const ReaderSurah = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={playAuto}
+                  onPress={() =>
+                    playAuto(
+                      dataAudio[1 - 1]?.audio_url,
+                      1,
+                      "Al-Fatihah",
+                      name,
+                      arab_name,
+                      id,
+                      "الفاتحة",
+                     
+                    )
+                  }
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -350,7 +387,6 @@ const ReaderSurah = () => {
 
         {searchQuery.length > 1 ? (
           <FlashList
-            
             contentContainerStyle={{
               paddingBottom: 150,
             }}
@@ -380,7 +416,6 @@ const ReaderSurah = () => {
           />
         ) : (
           <FlashList
-            
             contentContainerStyle={{
               paddingBottom: 150,
             }}

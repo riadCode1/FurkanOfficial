@@ -1,4 +1,4 @@
-import { View, Text, FlatList,  } from "react-native";
+import { View, Text, FlatList, Dimensions,  } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Image } from 'expo-image';
 import { fetchChater } from "../app/API/QuranApi";
@@ -9,6 +9,8 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 import LottieView from "lottie-react-native";
+
+let { width, height } = Dimensions.get("window");
 
 const ChapterFilter = () => {
   const [chapter, setChapter] = useState([]);
@@ -44,7 +46,7 @@ const ChapterFilter = () => {
   return (
     <View style={styles.container}>
       <FlashList
-        contentContainerStyle={{ paddingBottom: 450 }}
+        contentContainerStyle={{ paddingBottom: 320 }}
         data={chapter}
         showsVerticalScrollIndicator={false}
         estimatedItemSize={75}

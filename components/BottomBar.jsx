@@ -3,6 +3,7 @@ import {
   Text,
   TouchableOpacity,
   BackHandler,
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useMemo, useRef } from "react";
 import { Image, ImageBackground } from "expo-image";
@@ -16,7 +17,8 @@ import TrackPlayer from "react-native-track-player";
 import { router } from "expo-router";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import Modals from "../components/Modals";
-
+import { SafeAreaView } from "react-native-safe-area-context";
+let { width } = Dimensions.get("window");
 const BottomBar = ({
   chapterId,
   setModalVisible,
@@ -79,7 +81,7 @@ const BottomBar = ({
   };
 
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => [1, "100%"], []);
+  const snapPoints = useMemo(() => [0.1, "100%"], []);
 
   const handleOpenBottomSheet = () => {
     bottomSheetRef.current?.expand();
@@ -87,6 +89,7 @@ const BottomBar = ({
 
   return (
     <>
+    <SafeAreaView style={{position:"absolute",bottom:70}}>
       <TouchableRipple
         rippleColor="rgba(200, 200, 200, 0.1)"
         onPress={handleOpenBottomSheet}
@@ -107,6 +110,7 @@ const BottomBar = ({
               />
             </View>
           </TouchableRipple>
+         
 
 
                 <View style={styles.playText}>
@@ -136,6 +140,7 @@ const BottomBar = ({
           
         </View>
       </TouchableRipple>
+       </SafeAreaView>
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -148,11 +153,11 @@ const BottomBar = ({
         
         handleComponent={() => <View style={styles.handleContainer}></View>}
       >
-        <ImageBackground style={{width:"100%", height:"100%",borderTopLeftRadius:15,borderTopRightRadius:15,overflow:"hidden"}} source={require('../assets/images/SplashFK.png')}>
+        <View style={{width:"100%", height:"100%",borderTopLeftRadius:15,borderTopRightRadius:15,overflow:"hidden",backgroundColor:Colors.background}} >
            <BottomSheetView style={styles.sheetContent}>
           <Modals handleCloseBottomSheet={handleCloseBottomSheet} />
         </BottomSheetView>
-        </ImageBackground>
+        </View>
        
       </BottomSheet>
     </>
@@ -162,8 +167,7 @@ const BottomBar = ({
 const {styles} = StyleSheet.create({
   container: {
     marginHorizontal:8,
-    position: "absolute",
-    bottom: 85,
+    
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -186,6 +190,7 @@ const {styles} = StyleSheet.create({
 
   handleContainer: {
     alignItems: "center",
+    
   },
   handle: {
     width: 40,

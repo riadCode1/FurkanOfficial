@@ -1,6 +1,15 @@
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+  FlatList,
+  I18nManager,
+  Alert,
+} from "react-native";
 import StyleSheet from "react-native-media-query";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReaderCard from "../../../components/ReaderCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ReadingSurah from "../../../components/ReadingSurah";
@@ -9,54 +18,93 @@ import { NewData } from "../../../constants/NewData";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "../../../constants/Colors";
 import { Image } from "expo-image";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import * as Updates from "expo-updates";
+import * as NavigationBar from 'expo-navigation-bar';
+import { useFocusEffect } from '@react-navigation/native'
+
+let { width } = Dimensions.get("window");
 
 const Index = () => {
+
+   useEffect(() => {
+      NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+      NavigationBar.setButtonStyleAsync(Colors.barbottom); // or 'dark'
+  
+      return () => {
+        // Optional: reset on unfocus
+        NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+      };
+   }, [])
+   
+ 
+    const handleTrackPlayerLoaded = useCallback(() => {
+      SplashScreen.hideAsync();
+    }, []);
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
-
+  const ITEM_WIDTH = width * 0.8;
+  const SPACING = 16;
   const { setLanguages, languages, modalVisible, loading } = useGlobalContext();
 
+  const groupedChapters = [
+    chapter.slice(2, 4),
+    chapter.slice(7, 9),
+    chapter.slice(13, 15),
+    chapter.slice(18, 20),
+  ];
+
   useEffect(() => {
+    toggleDirection(languages);
     getReciter();
     getChapter();
-  }, [loading]);
+  }, [languages]);
+
+  const toggleDirection = async (isArabic) => {
+    const shouldBeRTL = isArabic;
+
+    if (I18nManager.isRTL !== shouldBeRTL) {
+      I18nManager.allowRTL(shouldBeRTL);
+      I18nManager.forceRTL(shouldBeRTL);
+
+      Alert.alert("Restart", "App will restart to apply language direction.", [
+        {
+          text: "OK",
+          onPress: async () => {
+            await Updates.reloadAsync();
+          },
+        },
+      ]);
+    }
+  };
 
   const getReciter = async () => {
-    // setLoading(true);
     try {
       const data = await fetchSuwar();
-      if (data && data.recitations) {
+      if (data?.recitations) {
         const combinedData = [...data.recitations, ...NewData.recitations];
         setQuranData(combinedData);
       }
     } catch (error) {
       console.error("Error fetching recitations:", error);
-    } finally {
-      // setLoading(false);
     }
   };
 
   const getChapter = async () => {
-    // setLoading(true);
     try {
       const data = await fetchChater();
-      if (data && data.chapters) {
+      if (data?.chapters) {
         setChapter(data.chapters);
       }
     } catch (error) {
       console.error("Error fetching chapters:", error);
-    } finally {
-      // setLoading(false);
     }
   };
-
-
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Top */}
         <View style={styles.header}>
           <Image
             contentFit="cover"
@@ -65,18 +113,72 @@ const Index = () => {
           />
         </View>
 
-        {/* Listen */}
+        {/* Popular Reciters */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            {languages ? "استمع للقرآن الكريم من " : "Listen to Quran by"}
-          </Text>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              marginBottom: 16,
+              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.sectionTitle}>
+              {languages ? "أشهر القراء" : "Most popular reciters"}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/Searchs",
+                  params: { section: "reciters" },
+                })
+              }
+              style={{
+                flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+                height: 24,
+                alignItems: "center",
+              }}
+            >
+              {I18nManager.isRTL? <>
+
+               <MaterialIcons
+                size={20}
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                color={Colors.blue}
+              />
+               <Text style={styles.seeAll}>
+                {languages ? "عرض الكل" : "see all"}
+              </Text>
+             
+              
+              </>:<>
+              
+               <Text style={styles.seeAll}>
+                {languages ? "عرض الكل" : "see all"}
+              </Text>
+              <MaterialIcons
+                size={20}
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                color={Colors.blue}
+              />
+              
+              </>}
+
+            </TouchableOpacity>
+          </View>
 
           <ScrollView
             horizontal
-            contentContainerStyle={{ gap: 10, paddingLeft: 16,paddingRight:16 }}
+            contentContainerStyle={{
+              gap: 10,
+              paddingLeft: 16,
+              paddingRight: 16,
+            }}
             showsHorizontalScrollIndicator={false}
           >
-            {quranData?.slice(6,12).map((item) => (
+            {quranData?.slice(6, 12).map((item) => (
               <ReaderCard
                 key={item.index}
                 item={item}
@@ -91,40 +193,151 @@ const Index = () => {
           </ScrollView>
         </View>
 
-        {/* Chapters */}
+        {/* Quran Chapters */}
+        <View style={styles.section2}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              marginBottom: 16,
+              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.sectionTitle}>
+              {languages ? "سور القرآن الكريم" : "Quran Chapters"}
+            </Text>
+
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/Searchs",
+                  params: { section: "chapters" },
+                })
+              }
+              style={{
+                flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+                height: 24,
+                alignItems: "center",
+              }}
+            >
+             {I18nManager.isRTL? <>
+
+               <MaterialIcons
+                size={20}
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                color={Colors.blue}
+              />
+               <Text style={styles.seeAll}>
+                {languages ? "عرض الكل" : "see all"}
+              </Text>
+             
+              
+              </>:<>
+              
+               <Text style={styles.seeAll}>
+                {languages ? "عرض الكل" : "see all"}
+              </Text>
+              <MaterialIcons
+                size={20}
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                color={Colors.blue}
+              />
+              
+              </>}
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            horizontal
+            data={groupedChapters}
+            keyExtractor={(_, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={ITEM_WIDTH + SPACING}
+            decelerationRate={5}
+            contentContainerStyle={{
+              paddingHorizontal: SPACING,
+            }}
+            renderItem={({ item: group, index }) => (
+              <View
+                key={index}
+                style={{
+                  width: ITEM_WIDTH,
+                  marginRight: SPACING,
+                }}
+              >
+                <FlatList
+                  data={group}
+                  keyExtractor={(item) => item.id.toString()}
+                  
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) => (
+                    <ReadingSurah
+                      item={item}
+                      languages={languages}
+                      loading={loading}
+                      name={item.name_simple}
+                      arab_name={item.translated_name.name}
+                      chapter_arab={item.name_arabic}
+                      Chapterid={item.id}
+                      verses={item.verses_count}
+                      style={{
+                        width: "48%",
+                        marginBottom: SPACING,
+                      }}
+                    />
+                  )}
+                />
+              </View>
+            )}
+          />
+        </View>
+
+        {/* Listen to Quran */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            {languages ? " سور القرآن الكريم" : "Quran Chapters"}
-          </Text>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              marginBottom: 16,
+              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.sectionTitle}>
+              {languages ? "استمع للقرآن الكريم من" : "Listen to Quran by"}
+            </Text>
+          </View>
+
           <ScrollView
             horizontal
-            contentContainerStyle={{ gap: 10, paddingLeft: 16,paddingRight:16 }}
+            contentContainerStyle={{
+              gap: 10,
+              paddingLeft: 16,
+              paddingRight: 16,
+            }}
             showsHorizontalScrollIndicator={false}
           >
-            {chapter?.slice(2, 8).map((item) => (
-              <ReadingSurah
+            {quranData?.slice(15, 21).map((item) => (
+              <ReaderCard
                 key={item.index}
                 item={item}
-                languages={languages}
                 loading={loading}
-                name={item.name_simple}
+                languages={languages}
+                setLanguages={setLanguages}
+                name={item.reciter_name}
                 arab_name={item.translated_name.name}
-                chapter_arab={item.name_arabic}
-                Chapterid={item.id}
-                verses={item.verses_count}
+                id={item.id}
               />
             ))}
           </ScrollView>
-
-        
         </View>
       </ScrollView>
-    
     </SafeAreaView>
   );
 };
 
-const {  styles } = StyleSheet.create({
+const { styles } = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -133,75 +346,37 @@ const {  styles } = StyleSheet.create({
     paddingBottom: 200,
   },
   header: {
-    justifyContent: "flex-start",
+    marginHorizontal:16,
     width: 160,
     height: 50,
-    marginTop: 20,
+    marginTop: 20, 
+    marginRight:16,
     alignSelf: "flex-start",
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   logo: {
     width: "100%",
     height: "100%",
   },
-  logoText: {
-    color: "#01F4FF",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 8,
-  },
-
-  iconButton: {
-    justifyContent: "center",
-    alignItems: "center",
-
-    // To make it fully circular
-    backgroundColor: Colors.tint,
-    padding: 8,
-  },
   section: {
+    marginTop: 32,
+  },
+  section2: {
     marginTop: 32,
   },
   sectionTitle: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 16,
-    marginLeft: 16,
-    marginRight: 16,
+    textAlign: I18nManager.isRTL ? "right" : "left",
     fontFamily: "lucida grande",
     "@media (min-width: 700px)": {
       fontSize: 30,
     },
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  modalView: {
-    height: "100%",
-    width: "100%",
-    backgroundColor: Colors.background,
-  },
-  handleContainer: {
-    alignItems: 'center',
-    paddingTop: 10,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    backgroundColor: Colors.textTab,
-    borderRadius: 2,
-  },
-  sheetContent: {
-    flex: 1,
-    paddingHorizontal: 16,
+  seeAll: {
+    fontSize: 16,
+    color: Colors.blue,
+    fontWeight: "500",
   },
 });
 

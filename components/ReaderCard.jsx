@@ -61,7 +61,7 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
 
             <View style={styles.textContainer}>
               <Text style={styles.subtitle}>
-                {languages ? "القرآن الكريم من" : "Whole Quran by"}
+                {languages ? "القرآن الكريم من" : "114 chapters recited by "}
               </Text>
               <Text numberOfLines={2} style={styles.title}>
                 {languages ? arab_name : name}
@@ -77,10 +77,10 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
 const {ids,styles} = StyleSheet.create({
   cardContainer: {
     
-    width: 104,
+    width: 156,
     overflow: "hidden", 
     '@media (min-width: 768px)': {
-            width:156
+            width:200
         },
   },
   Loti:{
@@ -98,11 +98,11 @@ const {ids,styles} = StyleSheet.create({
   
   imageContainer: {
     width: "100%",
-    height: 104,
+    height: 156,
     borderRadius: 8,
     overflow: "hidden",
     '@media (min-width: 768px)': {
-            height:156
+            height:217
         },
   },
   image: {

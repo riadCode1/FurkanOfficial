@@ -38,7 +38,7 @@ const ReciterSearch = () => {
   });
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, 300], // Strictly increasing
+    inputRange: [ 0, 300], // Strictly increasing
     outputRange: [500, 0], // Descending output
     extrapolate: "clamp",
   });
@@ -133,7 +133,7 @@ const ReciterSearch = () => {
     Id,
     arabicCh
   ) => {
-  
+    console.log(trackId)
     playTrack(
       {
         id: Id,
@@ -155,15 +155,21 @@ const ReciterSearch = () => {
     setTrackList(trackList);
 
   };
-  const playAuto = () => {
+  const playAuto = ( uri,
+    trackId,
+    chapterName,
+    names,
+    arabName,
+    Id,
+    arabicCh) => {
     playTrack(
       {
-        id: id,
-
+       id: Id,
+        url: uri,
         title: chapters,
-        artist: name,
-        artistAR: arab_name,
-        chapterID: 1,
+        artist: names,
+        artistAR: arabName,
+        chapterID: trackId,
       },
       1
     );
@@ -201,7 +207,7 @@ const ReciterSearch = () => {
         ]}
       >
         <View style={styles.chapterSmall}>
-          <View style={{ width: 200, }}>
+          <View style={{ width: 200 }}>
             <Text
               style={[
                 styles.chapterTextSmall,
@@ -229,26 +235,37 @@ const ReciterSearch = () => {
 
           {isPlaying ? (
             <View>
-            <TouchableRipple
-              onPress={togglePlayback}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="pause" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
-        ) : (
-          <View>
-            <TouchableRipple
-              onPress={playAuto}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
+              <TouchableRipple
+                onPress={togglePlayback}
+                rippleColor="rgba(0, 209, 255, 0.2)"
+                style={styles.playPauseButton}
+                borderless={true}
+              >
+                <MaterialIcons name="pause" size={24} color="#00D1FF" />
+              </TouchableRipple>
+            </View>
+          ) : (
+            <View>
+              <TouchableRipple
+                onPress={() =>
+                    playAuto(
+                      dataAudio[1 - 1]?.audio_url,
+                      1,
+                      "Al-Fatihah",
+                      name,
+                      arab_name,
+                      id,
+                      "الفاتحة",
+                     
+                    )
+                  }
+                rippleColor="rgba(0, 209, 255, 0.2)"
+                style={styles.playPauseButton}
+                borderless={true}
+              >
+                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
+              </TouchableRipple>
+            </View>
           )}
         </View>
       </Animated.View>
@@ -318,7 +335,18 @@ const ReciterSearch = () => {
             ) : (
               <View>
                 <TouchableRipple
-                  onPress={playAuto}
+                  onPress={() =>
+                    playAuto(
+                      dataAudio[1 - 1]?.audio_url,
+                      1,
+                      "Al-Fatihah",
+                      name,
+                      arab_name,
+                      id,
+                      "الفاتحة",
+                     
+                    )
+                  }
                   rippleColor="rgba(0, 209, 255, 0.2)"
                   style={styles.playPauseButton}
                   borderless={true}
@@ -337,7 +365,7 @@ const ReciterSearch = () => {
               "rgba(24,26,60,1)",
             ]}
             style={{
-              width: width,
+              width: width*1,
               height: height * 0.1,
               position: "absolute",
               zIndex: 1,
@@ -359,7 +387,6 @@ const ReciterSearch = () => {
 
         {searchQuery.length > 1 ? (
           <FlashList
-            
             contentContainerStyle={{
               paddingBottom: 150,
             }}
@@ -389,11 +416,10 @@ const ReciterSearch = () => {
           />
         ) : (
           <FlashList
-            
             contentContainerStyle={{
               paddingBottom: 150,
             }}
-            data={memoizedChapters}
+            data={chapters}
             estimatedItemSize={75}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
@@ -586,6 +612,8 @@ const { ids, styles } = StyleSheet.create({
     },
   },
 });
+
+
 
 
 

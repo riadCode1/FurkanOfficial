@@ -93,7 +93,7 @@ const Listen = ({
         scrollEnabled={false}
         ref={flashListRef}
         contentContainerStyle={{
-          paddingBottom: 200,
+          paddingBottom: 150,
         }}
         data={searchQuery.length > 1 ? filteredData : quranData}
         estimatedItemSize={75} // Render fewer items initially

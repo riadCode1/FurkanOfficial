@@ -11,7 +11,7 @@ import TrackPlayer from "react-native-track-player";
 import { useSetupTrackPlayer } from "@/hooks/useSetupTrackPlayer";
 import { playbackService } from "../constants/playbackService";
 import { Linking, StatusBar } from "react-native";
-import { StripeProvider } from "@stripe/stripe-react-native";
+
 
 
 
@@ -61,11 +61,7 @@ export default function RootLayout() {
   return (
     <GlobalProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <StripeProvider
-      publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-     // required for Apple Pay
-      urlScheme="furkan" // required for 3D Secure and bank redirects
-    >   
+      
 
        
           <PaperProvider>
@@ -102,7 +98,7 @@ export default function RootLayout() {
             <ModalPortal />
           </PaperProvider>
        
-          </StripeProvider>  
+          
       </GestureHandlerRootView>
     </GlobalProvider>
   );

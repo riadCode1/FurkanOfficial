@@ -1,17 +1,20 @@
-import { View, Text, TouchableOpacity, BackHandler } from "react-native";
+import { View, Text, TouchableOpacity, BackHandler, I18nManager, Dimensions } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TouchableRipple } from "react-native-paper";
 import TrackPlayer, { useProgress } from "react-native-track-player";
 import StyleSheet from "react-native-media-query";
 import { LinearGradient } from "expo-linear-gradient";
-import { Slider } from '@rneui/themed'; 
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../context/GlobalProvider";
 import Dropmenu from "./Dropmenu";
 import { Colors } from "../constants/Colors";
 import { dataArray } from "../constants/RecitersImages";
 import { Image } from "expo-image";
+let { width } = Dimensions.get("window");
+import ImageColors from 'react-native-image-colors';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 
 const Modals = ({handleCloseBottomSheet}) => {
   const {
@@ -36,6 +39,35 @@ const Modals = ({handleCloseBottomSheet}) => {
   } = useGlobalContext();
 
   const progress = useProgress();
+  const [backgroundColor, setBackgroundColor] = useState('#191A3C');
+
+// color change 
+useEffect(() => {
+  const fetchColors = async () => {
+    const uri = dataArray[idReader]?.image;
+
+    if (uri) {
+      try {
+        const result = await ImageColors.getColors(uri, {
+          fallback: '#191A3C',
+          cache: true,
+          key: idReader.toString(), // optional, for better caching
+        });
+
+        if (result.platform === 'android') {
+          setBackgroundColor(result.dominant || '#191A3C');
+        } else {
+          setBackgroundColor(result.background || '#191A3C');
+        }
+      } catch (error) {
+        console.warn('Failed to fetch image colors:', error);
+        setBackgroundColor('#191A3C');
+      }
+    }
+  };
+
+  fetchColors();
+}, [idReader]);
 
   useEffect(() => {
     progress.position;
@@ -99,7 +131,8 @@ const Modals = ({handleCloseBottomSheet}) => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+
      
       <View style={styles.header}>
         <TouchableRipple
@@ -111,7 +144,13 @@ const Modals = ({handleCloseBottomSheet}) => {
           <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
         </TouchableRipple>
 
-        <Dropmenu
+        <TouchableRipple
+          
+          rippleColor="rgba(255, 255, 255, 0.2)"
+          style={styles.backButton}
+          borderless={true}
+        >
+         <Dropmenu
           chapter={chapterId}
           reciterName={reciter}
           reciterID={idReader}
@@ -119,46 +158,14 @@ const Modals = ({handleCloseBottomSheet}) => {
           chapterAr={arabicCH}
           chapteID={IDchapter}
         />
+        </TouchableRipple>
+
+        
       </View>
 
       <View style={styles.imageContainer}>
         <View style={styles.imageWrapper}>
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(24,26,60,0.6)",
-              
-              "rgba(24,26,60,0.1)",
-            ]}
-            style={{
-              width: "100%",
-              height: 120,
-              position: "absolute",
-              zIndex: 1,
-              bottom: 0,
-            }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 2 }}
-          />
-          <LinearGradient
-          
-            colors={[
-              "transparent",
-              "rgba(146, 148, 180, 0.1)",
-              
-              "rgba(24,26,60,0.5)",
-            ]}
-            style={{
-              width: "100%",
-              height: 50,
-              position: "absolute",
-              zIndex: 1,
-              top: 0,
-            }}
-            start={{ x: 0.5, y: 1 }}
-            end={{ x: 0.5, y: 0 }}
-          />
-
+        
            <Image
                          style={styles.image}
                          source={{
@@ -184,34 +191,69 @@ const Modals = ({handleCloseBottomSheet}) => {
             {languages ? reciterAR : reciter}
           </Text>
         </View>
+
+
         {/* Slider for progress */}
-        <Slider
-          value={position}
-          minimumValue={0}
-          maximumValue={duration || 1}
-          step={1}
-          onSlidingComplete={async (value) => {
-            await TrackPlayer.seekTo(value);
-          }}
-          thumbStyle={{
-            height: 20,
-            width: 20,
-            backgroundColor: Colors.blue,
-          }}
-          thumbTintColor={Colors.blue}
-          minimumTrackTintColor={Colors.blue}
-          maximumTrackTintColor="#fff"
-          trackStyle={{ height: 3 }}
-          style={styles.slider}
-        />
+       <MultiSlider
+  values={[position]}
+  min={0}
+  max={duration||1}
+  step={2}
+  containerStyle={{ transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }]}}
+  sliderLength={Dimensions.get('window').width * 0.9} // Same as your 90% width
+  onValuesChangeFinish={async (values) => {
+    await TrackPlayer.seekTo(values[0]);
+  }}
+  selectedStyle={{ backgroundColor: Colors.blue,}}
+  unselectedStyle={{ backgroundColor: '#A3A8C5' }}
+  trackStyle={{
+    height: 4,
+    transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }], // ✅ RTL support
+  }}
+  customMarker={() => (
+    <View
+      style={{
+        width: 20,          // ✅ Custom thumb size
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: Colors.blue,
+        
+      }}
+    />
+  )}
+/>
         <View style={styles.timeContainer}>
           <Text style={styles.timeText}>{formatTime(position)}</Text>
           <Text style={styles.timeText}>{formatTime(duration)}</Text>
         </View>
 
+        {/* control */}
+
         <View style={styles.controlsContainer}>
-          <TouchableOpacity activeOpacity={0.7} onPress={playPrevious}>
-            <MaterialIcons name="skip-previous" size={38} color="white" />
+
+            <TouchableOpacity
+            style={[
+              {
+                backgroundColor:
+                  shuffle === true ? "#5C63A3" : "transparent",
+                padding: 9,
+                alignItems:"center",
+                borderRadius: 50,
+              },
+            ]}
+            onPress={handleShuffle}
+            activeOpacity={0.7}
+          >
+            <MaterialIcons name="shuffle" size={30} color="white" />
+          </TouchableOpacity>
+
+
+          <TouchableOpacity  activeOpacity={0.7} onPress={playPrevious}>
+            <MaterialIcons
+  name={I18nManager.isRTL ? "skip-next" : "skip-previous"}  // ❌ This will flip icons
+  size={38}
+  color="white"
+/>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -220,61 +262,54 @@ const Modals = ({handleCloseBottomSheet}) => {
             style={styles.playPauseButton}
           >
             {isPlaying ? (
-              <MaterialIcons name="pause" size={35} color="white" />
+              <MaterialIcons name="pause" size={38} color="white" />
             ) : (
               <MaterialIcons name="play-arrow" size={35} color="white" />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity activeOpacity={0.7} onPress={playNext}>
-            <MaterialIcons name="skip-next" size={38} color="white" />
+           <MaterialIcons
+  name={I18nManager.isRTL ? "skip-previous" : "skip-next"}  // ❌ This will flip icons
+  size={38}
+  color="white"
+/>
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.shuffleRepeatContainer}>
-          <TouchableOpacity
+
+             <TouchableOpacity
             style={[
               {
                 backgroundColor:
-                  shuffle === true ? "white" : "transparent",
-                padding: 5,
-                alignItems:"center",
-                borderRadius: 5,
-              },
-            ]}
-            onPress={handleShuffle}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons name="shuffle" size={30} color="#00D1FF" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              {
-                backgroundColor:
-                  shuffle === false ? "white" : "transparent",
+                  shuffle === false ? "#5C63A3" : "transparent",
                   padding: 5,
                   alignItems:"center",
-                borderRadius: 5,
+                borderRadius: 50,
               },
             ]}
             onPress={handlerepeat}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="repeat" size={30} color="#00D1FF" />
+            <MaterialIcons name="repeat" size={30} color="white" />
           </TouchableOpacity>
         </View>
+
+
+
+
+       
       </View>
+
       <LinearGradient
             colors={[
               "transparent",
-              "rgb(118, 122, 204)",
+              "#181A3C",
               
-              "rgba(24,26,60,0.1)",
+              "rgba(24,26,60,0.5)",
             ]}
             style={{
               width: "100%",
-              height: 120,
+              height: "100%",
               position: "absolute",
               zIndex: -1,
               bottom: 0,
@@ -283,6 +318,7 @@ const Modals = ({handleCloseBottomSheet}) => {
             end={{ x: 0.5, y: 2 }}
           />
       
+      
     </SafeAreaView>
   );
 };
@@ -290,9 +326,8 @@ const Modals = ({handleCloseBottomSheet}) => {
 const { styles } = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop:8,
     
-    borderTopRightRadius: 100,
-    borderTopLeftRadius: 50,
     
   },
   header: {
@@ -323,28 +358,41 @@ const { styles } = StyleSheet.create({
     zIndex: 99,
     backgroundColor: "#454B8C",
   },
+
+  saveButton: {
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+
+    width: 44,
+    elevation: 50,
+    height: 44,
+    zIndex: 99,
+    backgroundColor: "#454B8C",
+  },
   imageContainer: {
     alignItems: "center",
   },
   imageWrapper: {
-    width: "90%",
-    height: "70%",
+    width:width*0.85 ,
+    height:width*0.85 ,
     alignItems: "center",
-    "@media (min-width: 768ppx)": {
-      height: "75%",
+    "@media (min-width: 700)": {
+      height: width*0.55,
+      width:width*0.8,
       
     },
   },
   image: {
     width: "100%",
     height: "100%",
-    borderWidth:3,
     borderColor:Colors.blue,
-    borderRadius:10
+    borderRadius:10,
+    
   },
   textContainer: {
     alignItems: "center",
-    marginTop: -24,
+    marginTop: 24,
     zIndex:999
   },
   chapterText: {
@@ -353,18 +401,15 @@ const { styles } = StyleSheet.create({
     fontWeight: "bold",
   },
   reciterText: {
-    color: "#A0A0A0",
+    color: "#D1D5DB",
     fontSize: 16,
   },
   progressContainer: {
-    marginTop: 16,
+   
     alignItems: "center",
-    position:"absolute",bottom:10,
+    
 
-    "@media (min-height: 700px)": {
-      bottom: 42,
-    },
-
+    
     
    
   },
@@ -373,20 +418,21 @@ const { styles } = StyleSheet.create({
   },
 
   timeContainer: {
-    flexDirection: "row",
+    flexDirection:I18nManager.isRTL? "row-reverse":"row",
     justifyContent: "space-between",
-    marginTop: 16,
+   marginBottom:16,
     width: "90%",
   },
   timeText: {
-    color: "white",
+    color: Colors.textGray,
     fontSize: 12,
   },
   controlsContainer: {
     flexDirection: "row",
+    
     justifyContent: "space-between", 
     alignItems: "center",
-    paddingHorizontal: 67,
+    paddingHorizontal: 16,
     width: "100%",
 
     "@media (min-width: 768px)": {

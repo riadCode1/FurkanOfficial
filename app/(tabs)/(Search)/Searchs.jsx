@@ -10,7 +10,7 @@ import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
 import StyleSheet from "react-native-media-query";
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { dataArray } from "@/constants/RecitersImages";
 import { NewData } from "../../../constants/NewData";
 import { Button, TouchableRipple } from "react-native-paper";
@@ -24,16 +24,24 @@ import SearchBar from "../../../components/SearchBar";
 let { width, height } = Dimensions.get("window");
 
 const Search = () => {
+  const { section } = useLocalSearchParams();  // ✅ GET PARAM FROM URL
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setloading] = useState(false);
-  const [activeButton, setActiveButton] = useState("button1");
-
   const { languages } = useGlobalContext();
+
+  const [activeButton, setActiveButton] = useState("reciters");  // ✅ Default state
+
+  useEffect(() => {
+    if (section) {
+      setActiveButton(section);  // ✅ SET TAB FROM PARAM
+    }
+  }, [section]);
 
   const handleButtonPress = (button) => {
     setActiveButton(button);
   };
+
   const getBackgroundColor = (button) => {
     return activeButton === button ? Colors.tintLight : Colors.rgb;
   };
@@ -42,10 +50,8 @@ const Search = () => {
     if (searchQuery.length > 1) {
       setloading(true);
 
-      // Fetch both chapters and recitations at the same time
       Promise.all([fetchChater(searchQuery), fetchSuwar(searchQuery)])
         .then(([chapterData, suwarData]) => {
-          // Filter chapters
           const filteredChapters = chapterData.chapters.filter(
             (item) =>
               item.name_simple
@@ -56,11 +62,10 @@ const Search = () => {
                 .includes(searchQuery.toLowerCase())
           );
 
-          // Filter recitations
           const combinedRecitations = [
             ...suwarData.recitations,
             ...NewData.recitations,
-          ]; // Combine API data with hardcoded data
+          ];
 
           const filteredRecitations = combinedRecitations.filter(
             (item) =>
@@ -74,7 +79,6 @@ const Search = () => {
                 item.status !== "inactive")
           );
 
-          // Combine results from both into filteredData
           setFilteredData([...filteredChapters, ...filteredRecitations]);
         })
         .catch((error) => {
@@ -96,7 +100,6 @@ const Search = () => {
           name: item.name_simple,
         },
       });
-      console.log("Moratilii", item);
     } else if (item.reciter_name) {
       router.push({
         pathname: `/ReciterSearch/`,
@@ -123,7 +126,6 @@ const Search = () => {
         }
       />
 
-      {/* results */}
       {searchQuery.length > 1 ? (
         <View style={styles.resultsContainer}>
           <Text style={styles.resultsText}>
@@ -137,7 +139,7 @@ const Search = () => {
             renderItem={({ item }) => (
               <TouchableRipple
                 activeOpacity={1}
-                 rippleColor="rgba(200, 200, 200, 0.1)"
+                rippleColor="rgba(200, 200, 200, 0.1)"
                 onPress={() => handlePress(item)}
                 style={styles.touchable}
               >
@@ -184,33 +186,33 @@ const Search = () => {
         <View style={{ width: "100%" }}>
           <View style={styles.filters}>
             <Button
-              mode="contained" // Use "outlined" or "text" for other styles
-              onPress={() => handleButtonPress("button1")}
+              mode="contained"
+              onPress={() => handleButtonPress("reciters")}  // ✅ Simplified button name
               contentStyle={[
-                { backgroundColor: getBackgroundColor("button1") },
+                { backgroundColor: getBackgroundColor("reciters") },
                 styles.filter,
               ]}
             >
               <Text
                 style={[
-                  { color: activeButton === "button1" ? "white" : "#A3A8C5" },
+                  { color: activeButton === "reciters" ? "white" : "#A3A8C5" },
                 ]}
               >
-                {languages ? "قراء" : "Readers"}
+                {languages ? "قراء" : "Reciters"}
               </Text>
             </Button>
 
             <Button
-              mode="contained" // Use "outlined" or "text" for other styles
-              onPress={() => handleButtonPress("button2")}
+              mode="contained"
+              onPress={() => handleButtonPress("chapters")}  // ✅ Simplified button name
               contentStyle={[
-                { backgroundColor: getBackgroundColor("button2") },
+                { backgroundColor: getBackgroundColor("chapters") },
                 styles.filter,
               ]}
             >
               <Text
                 style={[
-                  { color: activeButton === "button2" ? "white" : "#A3A8C5" },
+                  { color: activeButton === "chapters" ? "white" : "#A3A8C5" },
                 ]}
               >
                 {languages ? "سور" : "Chapters"}
@@ -218,8 +220,8 @@ const Search = () => {
             </Button>
           </View>
 
-          {activeButton === "button1" && <ReaderFilter />}
-          {activeButton === "button2" && <ChapterFilter />}
+          {activeButton === "reciters" && <ReaderFilter />}
+          {activeButton === "chapters" && <ChapterFilter />}
         </View>
       )}
     </SafeAreaView>
@@ -251,14 +253,8 @@ const { styles } = StyleSheet.create({
   filter: {
     alignItems: "center",
     justifyContent: "center",
-
     width: width * 0.43,
-
     borderRadius: 70,
-  },
-  filterText: {
-    color: Colors.textGray,
-    fontSize: 16,
   },
   resultsText: {
     color: "white",
@@ -267,12 +263,10 @@ const { styles } = StyleSheet.create({
   flatlistContainer: {
     paddingBottom: 200,
   },
-  
   touchable: {
     flexDirection: "row",
     gap: 12,
     alignItems: "center",
-    
     paddingVertical: 12,
     width: "100%",
     paddingHorizontal: 16,
@@ -295,7 +289,6 @@ const { styles } = StyleSheet.create({
   },
   textContainer: {
     justifyContent: "center",
-    
   },
   nameText: {
     fontSize: 16,
@@ -305,43 +298,7 @@ const { styles } = StyleSheet.create({
   arabicText: {
     fontSize: 14,
     color: "white",
-    textAlign:"left"
-  },
-  dropmenuContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginTop: 24,
-  },
-  card: {
-    width: width * 0.45,
-    height: 104,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  cardImage: {
-    width: "100%",
-    height: "100%",
-  },
-  linearGradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 64,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    padding: 8,
-  },
-  cardText: {
-    fontSize: width * 0.06,
-    fontWeight: "bold",
-    color: "white",
+    textAlign: "left",
   },
 });
 

@@ -6,6 +6,7 @@ import { Colors } from "../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
 
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { useGlobalContext } from "../context/GlobalProvider";
 
 const Dropmenu = ({
   reciterName,
@@ -32,6 +33,7 @@ const Dropmenu = ({
   const [alertVisible2, setAlertVisible2] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const focused = useIsFocused(); // State to track if the item is saved
+  const { setLanguages, languages, modalVisible, loading } = useGlobalContext();
 
   const saveToPlaylist = async (list) => {
     setIsSaved(true);
@@ -100,9 +102,6 @@ const Dropmenu = ({
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
-          width: RFValue(45),
-          height: 45,
-          alignItems: "flex-end",
           justifyContent: "center",
         }}
         onPress={() => {
@@ -121,44 +120,67 @@ const Dropmenu = ({
           <MaterialIcons
             name="bookmark-outline"
             size={24}
-            color={Colors.blue} // Color changes when saved
+            color='white' // Color changes when saved
           />
         )}
       </TouchableOpacity>
 
       {/*Alert modal */}
-      <Modal transparent={true} animationType="slide" visible={alertVisible}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.alertBox}>
-            <Text style={styles.alertTitle}>Saved!</Text>
-            <Text style={styles.alertMessage}>
-              {chapter} Added to the Playlist
-            </Text>
+
+      {languages ? (
+        <Modal transparent={true} animationType="slide" visible={alertVisible}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.alertBox}>
+              <Text style={styles.alertTitle}>حفظ!</Text>
+              <Text style={styles.alertMessage}>
+                تمت إضافته السورة إلى المكتبة
+              </Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : (
+        <Modal transparent={true} animationType="slide" visible={alertVisible}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.alertBox}>
+              <Text style={styles.alertTitle}>Saved!</Text>
+              <Text style={styles.alertMessage}>
+                chapter Added to the Playlist
+              </Text>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       {/*Alert modal2 */}
-      <Modal transparent={true} animationType="slide" visible={alertVisible2}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.alertBox}>
-            <Text style={styles.alertTitle}>Removed</Text>
-            <Text style={styles.alertMessage}>
-              {chapter} Removed from Savelist
-            </Text>
+      {languages ? (
+        <Modal transparent={true} animationType="slide" visible={alertVisible2}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.alertBox}>
+              <Text style={styles.alertTitle}>تمت الإزالة</Text>
+              <Text style={styles.alertMessage}>
+                تمت إزالته السورة  من  المكتبة
+              </Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : (
+        <Modal transparent={true} animationType="slide" visible={alertVisible2}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.alertBox}>
+              <Text style={styles.alertTitle}>Removed</Text>
+              <Text style={styles.alertMessage}>
+                chapter Removed from Savelist
+              </Text>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: RFValue(48),
-    height: 48,
-    alignItems: "center",
-  },
+  container: {},
   modalOverlay: {
     flex: 1,
     justifyContent: "center",

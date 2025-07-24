@@ -27,6 +27,7 @@ const SuratReader = ({
   const { loading } = useGlobalContext();
 
   const handlePlay = () => {
+    console.log("11",chapteID)
     playAudio(
       dataAudio[chapteID - 1]?.audio_url,
       chapteID,
@@ -121,7 +122,7 @@ const { styles } = StyleSheet.create({
     },
   },
   playButton: {
-    borderRadius: 8,
+    
     width: "100%",
     height: 75, // Ensures the ripple effect matches the container
     overflow: "hidden", // Ensures ripple stays within bounds
