@@ -131,9 +131,9 @@ const BottomBar = ({
             style={styles.iconButton}
           >
             {isPlaying ? (
-              <MaterialIcons name="pause" size={30} color="#00D1FF" />
+              <MaterialIcons name="pause" size={30} color={Colors.blue} />
             ) : (
-              <MaterialIcons name="play-arrow" size={30} color="#00D1FF" />
+              <MaterialIcons name="play-arrow" size={30} color={Colors.blue} />
             )}
           </TouchableRipple>
                 </View>

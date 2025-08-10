@@ -4,11 +4,12 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
+  I18nManager,
 } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import {MaterialIcons} from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 let { width, height } = Dimensions.get("window");
 import { View, Text, Animated } from "react-native";
 import SearchBar from "../../../components/SearchBar";
@@ -23,6 +24,9 @@ import { TouchableRipple } from "react-native-paper";
 import StyleSheet from "react-native-media-query";
 import { RFValue } from "react-native-responsive-fontsize";
 import { ImageBackground } from "react-native";
+import Lineargradient from "../../../components/LinearGradient";
+import Goback from "../../../components/Goback";
+import ArrowScroll from "../../../components/ArrowScroll";
 
 const HEADER_MAX_HEIGHT = height * 0.65;
 const HEADER_MIN_HEIGHT = height * 0.3;
@@ -32,8 +36,8 @@ const ReaderSearch = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, RFValue(290)],
-    outputRange: [700, 0],
+    inputRange: [0, 300], // Strictly increasing
+    outputRange: I18nManager.isRTL ? [-500, 0] : [500, 0],
     extrapolate: "clamp",
   });
 
@@ -52,16 +56,20 @@ const ReaderSearch = () => {
 
   const { name, Chapterid, chapter_arab } = params;
 
-  const { isPlaying, languages, togglePlayback, playTrack, loading } =
-    useGlobalContext();
+  const {
+    isPlaying,
+    languages,
+    setTrackList,
+    togglePlayback,
+    playTrack,
+    loading,
+  } = useGlobalContext();
 
   const [activeButton, setActiveButton] = useState("button1");
 
-  
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [quranData, setQuranData] = useState([]);
- 
 
   const flashListRef = useRef(null);
 
@@ -73,64 +81,62 @@ const ReaderSearch = () => {
 
   useEffect(() => {
     getReciter();
-   
   }, []);
 
-
   //get surah info
-
-  
 
   const getReciter = async () => {
     try {
       const data = await fetchSuwar();
-      
+
       if (!data?.recitations || !NewData?.recitations) {
         console.warn("Missing recitations data");
         return;
       }
-  
+
       // Create a Map to ensure unique IDs
       const uniqueReciters = new Map();
-  
+
       // Helper function to process recitations
       const processRecitations = (recitations) => {
-        recitations.forEach(reciter => {
+        recitations.forEach((reciter) => {
           // Skip if reciter is invalid or has inactive status
           if (!reciter?.id || reciter.status === "inactive") return;
-          
+
           // Only add if ID doesn't exist
           if (!uniqueReciters.has(reciter.id)) {
             uniqueReciters.set(reciter.id, reciter);
           }
         });
       };
-  
+
       // Process both data sources
       processRecitations(data.recitations);
       processRecitations(NewData.recitations);
-  
+
       // Convert to array, filter, sort, and add position
       const filteredData = Array.from(uniqueReciters.values())
-        .filter(item => item.id !== 8)
+        .filter((item) => item.id !== 8)
         .sort((a, b) => a.id - b.id) // Sort by ID to ensure consistent order
         .map((item, index) => ({
           ...item,
-          position: index + 1 // Add 1-based position number
+          position: index + 1, // Add 1-based position number
         }));
-  
+
       setQuranData(filteredData);
-      
+
       // For debugging:
-      console.log('Processed data:', filteredData.map(item => 
-        `Pos: ${item.position}, ID: ${item.id}, Name: ${item.name}`));
-        
+      console.log(
+        "Processed data:",
+        filteredData.map(
+          (item) => `Pos: ${item.position}, ID: ${item.id}, Name: ${item.name}`
+        )
+      );
     } catch (error) {
       console.error("Error fetching reciters:", error);
       // Optionally set error state here
     }
   };
-  
 
   const handleButtonPress = (button) => {
     setActiveButton(button);
@@ -181,7 +187,8 @@ const ReaderSearch = () => {
     }
   }, [searchQuery]);
 
-  const PlayAuto = async (reciterId) => {
+  const playAuto = async (reciterId, index) => {
+    console.log(reciterId, index);
     playTrack(
       {
         id: reciterId,
@@ -192,9 +199,17 @@ const ReaderSearch = () => {
         artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
           .name,
         titleAR: chapter_arab,
+        index,
       },
       Chapterid
     );
+    const trackList = quranData.map((data) => ({
+      id: Chapterid,
+      titleAR: chapter_arab,
+      title: name,
+      artist: quranData,
+    }));
+    setTrackList(trackList);
   };
 
   return (
@@ -230,40 +245,21 @@ const ReaderSearch = () => {
             </Text>
           </View>
 
-          {isPlaying ? (
-            <View>
-            <TouchableRipple
-              onPress={togglePlayback}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="pause" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
-        ) : (
-          <View>
-            <TouchableRipple
-              onPress={() => PlayAuto(1)}
-              rippleColor="rgba(0, 209, 255, 0.2)"
-              style={styles.playPauseButton}
-              borderless={true}
-            >
-              <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-            </TouchableRipple>
-          </View>
-          )}
+          <TouchableRipple
+            onPress={isPlaying ? togglePlayback : () => playAuto(1, Chapterid)}
+            rippleColor="rgba(0, 209, 255, 0.2)"
+            style={styles.playPauseButton}
+            borderless
+          >
+            <MaterialIcons
+              name={isPlaying ? "pause" : "play-arrow"}
+              size={24}
+              color={Colors.blue}
+            />
+          </TouchableRipple>
         </View>
       </Animated.View>
-
-      <TouchableRipple
-        onPress={() => router.back()}
-        rippleColor="rgba(255, 255, 255, 0.2)"
-        style={styles.backButton}
-        borderless={true}
-      >
-        <MaterialIcons name="arrow-back" size={24} color="white" />
-      </TouchableRipple>
+      <Goback />
 
       {/* Scroll Header */}
 
@@ -302,48 +298,24 @@ const ReaderSearch = () => {
               </Text>
             </View>
 
-            {isPlaying ? (
-              <View>
-                <TouchableRipple
-                  onPress={togglePlayback}
-                  rippleColor="rgba(0, 209, 255, 0.2)"
-                  style={styles.playPauseButton}
-                  borderless={true}
-                >
-                  <MaterialIcons name="pause" size={24} color="#00D1FF" />
-                </TouchableRipple>
-              </View>
-            ) : (
-              <View>
-                <TouchableRipple
-                  onPress={() => PlayAuto(1)}
-                  rippleColor="rgba(0, 209, 255, 0.2)"
-                  style={styles.playPauseButton}
-                  borderless={true}
-                >
-                  <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-                </TouchableRipple>
-              </View>
-            )}
+            <TouchableRipple
+              onPress={
+                isPlaying ? togglePlayback : () => playAuto(1, Chapterid)
+              }
+              rippleColor="rgba(0, 209, 255, 0.2)"
+              style={styles.playPauseButton}
+              borderless
+            >
+              <MaterialIcons
+                name={isPlaying ? "pause" : "play-arrow"}
+                size={24}
+                color={Colors.blue}
+              />
+            </TouchableRipple>
           </View>
-
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
-            ]}
-            style={{
-              width: width,
-              height: height * 0.1,
-              position: "absolute",
-              zIndex: 1,
-              bottom: 0,
-            }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 2 }}
-          />
+          
+               {/*LinearGradient */}
+          <Lineargradient />
         </ImageBackground>
 
         {/* button group */}
@@ -429,13 +401,7 @@ const ReaderSearch = () => {
           />
         )}
         {activeButton === "button2" && (
-          <Details
-            scrollY={scrollY}
-            languages={languages}
-            
-            
-            id={Chapterid}
-          />
+          <Details scrollY={scrollY} languages={languages} id={Chapterid} />
         )}
 
         {activeButton === "button3" && <Read id={Chapterid} />}
@@ -448,14 +414,7 @@ const ReaderSearch = () => {
           },
         ]}
       >
-        <TouchableRipple
-          onPress={scrollToTop}
-          rippleColor="rgba(255, 255, 255, 0.2)"
-          style={styles.buttonScroll}
-          borderless={true}
-        >
-          <MaterialIcons name="arrow-upward" size={24} color="white" />
-        </TouchableRipple>
+        <ArrowScroll scrollToTop={scrollToTop} />
       </Animated.View>
     </View>
   );
@@ -464,7 +423,7 @@ const ReaderSearch = () => {
 const { styles } = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#181A3C",
+    backgroundColor: Colors.background,
   },
 
   headerImage: {
@@ -537,23 +496,6 @@ const { styles } = StyleSheet.create({
     alignItems: "center",
   },
 
-  buttonScroll: {
-    width: 48,
-    height: 48,
-    right: 16,
-    borderRadius: 50,
-    position: "absolute",
-    zIndex: 999,
-    backgroundColor: Colors.tint,
-    bottom: 170,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 50,
-
-    "@media (min-width: 700px)": {
-      right: 32,
-    },
-  },
   buttonText: {
     color: Colors.textGray,
     marginBottom: 8,
@@ -574,11 +516,10 @@ const { styles } = StyleSheet.create({
   playPauseButton: {
     width: 48,
     height: 48,
-    backgroundColor: "#454B8C",
+    backgroundColor: Colors.barbottom,
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    
   },
 
   playPauseButtonSmall: {
@@ -609,23 +550,6 @@ const { styles } = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  backButton: {
-    position: "absolute",
-    width: 48,
-    height: 48,
-    top: 44,
-    left: 16,
-    zIndex: 99,
-    elevation: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#454B8C",
-    borderRadius: 50,
-    "@media (min-width: 700px)": {
-      left: 32,
-    },
-  },
-
   smallHeader: {
     position: "absolute",
     top: 0,
@@ -640,7 +564,5 @@ const { styles } = StyleSheet.create({
     zIndex: 2,
   },
 });
-
-
 
 export default ReaderSearch;

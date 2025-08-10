@@ -4,22 +4,20 @@ import {
   ImageBackground,
   ScrollView,
   Image,
-  TouchableOpacity,
+  
   StyleSheet,
-  Button,
-  Alert,
-  TextInput,
+  
   Linking,
   I18nManager,
 } from "react-native";
 
-import React, { useEffect, useState } from "react";
+import  { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import {  MaterialIcons } from "@expo/vector-icons";
 
 import { router } from "expo-router";
-import { Modal, Switch, TouchableRipple } from "react-native-paper";
+import {  Switch, TouchableRipple } from "react-native-paper";
 import { Colors } from "../../../constants/Colors";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 
@@ -43,7 +41,7 @@ const Setting = () => {
         <View style={styles.card}>
           <ImageBackground
             resizeMode="cover"
-            source={require("../../../assets/images/SplashFK.png")}
+            source={require("../../../assets/images/SplashIndex.png")}
             style={styles.imageBackground}
           >
             <View style={styles.imageContent}>
@@ -69,7 +67,7 @@ const Setting = () => {
               rippleColor="rgb(200, 200, 200,0.8)"
               onPress={() =>
                 Linking.openURL(
-                  "https://www.paypal.com/ncp/payment/N47ELNDDGHLVC"
+                  "https://www.paypal.com/ncp/payment/4GFTTGH38F4EC"
                 )
               }
               style={styles.donateButton}
@@ -171,62 +169,7 @@ const Setting = () => {
           </View>
         </TouchableRipple>
 
-        {/* <Modal
-           visible={isVisible}
-           animationType="slide"
-           transparent={true}
-           onRequestClose={() => setIsVisible(false)}
-         >
-           <View style={styles.modalContainer}>
-             <View style={styles.modalContent}>
-               <Text style={styles.title}>
-                 {languages ? "أدخل مبلغ التبرع" : "Enter Donation Amount"}{" "}
-               </Text>
-
-               <TextInput
-                 style={styles.input}
-                 placeholder="$0.00"
-                 keyboardType="numeric"
-                 value={payableAmount}
-                 onChangeText={setPayableAmount}
-                 autoFocus={true}
-               />
-
-               <View style={styles.buttonContainer}>
-                 <TouchableOpacity
-                   style={[styles.button, styles.ButtonD]}
-                     onPress={async () => {
-                      if(payableAmount>0){
-
-                         setLoading(true)
-                       await initializePaymentSheet().then(async () => {
-                         openPaymentSheet();
-                       });
-                      }
-                     
-                     }}
-                
-                 >
-                   <Text style={styles.buttonText}>
-                    {load? languages? "الرجاء الانتظار...":"Please wait..." : 
-                        languages
-                       ? "تبرع"
-                       : "Donate"}
-                   </Text>
-                 </TouchableOpacity>
-
-                 <TouchableOpacity
-                   style={[styles.button, styles.cancelButton]}
-                   onPress={() => setIsVisible(false)}
-                 >
-                   <Text style={styles.buttonText}>
-                     {languages ? "إلغاء" : "Cancel"}
-                   </Text>
-                 </TouchableOpacity>
-               </View>
-             </View>
-           </View>
-         </Modal> */}
+     
       </ScrollView>
     </SafeAreaView>
   );
@@ -289,14 +232,14 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#00BCE5",
+    backgroundColor: Colors.blue,
     borderRadius: 20,
     overflow: "hidden",
     marginTop: 20,
     alignSelf: "center",
   },
   donateButtonText: {
-    color: "white",
+    color: Colors.background,
     fontSize: 18,
     fontWeight: "bold",
   },

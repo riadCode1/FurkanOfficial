@@ -18,7 +18,7 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
           styles.animatedView,
           {
             borderColor: isFocused ? Colors.blue : "transparent",
-            backgroundColor: Colors.backgroundTint,
+            backgroundColor: Colors.barbottom,
             width: width * 0.93,
           },
         ]}

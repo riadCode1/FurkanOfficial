@@ -154,7 +154,7 @@ const {styles} = StyleSheet.create({
     justifyContent: "space-between",
   },
   Color: {
-    backgroundColor: Colors.tint,
+    backgroundColor: Colors.barbottom,
   },
   buttonContent: {
     flexDirection: "row",

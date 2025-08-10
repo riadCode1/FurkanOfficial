@@ -122,10 +122,10 @@ const {styles} = StyleSheet.create({
   },
   text: {
     
-    fontSize: (18), // Responsive font size
+    fontSize: 18, // Responsive font size
     fontFamily: 'DMSans-Regular',
     textAlign: "center", // Changed to right for Arabic text
-    lineHeight: (30),
+    
     color: '#2D2926',
     
   },

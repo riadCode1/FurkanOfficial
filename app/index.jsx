@@ -25,7 +25,7 @@ const Index = () => {
     <ImageBackground
       contentFit="cover"
       
-      source={require("../assets/images/SplashFK.png")}
+      source={require("../assets/images/SplashIndex.png")}
       style={styles.imageBackground}
     >
       
@@ -33,17 +33,10 @@ const Index = () => {
       <View style={styles.container}>
         <Image
           style={styles.logo}
-          resizeMode="contain"
+          resizeMode="cover"
           source={require("../assets/images/logoIndex.png")}
         />
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Furkan</Text>
-          <Image
-            style={styles.arabicText}
-            resizeMode="contain"
-            source={require("../assets/images/الفرقان.png")}
-          />
-        </View>
+       
       </View>
     </ImageBackground>
    
@@ -58,10 +51,12 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
+     height: 230,
+    width: 144,
   },
   logo: {
-    height: 150,
-    width: 150,
+    height: "100%",
+    width: "100%",
     
   },
   textContainer: {

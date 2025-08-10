@@ -351,7 +351,7 @@ export const dataArray = [
   {
     id: 65,
     name: " حمد سنان",
-    image: "https://static.old.islamway.net/uploads/scholars/hamd-sannan.jpg",
+    image: "https://ar.assabile.com/media/person/280x219/hamad-sinan.png",
   },
   {
     id: 66,

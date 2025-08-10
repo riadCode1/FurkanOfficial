@@ -11,7 +11,8 @@ import TrackPlayer from "react-native-track-player";
 import { useSetupTrackPlayer } from "@/hooks/useSetupTrackPlayer";
 import { playbackService } from "../constants/playbackService";
 import { Linking, StatusBar } from "react-native";
-
+import * as NavigationBar from 'expo-navigation-bar';
+import { Colors } from "../constants/Colors";
 
 
 
@@ -22,6 +23,20 @@ SplashScreen.preventAutoHideAsync();
 TrackPlayer.registerPlaybackService(() => playbackService);
 
 export default function RootLayout() {
+
+// native tab bar 
+
+ useEffect(() => {
+      NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+      NavigationBar.setButtonStyleAsync(Colors.barbottom); // or 'dark'
+  
+      return () => {
+        // Optional: reset on unfocus
+        NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+      };
+   }, [])
+
+
   const handleTrackPlayerLoaded = useCallback(() => {
     SplashScreen.hideAsync();
   }, []);

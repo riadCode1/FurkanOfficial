@@ -21,31 +21,20 @@ import { Image } from "expo-image";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as Updates from "expo-updates";
-import * as NavigationBar from 'expo-navigation-bar';
-import { useFocusEffect } from '@react-navigation/native'
+import Carousel from 'react-native-reanimated-carousel';
 
 let { width } = Dimensions.get("window");
 
 const Index = () => {
 
-   useEffect(() => {
-      NavigationBar.setBackgroundColorAsync(Colors.barbottom);
-      NavigationBar.setButtonStyleAsync(Colors.barbottom); // or 'dark'
-  
-      return () => {
-        // Optional: reset on unfocus
-        NavigationBar.setBackgroundColorAsync(Colors.barbottom);
-      };
-   }, [])
+   
    
  
-    const handleTrackPlayerLoaded = useCallback(() => {
-      SplashScreen.hideAsync();
-    }, []);
+    
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
-  const ITEM_WIDTH = width * 0.8;
-  const SPACING = 16;
+  const ITEM_WIDTH = width ;
+ const ITEM_HEIGHT = 150; 
   const { setLanguages, languages, modalVisible, loading } = useGlobalContext();
 
   const groupedChapters = [
@@ -102,9 +91,11 @@ const Index = () => {
     }
   };
 
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <SafeAreaView  style={styles.container}>
+      <ScrollView nestedScrollEnabled={true} decelerationRate="fast" contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Image
             contentFit="cover"
@@ -119,7 +110,7 @@ const Index = () => {
             style={{
               paddingHorizontal: 16,
               marginBottom: 16,
-              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
             }}
@@ -199,7 +190,7 @@ const Index = () => {
             style={{
               paddingHorizontal: 16,
               marginBottom: 16,
-              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              flexDirection:  "row",
               justifyContent: "space-between",
               alignItems: "center",
             }}
@@ -248,49 +239,43 @@ const Index = () => {
             </TouchableOpacity>
           </View>
 
-          <FlatList
-            horizontal
-            data={groupedChapters}
-            keyExtractor={(_, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={ITEM_WIDTH + SPACING}
-            decelerationRate={5}
-            contentContainerStyle={{
-              paddingHorizontal: SPACING,
-            }}
-            renderItem={({ item: group, index }) => (
-              <View
-                key={index}
-                style={{
-                  width: ITEM_WIDTH,
-                  marginRight: SPACING,
-                }}
-              >
-                <FlatList
-                  data={group}
-                  keyExtractor={(item) => item.id.toString()}
-                  
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({ item }) => (
-                    <ReadingSurah
-                      item={item}
-                      languages={languages}
-                      loading={loading}
-                      name={item.name_simple}
-                      arab_name={item.translated_name.name}
-                      chapter_arab={item.name_arabic}
-                      Chapterid={item.id}
-                      verses={item.verses_count}
-                      style={{
-                        width: "48%",
-                        marginBottom: SPACING,
-                      }}
-                    />
-                  )}
-                />
-              </View>
-            )}
-          />
+          {/*Carousel */}
+
+           <Carousel
+      width={ITEM_WIDTH}
+      height={ITEM_HEIGHT}
+      data={groupedChapters}
+      mode="parallax" // smooth scroll
+      loop={true}
+      autoPlay={false}
+      style={{ alignSelf: 'flex-start' }}
+      pagingEnabled
+      snapEnabled
+      
+    
+       
+      modeConfig={{
+        parallaxScrollingScale: 0.95,
+        parallaxScrollingOffset: 50,
+      }}
+      renderItem={({ item: group }) => (
+        <View style={{marginLeft:10}}>
+          {group.map((item) => (
+            <ReadingSurah
+              key={item.id}
+              item={item}
+              languages={languages}
+              loading={loading}
+              name={item.name_simple}
+              arab_name={item.translated_name.name}
+              chapter_arab={item.name_arabic}
+              Chapterid={item.id}
+              verses={item.verses_count}
+            />
+          ))}
+        </View>
+      )}
+    />
         </View>
 
         {/* Listen to Quran */}
@@ -299,7 +284,7 @@ const Index = () => {
             style={{
               paddingHorizontal: 16,
               marginBottom: 16,
-              flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+              flexDirection:  "row",
               justifyContent: "space-between",
               alignItems: "center",
             }}
@@ -348,7 +333,7 @@ const { styles } = StyleSheet.create({
   header: {
     marginHorizontal:16,
     width: 160,
-    height: 50,
+    height: 60,
     marginTop: 20, 
     marginRight:16,
     alignSelf: "flex-start",

@@ -414,7 +414,7 @@ const {styles} = StyleSheet.create({
     fontSize: 12,
   },
   Color: {
-    backgroundColor: Colors.tint,
+    backgroundColor: Colors.barbottom,
   },
 
   menuContainer: {

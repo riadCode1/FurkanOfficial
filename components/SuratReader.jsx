@@ -107,7 +107,7 @@ const { styles } = StyleSheet.create({
     justifyContent: "center",
   },
   Color: {
-    backgroundColor: Colors.tint,
+    backgroundColor: Colors.barbottom,
     height: 75,
   },
 

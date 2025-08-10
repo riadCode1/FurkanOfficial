@@ -29,7 +29,7 @@ const ReadingSurah = ({
            <LottieView
                             source={require("../assets/images/load3.json")}
                             style={{ width: "100%", height: "100%",overflow:"hidden"}}
-                            resizeMode="contain"
+                            resizeMode="cover"
                             autoPlay
                             colorFilters={[
                               {
@@ -83,25 +83,26 @@ const ReadingSurah = ({
 
 const { ids, styles } = StyleSheet.create({
   cardContainer: {
-    width: width,
+    width: width*0.85,
     marginBottom:8,
     
     paddingVertical:8,
     
     flexDirection:"row",
-    overflow: "hidden",
+    
     alignItems:"center",
     
 
 
-    "@media (min-width: 700px)": {
+    "@media (min-width: 768px)": {
       width: width*2,
     },
   },
   Loti:{
-    width: 60,
+    width: 160,
             height: 60,
-            
+            marginBottom:12,
+            borderRadius:5,
             overflow: "hidden",
             justifyContent:"space-between",
             

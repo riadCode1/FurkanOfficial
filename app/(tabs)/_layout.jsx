@@ -139,11 +139,11 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
                     <MaterialIcons
                       name="home"
                       size={24}
-                      color={focused ? Colors.blue : Colors.textTab}
+                      color={focused ? Colors.blue : Colors.textGray}
                     />
                     <Text
                       style={{
-                        color: focused ? Colors.blue : Colors.textTab,
+                        color: focused ? Colors.blue : Colors.textGray,
                         fontSize: 12,
                       }}
                     >
@@ -180,11 +180,11 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
                     <MaterialIcons
                       name="search"
                       size={24}
-                      color={focused ? Colors.blue : Colors.textTab}
+                      color={focused ? Colors.blue : Colors.textGray}
                     />
                     <Text
                       style={{
-                        color: focused ? Colors.blue : Colors.textTab,
+                        color: focused ? Colors.blue : Colors.textGray,
                         fontSize: 12,
                       }}
                     >
@@ -221,11 +221,11 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
                     <Feather
                       name="download"
                       size={24}
-                      color={focused ? Colors.blue : Colors.textTab}
+                      color={focused ? Colors.blue : Colors.textGray}
                     />
                     <Text
                       style={{
-                        color: focused ? Colors.blue : Colors.textTab,
+                        color: focused ? Colors.blue : Colors.textGray,
                         fontSize: 12,
                       }}
                     >
@@ -262,11 +262,11 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
                     <MaterialIcons
                       name="settings"
                       size={24}
-                      color={focused ? Colors.blue : Colors.textTab}
+                      color={focused ? Colors.blue : Colors.textGray}
                     />
                     <Text
                       style={{
-                        color: focused ? Colors.blue : Colors.textTab,
+                        color: focused ? Colors.blue : Colors.textGray,
                         fontSize: 12,
                       }}
                     >

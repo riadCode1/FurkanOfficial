@@ -20,8 +20,9 @@ export const Colors = {
     textGray:"#A9B1BC",
     textTab:"#A1AAF1",
     border:"#9B9EFF",
-    blue:"#39DBF3",
-    background: '#181A3C',
+    blue:"#03DAC5",
+    background: '#111223',
+    backgroundRGB:"rgba(30,30,30,0.5)",
     backgroundTint: '#343C66',
     tint: tintColorDark,
     icon: '#9BA1A6',
@@ -29,6 +30,6 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     rgb:"rgb(52,60,102)",
-    barbottom :'#393F79'
+    barbottom :'#343544'
 
 };

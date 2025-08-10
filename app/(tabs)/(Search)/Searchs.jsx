@@ -21,6 +21,7 @@ import ReaderFilter from "../../../components/ReaderFilter";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import SearchBar from "../../../components/SearchBar";
 
+
 let { width, height } = Dimensions.get("window");
 
 const Search = () => {
@@ -43,7 +44,7 @@ const Search = () => {
   };
 
   const getBackgroundColor = (button) => {
-    return activeButton === button ? Colors.tintLight : Colors.rgb;
+    return activeButton === button ? Colors.barbottom : "#222333";
   };
 
   useEffect(() => {

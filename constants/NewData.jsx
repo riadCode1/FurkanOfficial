@@ -210,8 +210,8 @@ export const NewData = {
         reciter_name: "Ali Djabir",
         style: "Murattal",
         translated_name: {
-          name: "علي جابر",
-          language_name: "arabic",
+          name: " جابر علي",
+          language_name: "arabic"
         },
       },
 

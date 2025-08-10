@@ -1,4 +1,4 @@
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, I18nManager } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RadioButton, TouchableRipple } from "react-native-paper";
@@ -42,7 +42,7 @@ const Languagues = () => {
         style={styles.backButton}
         borderless={true}
       >
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <Ionicons name={I18nManager.isRTL? "arrow-forward": "arrow-back"} size={24} color="white" />
       </TouchableRipple>
 
    
@@ -66,8 +66,8 @@ const Languagues = () => {
               value="first"
               status={checked === "first" ? "checked" : "unchecked"}
               onPress={handleFirst}
-              uncheckedColor="#00D1FF"
-              color="#00D1FF"
+              uncheckedColor={Colors.blue}
+              color={Colors.blue}
               theme={"primary"}
             />
           </View>
@@ -86,8 +86,8 @@ const Languagues = () => {
               value="second"
               status={checked === "second" ? "checked" : "unchecked"}
               onPress={handleSecond}
-              uncheckedColor="#00D1FF"
-              color="#00D1FF"
+              uncheckedColor={Colors.blue}
+              color={Colors.blue}
               theme={"primary"}
             />
           </View>
@@ -121,7 +121,7 @@ const { styles } = StyleSheet.create({
     elevation: 50,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#454B8C",
+    backgroundColor: Colors.barbottom,
     borderRadius: 50,
     "@media (min-width: 700px)": {
       left: 32,

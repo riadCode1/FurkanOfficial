@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { TouchableOpacity, Dimensions, StatusBar } from "react-native";
+import {
+  TouchableOpacity,
+  Dimensions,
+  StatusBar,
+  I18nManager,
+} from "react-native";
 import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -14,11 +19,15 @@ import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
-import { TouchableRipple } from "react-native-paper";
+
 
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { Image } from "expo-image";
 import { ImageBackground } from "react-native";
+import TogglePlay from "../../../components/TogglePlay";
+import Lineargradient from "../../../components/LinearGradient";
+import Goback from "../../../components/Goback";
+import ArrowScroll from "../../../components/ArrowScroll";
 
 const HEADER_MAX_HEIGHT = 420;
 const HEADER_MIN_HEIGHT = height * 0.25;
@@ -39,14 +48,13 @@ const ReaderSurah = () => {
 
   const ButtonTranslate = scrollY.interpolate({
     inputRange: [0, 300], // Strictly increasing
-    outputRange: [500, 0], // Descending output
+    outputRange: I18nManager.isRTL ? [-500, 0] : [500, 0],
     extrapolate: "clamp",
   });
 
   const params = useGlobalSearchParams();
   const { arab_name, name, id } = params;
 
- 
   const {
     languages,
     setIsPlaying,
@@ -95,8 +103,6 @@ const ReaderSurah = () => {
           console.error("Error fetching recitations: ", error);
         });
     }
-
-   
   }, [languages, searchQuery, id, color2, loading]);
 
   const getChapter = async () => {
@@ -133,7 +139,7 @@ const ReaderSurah = () => {
     Id,
     arabicCh
   ) => {
-    console.log(trackId)
+    console.log(trackId);
     playTrack(
       {
         id: Id,
@@ -153,18 +159,19 @@ const ReaderSurah = () => {
       artistAR: arab_name,
     }));
     setTrackList(trackList);
-
   };
-  const playAuto = ( uri,
+  const playAuto = (
+    uri,
     trackId,
     chapterName,
     names,
     arabName,
     Id,
-    arabicCh) => {
+    arabicCh
+  ) => {
     playTrack(
       {
-       id: Id,
+        id: Id,
         url: uri,
         title: chapters,
         artist: names,
@@ -193,27 +200,82 @@ const ReaderSurah = () => {
     return chapters;
   }, [chapters]);
 
+
+  // render FlatlistHeader
+
+   const renderHeader = () => (
+    <>
+      {/* Background Image */}
+      <ImageBackground
+        source={{
+          uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+        }}
+        blurRadius={20}
+        style={styles.headerImage}
+      >
+        <View style={styles.imageContainer}>
+          <Image
+            contentFit="cover"
+            source={{
+              uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+            }}
+            style={styles.image}
+          />
+        </View>
+
+        <View style={styles.BotHeader}>
+          <View style={{ width: 285 }}>
+            <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
+              {languages ? arab_name : name}
+            </Text>
+            <Text
+              style={{
+                color: Colors.textGray,
+                fontSize: 16,
+                textAlign: "left",
+              }}
+            >
+              114 {languages ? "سورة" : "Surah"}
+            </Text>
+          </View>
+
+          <TogglePlay
+            isPlaying={isPlaying}
+            playAuto={playAuto}
+            togglePlayback={togglePlayback}
+            name={name}
+            id={id}
+            arab_name={arab_name}
+            dataAudio={dataAudio}
+          />
+        </View>
+
+        <Lineargradient />
+      </ImageBackground>
+
+      {/* Search bar */}
+      <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
+        <SearchBar
+          title={languages ? "ابحث عن سورة" : "Search Chapter"}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filteredData={memoizedFilteredData}
+        />
+      </View>
+    </>
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="transparent" />
 
       {/* Small Header */}
       <Animated.View
-        style={[
-          styles.smallHeader,
-          {
-            opacity: smallHeaderOpacity,
-          },
-        ]}
+        style={[styles.smallHeader, { opacity: smallHeaderOpacity }]}
       >
         <View style={styles.chapterSmall}>
           <View style={{ width: 200 }}>
-            <Text
-              style={[
-                styles.chapterTextSmall,
-                { fontSize: 20, textAlign: "left" },
-              ]}
-            >
+            <Text style={[styles.chapterTextSmall, { fontSize: 20 }]}>
               {languages
                 ? arab_name?.length > 15
                   ? arab_name.slice(0, 15) + "..."
@@ -222,230 +284,65 @@ const ReaderSurah = () => {
                 ? name.slice(0, 15) + "..."
                 : name}
             </Text>
-            <Text
-              style={{
-                color: Colors.textGray,
-                fontSize: 14,
-                textAlign: "left",
-              }}
-            >
+            <Text style={{ color: Colors.textGray, fontSize: 14 }}>
               114 {languages ? "سورة" : "Surah"}
             </Text>
           </View>
 
-          {isPlaying ? (
-            <View>
-              <TouchableRipple
-                onPress={togglePlayback}
-                rippleColor="rgba(0, 209, 255, 0.2)"
-                style={styles.playPauseButton}
-                borderless={true}
-              >
-                <MaterialIcons name="pause" size={24} color="#00D1FF" />
-              </TouchableRipple>
-            </View>
-          ) : (
-            <View>
-              <TouchableRipple
-                onPress={() =>
-                    playAuto(
-                      dataAudio[1 - 1]?.audio_url,
-                      1,
-                      "Al-Fatihah",
-                      name,
-                      arab_name,
-                      id,
-                      "الفاتحة",
-                     
-                    )
-                  }
-                rippleColor="rgba(0, 209, 255, 0.2)"
-                style={styles.playPauseButton}
-                borderless={true}
-              >
-                <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-              </TouchableRipple>
-            </View>
-          )}
+          <TogglePlay
+            isPlaying={isPlaying}
+            playAuto={playAuto}
+            togglePlayback={togglePlayback}
+            name={name}
+            id={id}
+            arab_name={arab_name}
+            dataAudio={dataAudio}
+          />
         </View>
       </Animated.View>
 
-      <TouchableRipple
-        onPress={() => router.back()}
-        rippleColor="rgba(255, 255, 255, 0.2)"
-        style={styles.backButton}
-        borderless={true}
-      >
-        <MaterialIcons name="arrow-back" size={24} color="white" />
-      </TouchableRipple>
+      <Goback />
 
       {/* Scroll Header */}
 
-      <Animated.ScrollView
-        ref={flashListRef}
+      
+
+        <FlashList
+
+ ListHeaderComponent={renderHeader}
+ ref={flashListRef}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: false }
         )}
-      >
-        <ImageBackground
-          source={{
-            uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+          contentContainerStyle={{
+            paddingBottom: 150,
           }}
-          blurRadius={20}
-          style={styles.headerImage}
-        >
-          <View style={[styles.imageContainer, {}]}>
-            <Image
-              contentFit="cover"
-              source={{
-                uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-              }}
-              style={styles.image}
+          data={searchQuery.length > 1 ? memoizedFilteredData : chapters}
+          estimatedItemSize={75}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <SuratReader
+              chapteID={item.id}
+              id={id}
+              setIsPlaying={setIsPlaying}
+              dataAudio={dataAudio}
+              reciterName={name}
+              data={item}
+              setSearchQuery={setSearchQuery}
+              setIDchapter={setIDchapter}
+              loading={loading}
+              arab_name={arab_name}
+              chapterAr={item.name_arabic}
+              chapterName={item.name_simple}
+              playAudio={playSound}
+              languages={languages}
+              color={color2}
+              setloading={setloading}
             />
-          </View>
-
-          <View style={styles.BotHeader}>
-            <View style={{ width: 285 }}>
-              <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
-                {languages ? arab_name : name}
-              </Text>
-              <Text
-                style={{
-                  color: Colors.textGray,
-                  fontSize: 16,
-                  textAlign: "left",
-                }}
-              >
-                114 {languages ? "سورة" : "Surah"}
-              </Text>
-            </View>
-
-            {isPlaying ? (
-              <View>
-                <TouchableRipple
-                  onPress={togglePlayback}
-                  rippleColor="rgba(0, 209, 255, 0.2)"
-                  style={styles.playPauseButton}
-                  borderless={true}
-                >
-                  <MaterialIcons name="pause" size={24} color="#00D1FF" />
-                </TouchableRipple>
-              </View>
-            ) : (
-              <View>
-                <TouchableRipple
-                  onPress={() =>
-                    playAuto(
-                      dataAudio[1 - 1]?.audio_url,
-                      1,
-                      "Al-Fatihah",
-                      name,
-                      arab_name,
-                      id,
-                      "الفاتحة",
-                     
-                    )
-                  }
-                  rippleColor="rgba(0, 209, 255, 0.2)"
-                  style={styles.playPauseButton}
-                  borderless={true}
-                >
-                  <MaterialIcons name="play-arrow" size={24} color="#00D1FF" />
-                </TouchableRipple>
-              </View>
-            )}
-          </View>
-
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
-              "rgba(24,26,60,1)",
-            ]}
-            style={{
-              width: width,
-              height: height * 0.1,
-              position: "absolute",
-              zIndex: 1,
-              bottom: 0,
-            }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 2 }}
-          />
-        </ImageBackground>
-
-        <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
-          <SearchBar
-            title={languages ? "ابحث عن سورة" : "Search Chapter"}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filteredData={memoizedFilteredData}
-          />
-        </View>
-
-        {searchQuery.length > 1 ? (
-          <FlashList
-            contentContainerStyle={{
-              paddingBottom: 150,
-            }}
-            data={memoizedFilteredData}
-            estimatedItemSize={70}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <SuratReader
-                chapteID={item.id}
-                id={id}
-                setIsPlaying={setIsPlaying}
-                dataAudio={dataAudio}
-                reciterName={name}
-                data={item}
-                setSearchQuery={setSearchQuery}
-                setIDchapter={setIDchapter}
-                loading={loading}
-                arab_name={arab_name}
-                chapterAr={item.name_arabic}
-                chapterName={item.name_simple}
-                playAudio={playSound}
-                languages={languages}
-                color={color2}
-                setloading={setloading}
-              />
-            )}
-          />
-        ) : (
-          <FlashList
-            contentContainerStyle={{
-              paddingBottom: 150,
-            }}
-            data={chapters}
-            estimatedItemSize={75}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <SuratReader
-                chapteID={item.id}
-                id={id}
-                setIsPlaying={setIsPlaying}
-                dataAudio={dataAudio}
-                reciterName={name}
-                data={item}
-                setSearchQuery={setSearchQuery}
-                setIDchapter={setIDchapter}
-                loading={loading}
-                arab_name={arab_name}
-                chapterAr={item.name_arabic}
-                chapterName={item.name_simple}
-                // playSound={playSound}
-                playAudio={playSound}
-                languages={languages}
-                color={color2}
-                setloading={setloading}
-              />
-            )}
-          />
-        )}
-      </Animated.ScrollView>
+          )}
+        />
+      
 
       <Animated.View
         style={[
@@ -455,42 +352,24 @@ const ReaderSurah = () => {
           },
         ]}
       >
-        <TouchableRipple
-          onPress={scrollToTop}
-          rippleColor="rgba(255, 255, 255, 0.2)"
-          style={styles.button}
-          borderless={true}
-        >
-          <MaterialIcons name="arrow-upward" size={24} color="white" />
-        </TouchableRipple>
+        <ArrowScroll scrollToTop={scrollToTop} />
       </Animated.View>
     </View>
   );
 };
 
+
+
+ 
+
+
 const { ids, styles } = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#181A3C",
+    backgroundColor: Colors.background,
   },
 
-  button: {
-    width: 48,
-    height: 48,
-    right: 16,
-    borderRadius: 50,
-    position: "absolute",
-    zIndex: 999,
-    backgroundColor: Colors.tint,
-    bottom: 170,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 50,
-
-    "@media (min-width: 700px)": {
-      right: 32,
-    },
-  },
+  
 
   chapterSmall: {
     flexDirection: "row",
@@ -580,7 +459,7 @@ const { ids, styles } = StyleSheet.create({
   playPauseButton: {
     width: 48,
     height: 48,
-    backgroundColor: "#454B8C",
+    backgroundColor: Colors.barbottom,
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
@@ -589,28 +468,14 @@ const { ids, styles } = StyleSheet.create({
   playPauseButtonSmall: {
     width: 48,
     height: 48,
-    backgroundColor: "#454B8C",
+    backgroundColor: Colors.blue,
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-  },
-
-  backButton: {
-    position: "absolute",
-    width: 48,
-    height: 48,
-    top: 44,
-    left: 16,
-    zIndex: 99,
-    elevation: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#454B8C",
-    borderRadius: 50,
-    "@media (min-width: 700px)": {
-      left: 32,
-    },
   },
 });
+
+
+
 
 export default ReaderSurah;
