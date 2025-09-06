@@ -10,7 +10,7 @@ import { Slot } from "expo-router";
 import TrackPlayer from "react-native-track-player";
 import { useSetupTrackPlayer } from "@/hooks/useSetupTrackPlayer";
 import { playbackService } from "../constants/playbackService";
-import { Linking, StatusBar } from "react-native";
+import { Linking, Platform, StatusBar } from "react-native";
 import * as NavigationBar from 'expo-navigation-bar';
 import { Colors } from "../constants/Colors";
 
@@ -28,24 +28,26 @@ TrackPlayer.registerPlaybackService(() => playbackService);
 
 export default function RootLayout() {
 
-  
+ 
+
+ 
 //new update
  useEffect(() => {
     const inAppUpdates = new SpInAppUpdates(false); // false = not debug
 
-    inAppUpdates.checkNeedsUpdate().then((result) => {
-      if (result.shouldUpdate) {
-        let updateOptions = {};
-
-        if (Platform.OS === "android") {
-          updateOptions = {
-            updateType: IAUUpdateKind.FLEXIBLE, // or IAUUpdateKind.IMMEDIATE
-          };
-        }
-
-        inAppUpdates.startUpdate(updateOptions);
-      }
-    });
+   inAppUpdates.checkNeedsUpdate().then((result) => {
+  if (result.shouldUpdate) {
+    let updateOptions: StartUpdateOptions = {};
+    if (Platform.OS === 'android') {
+      // android only, on iOS the user will be promped to go to your app store page
+      updateOptions = {
+        updateType: IAUUpdateKind.FLEXIBLE,
+      };
+    }
+    inAppUpdates.startUpdate(updateOptions); // https://github.com/SudoPlz/sp-react-native-in-app-updates/blob/master/src/types.ts#L78
+  }
+});
+console.log(inAppUpdates.startUpdate)
   }, []);
 
 

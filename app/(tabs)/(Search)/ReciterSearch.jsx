@@ -3,7 +3,7 @@ import {
   Dimensions,
   StatusBar,
   I18nManager,
-  Image,
+ 
 } from "react-native";
 import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
@@ -18,11 +18,11 @@ import SuratReader from "../../../components/SuratReader";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { ImageBackground } from "react-native";
 import TogglePlay from "../../../components/TogglePlay";
 import Lineargradient from "../../../components/LinearGradient";
 import Goback from "../../../components/Goback";
 import ArrowScroll from "../../../components/ArrowScroll";
+import { Image, ImageBackground } from "expo-image";
 
 const HEADER_MAX_HEIGHT = 420;
 const HEADER_MIN_HEIGHT = height * 0.25;

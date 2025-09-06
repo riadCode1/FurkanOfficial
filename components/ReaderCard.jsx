@@ -1,4 +1,4 @@
-import { View, Text, Image, } from "react-native";
+import { View, Text, } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
@@ -6,6 +6,7 @@ import { dataArray } from "../constants/RecitersImages";
 import LottieView from "lottie-react-native";
 import StyleSheet from 'react-native-media-query';
 import { Colors } from "../constants/Colors";
+import { Image } from "expo-image";
 
 const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
 
@@ -50,7 +51,7 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
             <View style={styles.imageContainer}>
               <Image
                 style={styles.image}
-                resizeMode="cover"
+                contentFit="cover"
                 source={{
                   uri: dataArray[id]?.image
                     ? dataArray[id]?.image
