@@ -14,7 +14,11 @@ import { Linking, StatusBar } from "react-native";
 import * as NavigationBar from 'expo-navigation-bar';
 import { Colors } from "../constants/Colors";
 
-
+import SpInAppUpdates, {
+  NeedsUpdateResponse,
+  IAUUpdateKind,
+  StartUpdateOptions,
+} from 'sp-react-native-in-app-updates';
 
 
 
@@ -23,6 +27,27 @@ SplashScreen.preventAutoHideAsync();
 TrackPlayer.registerPlaybackService(() => playbackService);
 
 export default function RootLayout() {
+
+  
+//new update
+ useEffect(() => {
+    const inAppUpdates = new SpInAppUpdates(false); // false = not debug
+
+    inAppUpdates.checkNeedsUpdate().then((result) => {
+      if (result.shouldUpdate) {
+        let updateOptions = {};
+
+        if (Platform.OS === "android") {
+          updateOptions = {
+            updateType: IAUUpdateKind.FLEXIBLE, // or IAUUpdateKind.IMMEDIATE
+          };
+        }
+
+        inAppUpdates.startUpdate(updateOptions);
+      }
+    });
+  }, []);
+
 
 // native tab bar 
 

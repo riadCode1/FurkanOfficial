@@ -4,16 +4,17 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "../context/GlobalProvider";
 
-const Ios = Platform.OS == "ios";
+
 let { width } = Dimensions.get("window");
 
 const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { languages } = useGlobalContext();
 
+  console.log("search3",searchQuery)
   return (
     <View style={styles.container}>
-      <Animated.View
+      <View
         style={[
           styles.animatedView,
           {
@@ -36,7 +37,7 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
           ]}
         />
 
-        {searchQuery?.length > 1 ? (
+        {searchQuery?.length >= 1 ? (
           <MaterialIcons
             onPress={() => setSearchQuery("")}
             name="close"
@@ -51,7 +52,7 @@ const SearchBar = ({ title, setSearchQuery, searchQuery }) => {
             color={Colors.textGray}
           />
         )}
-      </Animated.View>
+      </View>
     </View>
   );
 };

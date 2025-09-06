@@ -64,7 +64,7 @@ const ListenComp = React.memo(({
               <Image
                 contentFit="cover"
                 style={styles.image}
-                source={imageSource}
+                source={imageSource || require("../assets/images/noImage.jpg")}
                 cachePolicy="memory-disk"
               />
             </View>

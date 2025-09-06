@@ -51,6 +51,7 @@ const setupPlayer = async () => {
 
 		
 		
+		icon: require('../assets/images/Logo.png'),
 		
 	})
 

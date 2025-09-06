@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 
 import StyleSheet from 'react-native-media-query';
 import { useGlobalContext } from '../context/GlobalProvider';
+import { ActivityIndicator } from 'react-native-paper';
+import { Colors } from '../constants/Colors';
 
 
 const Read = ({ id }) => {
@@ -75,7 +77,12 @@ const Read = ({ id }) => {
       </View>
 
       {languages ? (
-        surahs.map((item) => (
+
+
+ loading ? (
+  <ActivityIndicator size="small" color={Colors.blue} />
+) : (
+   surahs.map((item) => (
           <View key={item.id.toString()} style={styles.item}>
             <Text style={styles.text}>{item.text_indopak}</Text>
             <View
@@ -94,8 +101,14 @@ const Read = ({ id }) => {
             </View>
           </View>
         ))
+)
+      
       ) : (
-        <Text style={styles.text}>{surahsEng.english}</Text>
+       loading ? (
+  <ActivityIndicator size="small" color={Colors.blue} />
+) : (
+  <Text style={styles.text}>{surahsEng.english}</Text>
+)
       )}
     </View>
   );

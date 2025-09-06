@@ -18,7 +18,10 @@ const Languagues = () => {
     saveCheck("first");
 
      try {
-      await Updates.reloadAsync(); // reloads the app like a restart
+      if(saveCheck==="first"){
+        await Updates.reloadAsync();
+      }
+       // reloads the app like a restart
     } catch (e) {
       console.error(e);
     }
@@ -28,7 +31,9 @@ const Languagues = () => {
     setLanguages(false);
     saveCheck("second");
     try {
-      await Updates.reloadAsync(); // reloads the app like a restart
+      if(saveCheck==="second"){
+        await Updates.reloadAsync();
+      } // reloads the app like a restart
     } catch (e) {
       console.error(e);
     }

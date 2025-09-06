@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
-  TouchableOpacity,
   Dimensions,
   StatusBar,
   I18nManager,
+  Image,
 } from "react-native";
 import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 let { width, height } = Dimensions.get("window");
 import { View, Text, Animated } from "react-native";
@@ -19,10 +17,7 @@ import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
-import { TouchableRipple } from "react-native-paper";
-
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { Image } from "expo-image";
 import { ImageBackground } from "react-native";
 import TogglePlay from "../../../components/TogglePlay";
 import Lineargradient from "../../../components/LinearGradient";
@@ -203,7 +198,8 @@ const ReciterSearch = () => {
 
   // render FlatlistHeader
 
-   const renderHeader = () => (
+  const renderHeader = useMemo(() => {
+  return (
     <>
       {/* Background Image */}
       <ImageBackground
@@ -215,7 +211,7 @@ const ReciterSearch = () => {
       >
         <View style={styles.imageContainer}>
           <Image
-            contentFit="cover"
+            resizeMode="cover"
             source={{
               uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
             }}
@@ -263,7 +259,8 @@ const ReciterSearch = () => {
         />
       </View>
     </>
-  );
+ );
+}, [id, languages, searchQuery, memoizedFilteredData, isPlaying, dataAudio]);
 
   return (
     <View style={styles.container}>
@@ -318,7 +315,7 @@ const ReciterSearch = () => {
           contentContainerStyle={{
             paddingBottom: 150,
           }}
-          data={searchQuery.length > 1 ? memoizedFilteredData : chapters}
+          data={searchQuery.length > 1 ? memoizedFilteredData : memoizedChapters}
           estimatedItemSize={75}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (

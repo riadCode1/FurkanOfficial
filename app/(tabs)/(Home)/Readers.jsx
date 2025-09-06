@@ -82,6 +82,7 @@ const Readers = () => {
   useEffect(() => {
     getReciter();
   }, []);
+  console.log("search2",searchQuery)
 
   //get surah info
 

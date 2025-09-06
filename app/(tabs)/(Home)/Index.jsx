@@ -57,7 +57,7 @@ const Index = () => {
       I18nManager.allowRTL(shouldBeRTL);
       I18nManager.forceRTL(shouldBeRTL);
 
-      Alert.alert("Restart", "App will restart to apply language direction.", [
+      Alert.alert("Restart", "App will restart to apply the language .", [
         {
           text: "OK",
           onPress: async () => {

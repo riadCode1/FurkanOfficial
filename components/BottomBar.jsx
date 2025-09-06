@@ -172,7 +172,7 @@ const {styles} = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderTopWidth: 1,
-    borderColor: "#00D1FF",
+    borderColor: Colors.blue,
     height: 60,
     borderRadius: 8,
     backgroundColor: Colors.barbottom,

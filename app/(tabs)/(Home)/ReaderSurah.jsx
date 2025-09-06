@@ -4,6 +4,7 @@ import {
   Dimensions,
   StatusBar,
   I18nManager,
+  Image,
 } from "react-native";
 import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
@@ -20,9 +21,8 @@ import SuratReader from "../../../components/SuratReader";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
 
-
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { Image } from "expo-image";
+
 import { ImageBackground } from "react-native";
 import TogglePlay from "../../../components/TogglePlay";
 import Lineargradient from "../../../components/LinearGradient";
@@ -200,70 +200,71 @@ const ReaderSurah = () => {
     return chapters;
   }, [chapters]);
 
-
   // render FlatlistHeader
 
-   const renderHeader = () => (
-    <>
-      {/* Background Image */}
-      <ImageBackground
-        source={{
-          uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-        }}
-        blurRadius={20}
-        style={styles.headerImage}
-      >
-        <View style={styles.imageContainer}>
-          <Image
-            contentFit="cover"
-            source={{
-              uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-            }}
-            style={styles.image}
-          />
-        </View>
-
-        <View style={styles.BotHeader}>
-          <View style={{ width: 285 }}>
-            <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
-              {languages ? arab_name : name}
-            </Text>
-            <Text
-              style={{
-                color: Colors.textGray,
-                fontSize: 16,
-                textAlign: "left",
+  const renderHeader = useMemo(() => {
+    return (
+      <>
+        {/* Background Image */}
+        <ImageBackground
+          source={{
+            uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
+          }}
+          blurRadius={20}
+          style={styles.headerImage}
+        >
+          <View style={styles.imageContainer}>
+            <Image
+              resizeMode="cover"
+              source={{
+                uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
               }}
-            >
-              114 {languages ? "سورة" : "Surah"}
-            </Text>
+              style={styles.image}
+            />
           </View>
 
-          <TogglePlay
-            isPlaying={isPlaying}
-            playAuto={playAuto}
-            togglePlayback={togglePlayback}
-            name={name}
-            id={id}
-            arab_name={arab_name}
-            dataAudio={dataAudio}
+          <View style={styles.BotHeader}>
+            <View style={{ width: 285 }}>
+              <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
+                {languages ? arab_name : name}
+              </Text>
+              <Text
+                style={{
+                  color: Colors.textGray,
+                  fontSize: 16,
+                  textAlign: "left",
+                }}
+              >
+                114 {languages ? "سورة" : "Surah"}
+              </Text>
+            </View>
+
+            <TogglePlay
+              isPlaying={isPlaying}
+              playAuto={playAuto}
+              togglePlayback={togglePlayback}
+              name={name}
+              id={id}
+              arab_name={arab_name}
+              dataAudio={dataAudio}
+            />
+          </View>
+
+          <Lineargradient />
+        </ImageBackground>
+
+        {/* Search bar */}
+        <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
+          <SearchBar
+            title={languages ? "ابحث عن سورة" : "Search Chapter"}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredData={memoizedFilteredData}
           />
         </View>
-
-        <Lineargradient />
-      </ImageBackground>
-
-      {/* Search bar */}
-      <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
-        <SearchBar
-          title={languages ? "ابحث عن سورة" : "Search Chapter"}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          filteredData={memoizedFilteredData}
-        />
-      </View>
-    </>
-  );
+      </>
+    );
+  }, [id, languages, searchQuery, memoizedFilteredData, isPlaying, dataAudio]);
 
   return (
     <View style={styles.container}>
@@ -303,46 +304,40 @@ const ReaderSurah = () => {
 
       <Goback />
 
-      {/* Scroll Header */}
-
-      
-
-        <FlashList
-
- ListHeaderComponent={renderHeader}
- ref={flashListRef}
+      <FlashList
+        ListHeaderComponent={renderHeader}
+        ref={flashListRef}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
-          contentContainerStyle={{
-            paddingBottom: 150,
-          }}
-          data={searchQuery.length > 1 ? memoizedFilteredData : chapters}
-          estimatedItemSize={75}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <SuratReader
-              chapteID={item.id}
-              id={id}
-              setIsPlaying={setIsPlaying}
-              dataAudio={dataAudio}
-              reciterName={name}
-              data={item}
-              setSearchQuery={setSearchQuery}
-              setIDchapter={setIDchapter}
-              loading={loading}
-              arab_name={arab_name}
-              chapterAr={item.name_arabic}
-              chapterName={item.name_simple}
-              playAudio={playSound}
-              languages={languages}
-              color={color2}
-              setloading={setloading}
-            />
-          )}
-        />
-      
+        contentContainerStyle={{
+          paddingBottom: 150,
+        }}
+        data={searchQuery.length > 1 ? memoizedFilteredData : memoizedChapters}
+        estimatedItemSize={75}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <SuratReader
+            chapteID={item.id}
+            id={id}
+            setIsPlaying={setIsPlaying}
+            dataAudio={dataAudio}
+            reciterName={name}
+            data={item}
+            setSearchQuery={setSearchQuery}
+            setIDchapter={setIDchapter}
+            loading={loading}
+            arab_name={arab_name}
+            chapterAr={item.name_arabic}
+            chapterName={item.name_simple}
+            playAudio={playSound}
+            languages={languages}
+            color={color2}
+            setloading={setloading}
+          />
+        )}
+      />
 
       <Animated.View
         style={[
@@ -358,18 +353,11 @@ const ReaderSurah = () => {
   );
 };
 
-
-
- 
-
-
 const { ids, styles } = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
-
-  
 
   chapterSmall: {
     flexDirection: "row",
@@ -474,8 +462,5 @@ const { ids, styles } = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-
-
 
 export default ReaderSurah;

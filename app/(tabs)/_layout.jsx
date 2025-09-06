@@ -88,7 +88,7 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
     track,
   } = useGlobalContext();
 
-  console.log(track);
+ 
   return (
     <View style={{ flex: 1 }}>
       {/* Tabs Component */}
@@ -311,7 +311,7 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
           >
             <View style={styles.modalOverlay}>
               <View style={styles.alertBox}>
-                <Text style={styles.alertMessage}>Connected !</Text>
+                <Text style={styles.alertMessage}>{languages? "تم  الاتصال بالانترنت!":"Connected !"} </Text>
               </View>
             </View>
           </Modal>
@@ -330,7 +330,7 @@ const TAB_BAR_HEIGHT = isTablet ? 70 : 60;
                 ]}
               >
                 <Text style={[styles.alertMessage, { color: "gray" }]}>
-                  No Internet Connection !
+                  {languages? "لا يتوفر اتصال بالإنترنت!": " No Internet Connection !"}
                 </Text>
               </View>
             </View>
