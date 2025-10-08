@@ -1,0 +1,41 @@
+{
+  "cli": {
+    "version": ">= 14.3.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+   "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+
+    },
+    "development:simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios":{
+        "simulator":true
+      } 
+    },
+    "preview": {
+       "distribution": "internal"
+     
+        },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    
+    "production": {
+
+      
+      
+      "android": {
+        "serviceAccountKeyPath": "./FurkanApp.json",
+        "track": "internal"
+        
+      }
+    }
+  }
+}
