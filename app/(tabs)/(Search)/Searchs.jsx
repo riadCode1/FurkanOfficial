@@ -2,13 +2,12 @@ import {
   View,
   Text,
   Platform,
-  Dimensions,
   FlatList,
   SafeAreaView,
+  useWindowDimensions,
 } from "react-native";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
-import StyleSheet from "react-native-media-query";
 import { fetchChater, fetchSuwar } from "../../API/QuranApi";
 import { router, useLocalSearchParams } from "expo-router";
 import { dataArray } from "@/constants/RecitersImages";
@@ -21,36 +20,30 @@ import ReaderFilter from "../../../components/ReaderFilter";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import SearchBar from "../../../components/SearchBar";
 
-
-let { width, height } = Dimensions.get("window");
-
 const Search = () => {
-  const { section } = useLocalSearchParams();  // ✅ GET PARAM FROM URL
+  const { width } = useWindowDimensions();
+  const { section } = useLocalSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setloading] = useState(false);
   const { languages } = useGlobalContext();
+  const [activeButton, setActiveButton] = useState("reciters");
 
-  const [activeButton, setActiveButton] = useState("reciters");  // ✅ Default state
-
+ 
   useEffect(() => {
-    if (section) {
-      setActiveButton(section);  // ✅ SET TAB FROM PARAM
-    }
+    if (section) setActiveButton(section);
   }, [section]);
 
   const handleButtonPress = (button) => {
     setActiveButton(button);
   };
 
-  const getBackgroundColor = (button) => {
-    return activeButton === button ? Colors.barbottom : "#222333";
-  };
+  const getBackgroundColor = (button) =>
+    activeButton === button ? Colors.barbottom : "#222333";
 
   useEffect(() => {
     if (searchQuery.length > 1) {
       setloading(true);
-
       Promise.all([fetchChater(searchQuery), fetchSuwar(searchQuery)])
         .then(([chapterData, suwarData]) => {
           const filteredChapters = chapterData.chapters.filter(
@@ -82,12 +75,8 @@ const Search = () => {
 
           setFilteredData([...filteredChapters, ...filteredRecitations]);
         })
-        .catch((error) => {
-          console.error("Error fetching data: ", error);
-        })
-        .finally(() => {
-          setloading(false);
-        });
+        .catch((error) => console.error("Error fetching data: ", error))
+        .finally(() => setloading(false));
     }
   }, [searchQuery]);
 
@@ -123,7 +112,7 @@ const Search = () => {
         title={
           languages
             ? "ابحث عن السورة أو القارئ..."
-            : " Search Chapter or Reciter..."
+            : "Search Chapter or Reciter..."
         }
       />
 
@@ -142,7 +131,10 @@ const Search = () => {
                 activeOpacity={1}
                 rippleColor="rgba(200, 200, 200, 0.1)"
                 onPress={() => handlePress(item)}
-                style={styles.touchable}
+                style={[
+                  styles.touchable,
+                  width >= 768 && { paddingHorizontal: 32 },
+                ]}
               >
                 <View style={{ flexDirection: "row", width: "100%", gap: 20 }}>
                   <View style={styles.imageContainer}>
@@ -167,10 +159,10 @@ const Search = () => {
 
                   <View style={styles.textContainer}>
                     <Text numberOfLines={1} style={styles.nameText}>
-                      {item.name_simple}
-                      {item?.reciter_name?.length > 25
-                        ? item.reciter_name.slice(0, 30) + "..."
-                        : item.reciter_name}
+                      {item.name_simple ||
+                        (item.reciter_name?.length > 25
+                          ? item.reciter_name.slice(0, 30) + "..."
+                          : item.reciter_name)}
                     </Text>
 
                     <Text style={styles.arabicText}>
@@ -185,19 +177,24 @@ const Search = () => {
         </View>
       ) : (
         <View style={{ width: "100%" }}>
-          <View style={styles.filters}>
+          <View
+            style={[
+              styles.filters,
+              width >= 768 && { paddingHorizontal: 30 },
+            ]}
+          >
             <Button
               mode="contained"
-              onPress={() => handleButtonPress("reciters")}  // ✅ Simplified button name
+              onPress={() => handleButtonPress("reciters")}
               contentStyle={[
                 { backgroundColor: getBackgroundColor("reciters") },
-                styles.filter,
+                styles.filter,width >= 768 ? { width: 250 }:{ width: 150 }
               ]}
             >
               <Text
-                style={[
-                  { color: activeButton === "reciters" ? "white" : "#A3A8C5" },
-                ]}
+                style={{
+                  color: activeButton === "reciters" ? "white" : "#A3A8C5",
+                }}
               >
                 {languages ? "قراء" : "Reciters"}
               </Text>
@@ -205,16 +202,16 @@ const Search = () => {
 
             <Button
               mode="contained"
-              onPress={() => handleButtonPress("chapters")}  // ✅ Simplified button name
+              onPress={() => handleButtonPress("chapters")}
               contentStyle={[
                 { backgroundColor: getBackgroundColor("chapters") },
-                styles.filter,
+                styles.filter,width >= 768 ? { width: 250 }:{ width: 150 }
               ]}
             >
               <Text
-                style={[
-                  { color: activeButton === "chapters" ? "white" : "#A3A8C5" },
-                ]}
+                style={{
+                  color: activeButton === "chapters" ? "white" : "#A3A8C5",
+                }}
               >
                 {languages ? "سور" : "Chapters"}
               </Text>
@@ -229,7 +226,7 @@ const Search = () => {
   );
 };
 
-const { styles } = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
     alignItems: "center",
@@ -246,16 +243,15 @@ const { styles } = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
+    with:150,
     marginTop: 16,
-    "@media (min-width: 768px)": {
-      paddingHorizontal: 32,
-    },
   },
   filter: {
     alignItems: "center",
     justifyContent: "center",
-    width: width * 0.43,
     borderRadius: 70,
+    
+    
   },
   resultsText: {
     color: "white",
@@ -271,9 +267,6 @@ const { styles } = StyleSheet.create({
     paddingVertical: 12,
     width: "100%",
     paddingHorizontal: 16,
-    "@media (min-width: 768px)": {
-      paddingHorizontal: 32,
-    },
   },
   imageContainer: {
     borderColor: "#00BCE5",
@@ -286,7 +279,6 @@ const { styles } = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    overflow: "hidden",
   },
   textContainer: {
     justifyContent: "center",
@@ -301,6 +293,6 @@ const { styles } = StyleSheet.create({
     color: "white",
     textAlign: "left",
   },
-});
+};
 
 export default Search;

@@ -1,4 +1,13 @@
-import { View, Text, FlatList, Image, Modal, StatusBar } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  Modal,
+  StatusBar,
+  useWindowDimensions,
+  StyleSheet,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dropmenu from "./Dropmenu";
@@ -8,10 +17,9 @@ import { Colors } from "../constants/Colors";
 import SearchBar from "./SearchBar";
 import { TouchableRipple } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import StyleSheet from 'react-native-media-query';
-
 
 const PlayList = () => {
+  const { width } = useWindowDimensions();
   const [alertVisible, setAlertVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [idColor, setIdColor] = useState("");
@@ -21,55 +29,31 @@ const PlayList = () => {
   const [color2, setColor2] = useState(0);
   const isFocused = useIsFocused();
 
-   const {
-     
-      languages,
-     
-     
-      playTrack
-    } = useGlobalContext();
+  const { languages, playTrack } = useGlobalContext();
 
-  const hideAlert = () => {
-    setAlertVisible(false);
-  };
+  const hideAlert = () => setAlertVisible(false);
 
-  
   useEffect(() => {
-    
     if (isFocused) {
       const fetchBookMark = async () => {
         const token = await AsyncStorage.getItem("playList");
         const res = JSON.parse(token);
-
-        if (res) {
-          setPlaylist(res);
-        }
+        if (res) setPlaylist(res);
       };
-
       fetchBookMark();
     }
   }, [playlist, isFocused]);
 
-
-  
-
   const Remove = async (id) => {
     try {
       const removedItem = playlist.find((item) => item && item.id === id?.id);
-
-      if (!removedItem) {
-        console.log("Item not found in playlist.");
-        return;
-      }
+      if (!removedItem) return;
 
       const updatedPlaylist = playlist.filter((item) => item?.id !== id?.id);
       await AsyncStorage.setItem("playList", JSON.stringify(updatedPlaylist));
       setPlaylist(updatedPlaylist);
-
       setAlertVisible(true);
-      setTimeout(() => {
-        setAlertVisible(false);
-      }, 3000);
+      setTimeout(() => setAlertVisible(false), 3000);
     } catch (e) {
       console.error("Error removing item:", e);
     } finally {
@@ -77,73 +61,47 @@ const PlayList = () => {
     }
   };
 
-  {/*SearchQuery */}
-
   useEffect(() => {
     if (searchQuery.length > 1) {
       setloading(true);
-
       const filteredRecitations = playlist.filter(
         (item) =>
           item.chapter?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
-          item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase())||
-          item.arabName?.toLowerCase()?.includes(searchQuery.toLowerCase())||
+          item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+          item.arabName?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
           item.chapterAr?.toLowerCase()?.includes(searchQuery.toLowerCase())
-          
       );
-
-      setFilteredData(filteredRecitations); 
-     
-
+      setFilteredData(filteredRecitations);
     }
   }, [languages, searchQuery]);
 
- 
-//PlaySound
+  const playSound = (idReciter, trackId, chapterName, name, arabName, arabicCh) => {
+    playTrack(
+      {
+        id: idReciter,
+        chapterID: trackId,
+        chapter: languages ? arabicCh : chapterName,
+        artist: languages ? arabName : name,
+        artistAR: arabName,
+        titleAR: arabicCh,
+      },
+      trackId
+    );
+  };
 
-
-
-const playSound = (
-  idReciter,
-  trackId,
-  chapterName,
-  name,
-  arabName,
-  arabicCh
-) => {
-
- 
-  playTrack(
-    {
-      
-      id: idReciter,
-      chapterID: trackId,
-      chapter: languages? arabicCh: chapterName,
-      artist: languages?arabName: name,
-      artistAR: arabName,
-      titleAR: arabicCh,
-      
+  const dynamicStyles = StyleSheet.create({
+    listItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      height: 75,
+      paddingHorizontal: width >= 768 ? 40 : 16,
+      paddingVertical: 8,
     },
-    trackId
-    
-  );
-
-  
-  
-};
-
-
-// Function to handle playback status updates
-
-
-
-
-
-
+  });
 
   return (
-    <View className=" items-center">
-      <View style={{ marginBottom: 16,alignItems:"center" }}>
+    <View style={{ alignItems: "center" }}>
+      <View style={{ marginBottom: 16, alignItems: "center" }}>
         <SearchBar
           title={languages ? "بحث... " : "Search your savings"}
           searchQuery={searchQuery}
@@ -153,19 +111,18 @@ const playSound = (
       </View>
 
       {playlist[0] ? (
-        searchQuery.length > 1 ? (
-          <FlatList
-          data={playlist}
+        <FlatList
+          data={searchQuery.length > 1 ? filteredData : playlist}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={70}
-          keyExtractor={(item, index) => item?.id?.toString()}
+          keyExtractor={(item) => item?.id?.toString()}
           contentContainerStyle={styles.flatlistContent}
           renderItem={({ item }) => (
             <View
               style={[
                 color2 === item.reciterID && idColor === item.id
                   ? styles.Color
-                  : "",
+                  : null,
               ]}
             >
               <TouchableRipple
@@ -177,13 +134,13 @@ const playSound = (
                     item?.reciterName,
                     item?.arabName,
                     item?.chapterAr
-                  ),
-                    setColor2(item.reciterID),
-                    setIdColor(item.id);
+                  );
+                  setColor2(item.reciterID);
+                  setIdColor(item.id);
                 }}
                 activeOpacity={0.7}
                 rippleColor="rgba(200, 200, 200, 0.1)"
-                style={[styles.listItem]}
+                style={[dynamicStyles.listItem]}
               >
                 <View style={[styles.itemContent]}>
                   <View style={styles.buttonContent}>
@@ -199,11 +156,10 @@ const playSound = (
                       />
                     </View>
 
-                    <View style={{alignItems:"flex-start"}}>
+                    <View style={{ alignItems: "flex-start" }}>
                       <Text style={styles.chapterText}>
                         {languages ? item.chapterAr : item?.chapter}
                       </Text>
-
                       <Text numberOfLines={1} style={styles.nameText}>
                         {languages ? item.arabName : item?.reciterName}
                       </Text>
@@ -229,99 +185,11 @@ const playSound = (
             </View>
           )}
         />
-        ) : (<>
-          <FlatList
-            data={playlist}
-            showsVerticalScrollIndicator={false}
-            estimatedItemSize={70}
-            keyExtractor={(item, index) => item?.id?.toString()}
-            contentContainerStyle={styles.flatlistContent}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  color2 === item.reciterID && idColor === item.id
-                    ? styles.Color
-                    : "",
-                ]}
-              >
-                <TouchableRipple
-                  onPress={() => {
-                    playSound(
-                      item?.reciterID,
-                      item?.id,
-                      item?.chapter,
-                      item?.reciterName,
-                      item?.arabName,
-                      item?.chapterAr
-                    ),
-                      setColor2(item.reciterID),
-                      setIdColor(item.id);
-                  }}
-                  activeOpacity={0.7}
-                  rippleColor="rgba(200, 200, 200, 0.1)"
-                  style={[styles.listItem]}
-                >
-                  <View style={[styles.itemContent]}>
-                    <View style={styles.buttonContent}>
-                      <View style={styles.imageContainer}>
-                        <Image
-                          resizeMode="cover"
-                          style={styles.image}
-                          source={{
-                            uri: dataArray[item?.reciterID]?.image
-                              ? dataArray[item?.reciterID]?.image
-                              : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBeNtIDXrucypAOP8APKT6-wuwPcJ8epwNvNMd4QbNlyWi9EfS",
-                          }}
-                        />
-                      </View>
-
-                      <View style={{alignItems:"flex-start"}}>
-                        <Text style={styles.chapterText}>
-                          {languages ? item.chapterAr : item?.chapter}
-                        </Text>
-
-                        <Text numberOfLines={1} style={styles.nameText}>
-                          {languages ? item.arabName : item?.reciterName}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.menuContainer}>
-                      <Dropmenu
-                        playSound={playSound}
-                        RemoveItem={true}
-                        dataSave={item}
-                        reciterName={item.reciterName}
-                        reciterID={item.reciterID}
-                        chapteID={item.id}
-                        arabName={item.arabName}
-                        chapter={item.chapter}
-                        chapterAr={item.chapterAr}
-                        Remove={Remove}
-                      />
-                    </View>
-                  </View>
-                </TouchableRipple>
-              </View>
-            )}
-          />
-         
-          </>
-        )
       ) : (
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 60,
-          }}
-        >
+        <View style={styles.emptyContainer}>
           <Image source={require("../assets/images/emptyState.png")} />
-          <Text
-            style={{ color: Colors.text, fontWeight: "600", marginTop: 20 }}
-          >
-            {languages?"   لم تقم بحفظ أي شيء بعد":" No Savings Yet"}
-           
+          <Text style={styles.emptyText}>
+            {languages ? "   لم تقم بحفظ أي شيء بعد" : " No Savings Yet"}
           </Text>
         </View>
       )}
@@ -335,7 +203,9 @@ const playSound = (
         <View style={styles.modalOverlay}>
           <View style={styles.alertBox}>
             <Text style={styles.alertTitle}>Delete!</Text>
-            <Text style={styles.alertMessage}>Surah Removed From PlayList</Text>
+            <Text style={styles.alertMessage}>
+              Surah Removed From PlayList
+            </Text>
           </View>
         </View>
       </Modal>
@@ -343,47 +213,21 @@ const playSound = (
   );
 };
 
-const {styles} = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+const styles = StyleSheet.create({
   flatlistContent: {
     paddingBottom: 450,
     marginTop: 16,
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    height:75,
-    paddingHorizontal:16,
-    paddingVertical: 8,
-    '@media (min-width: 768px)': {
-      paddingHorizontal: 40,
-  
-    }
   },
   itemContent: {
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-between",
   },
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-
-    justifyContent: "space-between",
-    paddingVertical: 8,
-  },
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     justifyContent: "space-between",
-  },
-  touchableContainer: {
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
   },
   imageContainer: {
     overflow: "hidden",
@@ -397,9 +241,6 @@ const {styles} = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  textContainer: {
-    alignItems: "flex-start",
-  },
   chapterText: {
     color: "white",
     fontWeight: "bold",
@@ -409,24 +250,14 @@ const {styles} = StyleSheet.create({
     color: "#9ca3af",
     fontSize: 12,
   },
-  chapterName: {
-    color: Colors.textGray,
-    fontSize: 12,
-  },
   Color: {
     backgroundColor: Colors.barbottom,
   },
-
   menuContainer: {
     justifyContent: "center",
     alignItems: "center",
     width: 48,
     height: 48,
-  },
-  actionContainer: {
-    flexDirection: "row",
-    gap: 30,
-    alignItems: "center",
   },
   modalOverlay: {
     flex: 1,
@@ -439,15 +270,10 @@ const {styles} = StyleSheet.create({
     width: "100%",
     backgroundColor: "#fff",
     paddingVertical: 10,
-
     height: 80,
     bottom: 0,
     position: "absolute",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
   },
   alertTitle: {
@@ -458,26 +284,17 @@ const {styles} = StyleSheet.create({
   alertMessage: {
     fontSize: 16,
     color: "#555",
-    marginBottom: 20,
     textAlign: "center",
   },
-  
-  centeredView: {
-    position: "absolute",
-    justifyContent: "center",
+  emptyContainer: {
     alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  modalView: {
-    height: "100%",
-    width: "100%",
-    backgroundColor: Colors.background,
-  },
-  menuContainer: {
     justifyContent: "center",
-    alignItems: "center",
-    width: 48,
+    marginTop: 60,
+  },
+  emptyText: {
+    color: Colors.text,
+    fontWeight: "600",
+    marginTop: 20,
   },
 });
 

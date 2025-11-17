@@ -13,6 +13,8 @@ const setupPlayer = async () => {
 	})
 
 	await TrackPlayer.updateOptions({
+
+		
 		
 		ratingType: RatingType.Heart,
 		capabilities: [

@@ -1,10 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from "react-native";
 import axios from "axios";
 import * as vector from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import {prepare} from '@/app/(tabs)/(Home)/_layout'
+
+
+
+
 export default function PrayerTimes() {
   const [data, setData] = useState(null);
   const [nextPrayer, setNextPrayer] = useState(null);
@@ -13,6 +17,7 @@ export default function PrayerTimes() {
   const countdownRef = useRef(null);
   const { currentLocation, setCurrentLocation, languages } = useGlobalContext(); // assume language comes from global context
 
+
   // Arabic translation map
   const prayerNames = {
     Fajr: "الفجر",
@@ -20,6 +25,9 @@ export default function PrayerTimes() {
     Asr: "العصر",
     Maghrib: "المغرب",
     Isha: "العشاء",
+    Midnight:"منتصف الليل",
+    Firstthird:"الثلث الاول",
+    Lastthird:"الثلث الاخير",
     Sunrise: "الشروق",
     Sunset: "الغروب",
   };
@@ -115,6 +123,7 @@ if(!currentLocation){
        <Text style={styles.text}>
         set your location to get today's prayer times
        </Text>
+       
         
       </TouchableOpacity>)
   }
@@ -131,13 +140,13 @@ if(!currentLocation){
   return (
     <View style={styles.container}>
 
-    <View style={{position:"absolute", top:0,right:2,width:"20%",alignItems:"center"}}>
+    <TouchableOpacity onPress={()=>prepare(setCurrentLocation)} style={{position:"absolute", top:0,right:2,width:"20%",alignItems:"center"}}>
       <vector.MaterialIcons size={20} color={Colors.blue} name="location-pin"/>
       <Text style={styles.text}>
-        {currentLocation.city}, {currentLocation.country}
+        {currentLocation.city}, {currentLocation?.country}
       </Text>
     
-    </View>
+    </TouchableOpacity>
       {nextPrayer && (
         <View style={{ alignItems: "center", marginBottom: 12 }}>
           <Text style={styles.nextTitle}>

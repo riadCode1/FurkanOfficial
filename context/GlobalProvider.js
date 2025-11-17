@@ -40,7 +40,7 @@ const GlobalProvider = memo(({ children }) => {
   const [color2, setColor2] = useState(0);
   const [loading, setloading] = useState(false);
   const [track, setTrack] = useState(null);
-   const [currentLocation, setCurrentLocation] = useState(0);
+   const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     const initializeState = async () => {

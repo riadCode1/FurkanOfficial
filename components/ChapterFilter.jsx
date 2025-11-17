@@ -1,22 +1,20 @@
-import { View, Text, FlatList, Dimensions,  } from "react-native";
+import { View, Text, useWindowDimensions, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Image } from 'expo-image';
+import { Image } from "expo-image";
 import { fetchChater } from "../app/API/QuranApi";
 import { useGlobalContext } from "../context/GlobalProvider";
-import StyleSheet from 'react-native-media-query';
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 import LottieView from "lottie-react-native";
 
-let { width, height } = Dimensions.get("window");
-
 const ChapterFilter = () => {
   const [chapter, setChapter] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const {languages,} = useGlobalContext();
+  const { languages } = useGlobalContext();
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     getChapter();
@@ -43,6 +41,9 @@ const ChapterFilter = () => {
     });
   };
 
+  // Responsive padding (replaces media query)
+  const horizontalPadding = width >= 768 ? 32 : 16;
+
   return (
     <View style={styles.container}>
       <FlashList
@@ -53,51 +54,51 @@ const ChapterFilter = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View>
-
-              {loading ? (
-                    <View>
-                           <LottieView
-                        source={require("../assets/images/Loading.json")}
-                        style={{right:70, width: 400, height: 50}}
-                        autoPlay
-                        loop
-                      />
-                          </View>
-                  ) : (
-            <TouchableRipple
-              onPress={() =>
-                handleNavigate(item.name_simple, item.name_arabic, item.id)
-              }
-              rippleColor="rgba(200, 200, 200, 0.1)"
-              style={styles.playButton}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flexDirection: "row", gap: 12 }}>
-                  <View style={styles.imageContainer}>
-                    <Image
-                      contentFit="contain"
-                      style={styles.image}
-                      source={require("../assets/images/quranLogo.jpeg")}
-                    />
-                  </View>
-
-                  <View style={styles.textContainer}>
-                    <Text style={styles.chapterText}>{item.name_simple}</Text>
-                    <Text style={styles.chapterARText}>{item.name_arabic}</Text>
-                  </View>
-                </View>
-
-                <View style={{ width: 45, height: 48, paddingLeft: 15 }}>
-                  {/* <Dropmenu /> */}
-                </View>
+            {loading ? (
+              <View>
+                <LottieView
+                  source={require("../assets/images/Loading.json")}
+                  style={{ right: 70, width: 400, height: 50 }}
+                  autoPlay
+                  loop
+                />
               </View>
-            </TouchableRipple>)}
+            ) : (
+              <TouchableRipple
+                onPress={() =>
+                  handleNavigate(item.name_simple, item.name_arabic, item.id)
+                }
+                rippleColor="rgba(200, 200, 200, 0.1)"
+                style={[styles.playButton, { paddingHorizontal: horizontalPadding }]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{ flexDirection: "row", gap: 12 }}>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        contentFit="contain"
+                        style={styles.image}
+                        source={require("../assets/images/quranLogo.jpeg")}
+                      />
+                    </View>
+
+                    <View style={styles.textContainer}>
+                      <Text style={styles.chapterText}>{item.name_simple}</Text>
+                      <Text style={styles.chapterARText}>
+                        {item.name_arabic}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={{ width: 45, height: 48, paddingLeft: 15 }} />
+                </View>
+              </TouchableRipple>
+            )}
           </View>
         )}
       />
@@ -105,22 +106,16 @@ const ChapterFilter = () => {
   );
 };
 
-const {styles} = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 8,
   },
-
   playButton: {
-    width:"100%",
-    paddingVertical:12,
-    paddingHorizontal:16,
-    '@media (min-width: 768px)': {
-      paddingHorizontal: 32,
-  
-    }
+    width: "100%",
+    paddingVertical: 12,
   },
   imageContainer: {
     overflow: "hidden",
@@ -144,8 +139,8 @@ const {styles} = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  chapterARText:{
-     color: Colors.textGray,
+  chapterARText: {
+    color: Colors.textGray,
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -155,9 +150,7 @@ const {styles} = StyleSheet.create({
   },
   menuContainer: {
     flexDirection: "row",
-
     width: 48,
-
     justifyContent: "center",
     alignItems: "center",
   },

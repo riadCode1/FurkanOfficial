@@ -1,16 +1,23 @@
-import { View, Text, } from "react-native";
+import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import { dataArray } from "../constants/RecitersImages";
 import LottieView from "lottie-react-native";
-import StyleSheet from 'react-native-media-query';
 import { Colors } from "../constants/Colors";
 import { Image } from "expo-image";
 
 const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
+  const { width } = useWindowDimensions();
 
- 
+  // Responsive sizes based on screen width
+  const isTablet = width >= 768;
+
+  const cardWidth = isTablet ? 200 : 156;
+  const lotiSize = isTablet ? 156 : 104;
+  const imageHeight = isTablet ? 217 : 156;
+  const subtitleFont = isTablet ? 19 : 12;
+  const titleFont = isTablet ? 20 : 14;
 
   const handleNavigate = () => {
     router.push({ pathname: `/ReaderSurah/`, params: { arab_name, name, id } });
@@ -20,35 +27,38 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
     <>
       {loading ? (
         <View
-          style={styles.Loti}
+          style={[
+            styles.Loti,
+            { width: lotiSize, height: lotiSize },
+          ]}
         >
-         <LottieView
-                                     source={require("../assets/images/load3.json")}
-                                     style={{ width: "100%", height: "100%",overflow:"hidden"}}
-                                     resizeMode="contain"
-                                     autoPlay
-                                     colorFilters={[
-                                       {
-                                         keypath: "fade_layer", // Replace with the name of the layer you want to change
-                                         color: Colors.backgroundTint, // Replace with the desired color (e.g., red)
-                                       },
-                                       {
-                                         keypath: 'Another Layer Name', // Another layer to change
-                                         color: '#00FF00', // Green color
-                                       },
-                                     ]}
-                                     loop
-                                   />
+          <LottieView
+            source={require("../assets/images/load3.json")}
+            style={{ width: "100%", height: "100%", overflow: "hidden" }}
+            resizeMode="contain"
+            autoPlay
+            colorFilters={[
+              {
+                keypath: "fade_layer",
+                color: Colors.backgroundTint,
+              },
+              {
+                keypath: "Another Layer Name",
+                color: "#00FF00",
+              },
+            ]}
+            loop
+          />
         </View>
       ) : (
         <TouchableRipple
           onPress={handleNavigate}
           rippleColor="rgba(255, 255, 255, 0.1)"
-          style={styles.cardContainer}
+          style={[styles.cardContainer, { width: cardWidth }]}
           borderless={true}
         >
           <View>
-            <View style={styles.imageContainer}>
+            <View style={[styles.imageContainer, { height: imageHeight }]}>
               <Image
                 style={styles.image}
                 contentFit="cover"
@@ -61,10 +71,13 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
             </View>
 
             <View style={styles.textContainer}>
-              <Text style={styles.subtitle}>
+              <Text style={[styles.subtitle, { fontSize: subtitleFont }]}>
                 {languages ? "القرآن الكريم من" : "114 chapters recited by "}
               </Text>
-              <Text numberOfLines={2} style={styles.title}>
+              <Text
+                numberOfLines={2}
+                style={[styles.title, { fontSize: titleFont }]}
+              >
                 {languages ? arab_name : name}
               </Text>
             </View>
@@ -75,36 +88,18 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
   );
 };
 
-const {ids,styles} = StyleSheet.create({
+const styles = StyleSheet.create({
   cardContainer: {
-    
-    width: 156,
-    overflow: "hidden", 
-    '@media (min-width: 768px)': {
-            width:200
-        },
+    overflow: "hidden",
   },
-  Loti:{
-    width: 104,
-            height: 104,
-            borderRadius: 8,
-            overflow: "hidden",
-
-            '@media (min-width: 768px)': {
-              height:156,
-              width: 156,
-          },
-
-  },
-  
-  imageContainer: {
-    width: "100%",
-    height: 156,
+  Loti: {
     borderRadius: 8,
     overflow: "hidden",
-    '@media (min-width: 768px)': {
-            height:217
-        },
+  },
+  imageContainer: {
+    width: "100%",
+    borderRadius: 8,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
@@ -114,19 +109,11 @@ const {ids,styles} = StyleSheet.create({
     marginTop: 8,
   },
   subtitle: {
-    color: "#B3B3B3", // Equivalent to gray-400
-    fontSize:12,
-    '@media (min-width: 768px)': {
-            fontSize:19
-        },
+    color: "#B3B3B3",
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 14,
     fontWeight: "bold",
-    '@media (min-width: 768px)': {
-            fontSize:20
-        },
   },
 });
 

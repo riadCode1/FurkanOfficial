@@ -3,10 +3,11 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { registerForPushNotificationsAsync } from "../../../constants/BackgroundTask";
 
-// Set up notification handler
+// ✅ Notification handler setup
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -15,17 +16,27 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// ✅ Exported prepare function
-export const prepare = async (setCurrentLocation) => {
+// ✅ Main prepare function
+export const prepareLocation = async (setCurrentLocation, currentLocation) => {
   try {
-    // Request notification permission
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== "granted") {
+    // 1️⃣ Try to load stored location first
+    const storedLocation = await AsyncStorage.getItem("currentLocation");
+
+    if (storedLocation) {
+      console.log("📦 Loaded location from AsyncStorage");
+      const parsed = JSON.parse(storedLocation);
+     
+      setCurrentLocation(parsed);
+      return; // Skip fetching again
+    }
+
+    // 2️⃣ If no stored location, request permissions
+    const { status: notifStatus } = await Notifications.requestPermissionsAsync();
+    if (notifStatus !== "granted") {
       alert("Permission for notifications not granted!");
       return;
     }
 
-    // Request location permission
     const { status: locStatus } =
       await Location.requestForegroundPermissionsAsync();
     if (locStatus !== "granted") {
@@ -33,40 +44,111 @@ export const prepare = async (setCurrentLocation) => {
       return;
     }
 
-    // Get current location
+    // 3️⃣ Get current location
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.High,
     });
 
     const { latitude, longitude } = location.coords;
-    console.log(location);
+    console.log("📍 Current coordinates:", latitude, longitude);
 
-    // Reverse geocode coordinates → human readable address
+    // 4️⃣ Reverse geocode
     const placemarks = await Location.reverseGeocodeAsync({
       latitude,
       longitude,
     });
-    console.log(placemarks);
 
     if (placemarks.length > 0) {
       const place = placemarks[0];
-      setCurrentLocation({
+      const locationData = {
         city: place.city || "Unknown city",
         state: place.region || "Unknown state",
         country: place.country || "Unknown country",
-      });
+      };
+
+      console.log("🌍 Location data:", locationData);
+
+      // Save to context
+      setCurrentLocation(locationData);
+
+      // Save to AsyncStorage
+      await AsyncStorage.setItem(
+        "currentLocation",
+        JSON.stringify(locationData)
+      );
+
+      console.log("✅ Location saved to AsyncStorage");
     }
   } catch (error) {
-    console.error("Error during prepare:", error);
+    console.error("❌ Error during prepare:", error);
+  }
+};
+
+export const prepare = async (setCurrentLocation, currentLocation) => {
+  try {
+    // 1️⃣ Try to load stored location first
+    
+
+    // 2️⃣ If no stored location, request permissions
+    const { status: notifStatus } = await Notifications.requestPermissionsAsync();
+    if (notifStatus !== "granted") {
+      alert("Permission for notifications not granted!");
+      return;
+    }
+
+    const { status: locStatus } =
+      await Location.requestForegroundPermissionsAsync();
+    if (locStatus !== "granted") {
+      alert("Permission for location not granted!");
+      return;
+    }
+
+    // 3️⃣ Get current location
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+
+    const { latitude, longitude } = location.coords;
+    console.log("📍 Current coordinates:", latitude, longitude);
+
+    // 4️⃣ Reverse geocode
+    const placemarks = await Location.reverseGeocodeAsync({
+      latitude,
+      longitude,
+    });
+
+    if (placemarks.length > 0) {
+      const place = placemarks[0];
+      const locationData = {
+        city: place.city || "Unknown city",
+        state: place.region || "Unknown state",
+        country: place.country || "Unknown country",
+      };
+
+      console.log("🌍 Location data:", locationData);
+
+      // Save to context
+      setCurrentLocation(locationData);
+
+      // Save to AsyncStorage
+      await AsyncStorage.setItem(
+        "currentLocation",
+        JSON.stringify(locationData)
+      );
+
+      console.log("✅ Location saved to AsyncStorage");
+    }
+  } catch (error) {
+    console.error("❌ Error during prepare:", error);
   }
 };
 
 // ✅ Main layout component
 const _layout = () => {
-  const { setCurrentLocation } = useGlobalContext();
+  const { setCurrentLocation, currentLocation } = useGlobalContext();
 
   useEffect(() => {
-    prepare(setCurrentLocation);
+    prepareLocation(setCurrentLocation, currentLocation);
     registerForPushNotificationsAsync();
   }, []);
 

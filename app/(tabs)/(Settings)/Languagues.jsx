@@ -1,27 +1,31 @@
-import { View, Text, Button, I18nManager } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  I18nManager,
+  useWindowDimensions,
+  StyleSheet,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RadioButton, TouchableRipple } from "react-native-paper";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { Colors } from "../../../constants/Colors";
-import StyleSheet from "react-native-media-query";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import * as Updates from 'expo-updates';
-
+import * as Updates from "expo-updates";
 
 const Languagues = () => {
+  const { width } = useWindowDimensions();
   const { languages, checked, saveCheck, setLanguages } = useGlobalContext();
 
-  const handleFirst =async () => {
+  const handleFirst = async () => {
     setLanguages(true);
     saveCheck("first");
-
-     try {
-      if(saveCheck==="first"){
+    try {
+      if (saveCheck === "first") {
         await Updates.reloadAsync();
       }
-       // reloads the app like a restart
     } catch (e) {
       console.error(e);
     }
@@ -31,26 +35,45 @@ const Languagues = () => {
     setLanguages(false);
     saveCheck("second");
     try {
-      if(saveCheck==="second"){
+      if (saveCheck === "second") {
         await Updates.reloadAsync();
-      } // reloads the app like a restart
+      }
     } catch (e) {
       console.error(e);
     }
   };
+
+  const dynamicStyles = StyleSheet.create({
+    backButton: {
+      position: "absolute",
+      width: 48,
+      height: 48,
+      top: 44,
+      left: width >= 700 ? 32 : 16,
+      zIndex: 99,
+      elevation: 50,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: Colors.barbottom,
+      borderRadius: 50,
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableRipple
         onPress={() => router.back()}
         rippleColor="rgba(255, 255, 255, 0.2)"
-        style={styles.backButton}
+        style={dynamicStyles.backButton}
         borderless={true}
       >
-        <Ionicons name={I18nManager.isRTL? "arrow-forward": "arrow-back"} size={24} color="white" />
+        <Ionicons
+          name={I18nManager.isRTL ? "arrow-forward" : "arrow-back"}
+          size={24}
+          color="white"
+        />
       </TouchableRipple>
 
-   
       <View style={styles.header}>
         <Text style={styles.headerText}>
           {languages ? "اللغة" : "Languages"}
@@ -58,7 +81,6 @@ const Languagues = () => {
       </View>
 
       <View style={styles.optionsContainer}>
-        {/* Arabic Option */}
         <TouchableRipple
           activeOpacity={1}
           rippleColor="rgba(53, 53, 151, 0.5)"
@@ -78,7 +100,6 @@ const Languagues = () => {
           </View>
         </TouchableRipple>
 
-        {/* English Option */}
         <TouchableRipple
           activeOpacity={1}
           rippleColor="rgba(53, 53, 151, 0.5)"
@@ -102,7 +123,7 @@ const Languagues = () => {
   );
 };
 
-const { styles } = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -115,22 +136,6 @@ const { styles } = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  backButton: {
-    position: "absolute",
-    width: 48,
-    height: 48,
-    top: 44,
-    left: 16,
-    zIndex: 99,
-    elevation: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.barbottom,
-    borderRadius: 50,
-    "@media (min-width: 700px)": {
-      left: 32,
-    },
   },
   optionsContainer: {
     alignItems: "center",

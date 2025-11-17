@@ -2,7 +2,7 @@
   "expo": {
     "name": "Furkan",
     "slug": "Furkan",
-    "version": "1.2.1",
+    "version": "1.5.3",
     "notification": {
       "icon": "./assets/images/icon.png",
       "color": "#000000"
@@ -21,6 +21,7 @@
       "bundleIdentifier": "com.riadp1.Quran"
     },
     "android": {
+      "versionCode": 83,
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
         "FOREGROUND_SERVICE",
@@ -34,7 +35,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.riadp1.Quran",
-      "runtimeVersion": "1.2.1"
+      "runtimeVersion": "1.5.3"
     },
     "web": {
       "bundler": "metro",
@@ -92,9 +93,9 @@
         "expo-build-properties",
         {
           "android": {
-            "targetSdkVersion": 35,
             "compileSdkVersion": 35,
-            "useNextNotificationsApi": true
+            "targetSdkVersion": 35,
+            
           }
         }
       ]

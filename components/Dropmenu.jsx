@@ -4,8 +4,6 @@ import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
-
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { useGlobalContext } from "../context/GlobalProvider";
 
 const Dropmenu = ({

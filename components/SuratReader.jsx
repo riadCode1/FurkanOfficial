@@ -1,13 +1,11 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import { Image } from "expo-image";
 import React from "react";
 import Dropmenu from "./Dropmenu";
 import { dataArray } from "@/constants/RecitersImages";
 import { Colors } from "../constants/Colors";
 import { TouchableRipple } from "react-native-paper";
-
 import LottieView from "lottie-react-native";
-import StyleSheet from "react-native-media-query";
 import { useGlobalContext } from "../context/GlobalProvider";
 
 const SuratReader = ({
@@ -24,10 +22,13 @@ const SuratReader = ({
   playAudio,
   data,
 }) => {
+  const { width } = useWindowDimensions();
   const { loading } = useGlobalContext();
 
+  const isLargeScreen = width >= 768;
+
   const handlePlay = () => {
-    console.log("11",chapteID)
+    console.log("11", chapteID);
     playAudio(
       dataAudio[chapteID - 1]?.audio_url,
       chapteID,
@@ -40,10 +41,71 @@ const SuratReader = ({
     );
   };
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    Color: {
+      backgroundColor: Colors.barbottom,
+      height: 75,
+    },
+    lottie: {
+      right: isLargeScreen ? 270 : 70,
+      width: "100%",
+      height: 50,
+    },
+    playButton: {
+      width: "100%",
+      height: 75,
+      overflow: "hidden",
+      alignContent: "center",
+      justifyContent: "center",
+      paddingHorizontal: isLargeScreen ? 32 : 16,
+    },
+    buttonContent: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    imageContainer: {
+      overflow: "hidden",
+      borderColor: "#00BCE5",
+      borderWidth: 1,
+      marginRight: 8,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+    },
+    image: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+    },
+    textContainer: {
+      alignItems: "flex-start",
+    },
+    chapterText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: 16,
+    },
+    reciterText: {
+      color: Colors.textGray,
+      fontSize: 12,
+    },
+    menuContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });
+
   return (
     <View>
       {loading ? (
-        <View style={styles.lottie}>
+        <View style={dynamicStyles.lottie}>
           <LottieView
             source={require("../assets/images/Loading.json")}
             style={{ width: "100%", height: "100%" }}
@@ -52,30 +114,35 @@ const SuratReader = ({
           />
         </View>
       ) : (
-        <View style={[color === chapteID && styles.Color, styles.container]}>
+        <View
+          style={[
+            color === chapteID && dynamicStyles.Color,
+            dynamicStyles.container,
+          ]}
+        >
           <TouchableRipple
             onPress={handlePlay}
             rippleColor="rgba(200, 200, 200, 0.1)"
-            style={styles.playButton}
+            style={dynamicStyles.playButton}
           >
-            <View style={styles.buttonContent}>
+            <View style={dynamicStyles.buttonContent}>
               <View style={{ flexDirection: "row" }}>
-                <View style={styles.imageContainer}>
+                <View style={dynamicStyles.imageContainer}>
                   <Image
                     contentFit="cover"
-                    style={styles.image}
+                    style={dynamicStyles.image}
                     source={{
                       uri: dataArray[id]?.image ? dataArray[id]?.image : "",
                     }}
                   />
                 </View>
 
-                <View style={styles.textContainer}>
-                  <Text style={styles.chapterText}>
+                <View style={dynamicStyles.textContainer}>
+                  <Text style={dynamicStyles.chapterText}>
                     {languages ? chapterAr : chapterName}
                   </Text>
 
-                  <Text style={styles.reciterText}>
+                  <Text style={dynamicStyles.reciterText}>
                     {languages ? arab_name : reciterName}
                   </Text>
                 </View>
@@ -99,76 +166,5 @@ const SuratReader = ({
     </View>
   );
 };
-
-const { styles } = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  Color: {
-    backgroundColor: Colors.barbottom,
-    height: 75,
-  },
-
-  lottie: {
-    right: 70,
-    width: "100%",
-    height: 50,
-
-    "@media (min-width: 768px)": {
-      right: 270,
-      width: "100%",
-    },
-  },
-  playButton: {
-    
-    width: "100%",
-    height: 75, // Ensures the ripple effect matches the container
-    overflow: "hidden", // Ensures ripple stays within bounds
-    alignContent: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-    "@media (min-width: 768px)": {
-      paddingHorizontal: 32,
-    },
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  imageContainer: {
-    overflow: "hidden",
-    borderColor: "#00BCE5",
-    borderWidth: 1,
-    marginRight: 8,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-  },
-  textContainer: {
-    alignItems: "flex-start",
-  },
-  chapterText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  reciterText: {
-    color: Colors.textGray,
-    fontSize: 12,
-  },
-  menuContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default SuratReader;

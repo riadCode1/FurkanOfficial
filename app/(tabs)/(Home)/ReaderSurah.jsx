@@ -1,18 +1,16 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   TouchableOpacity,
-  Dimensions,
   StatusBar,
   I18nManager,
- 
+  View,
+  Text,
+  Animated,
+  useWindowDimensions,
+  StyleSheet,
 } from "react-native";
-import StyleSheet from "react-native-media-query";
 import { router, useGlobalSearchParams } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
-let { width, height } = Dimensions.get("window");
-import { View, Text, Animated } from "react-native";
 import SearchBar from "../../../components/SearchBar";
 import { useGlobalContext } from "../../../context/GlobalProvider";
 import { fetchAudio, fetchChater } from "../../API/QuranApi";
@@ -20,7 +18,7 @@ import { dataArray } from "../../../constants/RecitersImages";
 import SuratReader from "../../../components/SuratReader";
 import { Colors } from "../../../constants/Colors";
 import { images } from "../../../constants/noImage";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import TogglePlay from "../../../components/TogglePlay";
 import Lineargradient from "../../../components/LinearGradient";
 import Goback from "../../../components/Goback";
@@ -28,24 +26,23 @@ import ArrowScroll from "../../../components/ArrowScroll";
 import { Image, ImageBackground } from "expo-image";
 
 const HEADER_MAX_HEIGHT = 420;
-const HEADER_MIN_HEIGHT = height * 0.25;
-const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+const HEADER_MIN_HEIGHT_FACTOR = 0.25;
 
 const ReaderSurah = () => {
+  const { width, height } = useWindowDimensions();
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  const HEADER_MIN_HEIGHT = height * HEADER_MIN_HEIGHT_FACTOR;
+  const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
   const smallHeaderOpacity = scrollY.interpolate({
-    inputRange: [
-      HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
-      HEADER_SCROLL_DISTANCE,
-      RFValue(350),
-    ],
+    inputRange: [HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT, HEADER_SCROLL_DISTANCE, RFValue(350)],
     outputRange: [0, 1, 1],
     extrapolate: "clamp",
   });
 
   const ButtonTranslate = scrollY.interpolate({
-    inputRange: [0, 300], // Strictly increasing
+    inputRange: [0, 300],
     outputRange: I18nManager.isRTL ? [-500, 0] : [500, 0],
     extrapolate: "clamp",
   });
@@ -73,9 +70,7 @@ const ReaderSurah = () => {
   const [chapters, setchapters] = useState([]);
 
   const scrollToTop = () => {
-    if (flashListRef.current) {
-      flashListRef.current.scrollTo({ offset: 0, animated: true });
-    }
+    flashListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
   useEffect(() => {
@@ -87,28 +82,19 @@ const ReaderSurah = () => {
         .then((suwarData) => {
           const filteredRecitations = suwarData.chapters.filter(
             (item) =>
-              item.name_simple
-                ?.toLowerCase()
-                ?.includes(searchQuery.toLowerCase()) ||
-              item.name_arabic
-                ?.toLowerCase()
-                ?.includes(searchQuery.toLowerCase())
+              item.name_simple?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+              item.name_arabic?.toLowerCase()?.includes(searchQuery.toLowerCase())
           );
-
           setFilteredData(filteredRecitations);
         })
-        .catch((error) => {
-          console.error("Error fetching recitations: ", error);
-        });
+        .catch(console.error);
     }
   }, [languages, searchQuery, id, color2, loading]);
 
   const getChapter = async () => {
     try {
       const data = await fetchChater();
-      if (data && data.chapters) {
-        setchapters(data.chapters);
-      }
+      if (data?.chapters) setchapters(data.chapters);
     } catch (error) {
       console.error("Error fetching chapters:", error);
     }
@@ -117,122 +103,73 @@ const ReaderSurah = () => {
   const fetchAudioUrl = async (id) => {
     try {
       const data = await fetchAudio(id);
-      if (data && data.audio_files) {
-        setDataAudio(data.audio_files);
-      }
+      if (data?.audio_files) setDataAudio(data.audio_files);
     } catch (error) {
-      console.error("Error fetching chapters:", error);
-    } finally {
+      console.error("Error fetching audio:", error);
     }
   };
 
-  //playSound
-
-  const playSound = (
-    uri,
-    trackId,
-    chapterName,
-    names,
-    arabName,
-    Id,
-    arabicCh
-  ) => {
-    console.log(trackId);
+  const playSound = (uri, trackId, chapterName, names, arabName, Id) => {
     playTrack(
-      {
-        id: Id,
-        url: uri,
-        title: chapters,
-        artist: names,
-        artistAR: arabName,
-        chapterID: trackId,
-      },
+      { id: Id, url: uri, title: chapters, artist: names, artistAR: arabName, chapterID: trackId },
       trackId
     );
 
-    const trackList = dataAudio.map((data) => ({
-      id: id,
-      title: chapters,
-      artist: name,
-      artistAR: arab_name,
-    }));
-    setTrackList(trackList);
-  };
-  const playAuto = (
-    uri,
-    trackId,
-    chapterName,
-    names,
-    arabName,
-    Id,
-    arabicCh
-  ) => {
-    playTrack(
-      {
-        id: Id,
-        url: uri,
+    setTrackList(
+      dataAudio.map(() => ({
+        id,
         title: chapters,
-        artist: names,
-        artistAR: arabName,
-        chapterID: trackId,
-      },
+        artist: name,
+        artistAR: arab_name,
+      }))
+    );
+  };
+
+  const playAuto = (uri, trackId, chapterName, names, arabName, Id) => {
+    playTrack(
+      { id: Id, url: uri, title: chapters, artist: names, artistAR: arabName, chapterID: trackId },
       1
     );
 
-    const trackList = dataAudio.map((data) => ({
-      id: id,
-      title: chapters,
-      artist: name,
-      artistAR: arab_name,
-    }));
-    setTrackList(trackList);
+    setTrackList(
+      dataAudio.map(() => ({
+        id,
+        title: chapters,
+        artist: name,
+        artistAR: arab_name,
+      }))
+    );
   };
 
-  //  Memoizing filtered data
-  const memoizedFilteredData = useMemo(() => {
-    return filteredData;
-  }, [filteredData]);
-
-  //  Memoizing chapters list
-  const memoizedChapters = useMemo(() => {
-    return chapters;
-  }, [chapters]);
-
-  // render FlatlistHeader
-
   const renderHeader = useMemo(() => {
+    const isTablet = width >= 768;
     return (
       <>
-        {/* Background Image */}
         <ImageBackground
-          source={{
-            uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-          }}
+          source={{ uri: dataArray[id]?.image || images.image }}
           blurRadius={20}
-          style={styles.headerImage}
+          style={{
+            width: "100%",
+            height: isTablet ? 400 : 366,
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}
         >
-          <View style={styles.imageContainer}>
+          <View style={[styles.imageContainer, { width: isTablet ? 140 : 146, height: isTablet ? 140 : 146 }]}>
             <Image
               contentFit="cover"
-              source={{
-                uri: dataArray[id]?.image ? dataArray[id]?.image : images.image,
-              }}
-              style={styles.image}
+              source={{ uri: dataArray[id]?.image || images.image }}
+              style={{ width: "100%", height: "100%" }}
             />
           </View>
 
-          <View style={styles.BotHeader}>
-            <View style={{ width: 285 }}>
+          <View style={[styles.BotHeader, { paddingHorizontal: isTablet ? 32 : 16 }]}>
+            <View style={{ width: isTablet ? 320 : 285 }}>
               <Text style={[styles.chapterNameText, { textAlign: "left" }]}>
                 {languages ? arab_name : name}
               </Text>
-              <Text
-                style={{
-                  color: Colors.textGray,
-                  fontSize: 16,
-                  textAlign: "left",
-                }}
-              >
+              <Text style={{ color: Colors.textGray, fontSize: 16, textAlign: "left" }}>
                 114 {languages ? "سورة" : "Surah"}
               </Text>
             </View>
@@ -251,28 +188,35 @@ const ReaderSurah = () => {
           <Lineargradient />
         </ImageBackground>
 
-        {/* Search bar */}
         <View style={{ alignItems: "center", marginTop: 24, marginBottom: 16 }}>
           <SearchBar
             title={languages ? "ابحث عن سورة" : "Search Chapter"}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            filteredData={memoizedFilteredData}
+            filteredData={filteredData}
           />
         </View>
       </>
     );
-  }, [id, languages, searchQuery, memoizedFilteredData, isPlaying, dataAudio]);
+  }, [width, id, languages, searchQuery, filteredData, isPlaying, dataAudio]);
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="transparent" />
 
       {/* Small Header */}
-      <Animated.View
-        style={[styles.smallHeader, { opacity: smallHeaderOpacity }]}
-      >
-        <View style={styles.chapterSmall}>
+      <Animated.View style={[styles.smallHeader, { opacity: smallHeaderOpacity }]}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            paddingTop: 30,
+            paddingRight: width >= 768 ? 32 : 16,
+            paddingLeft: width >= 768 ? 100 : 80,
+            alignItems: "center",
+          }}
+        >
           <View style={{ width: 200 }}>
             <Text style={[styles.chapterTextSmall, { fontSize: 20 }]}>
               {languages
@@ -305,14 +249,11 @@ const ReaderSurah = () => {
       <FlashList
         ListHeaderComponent={renderHeader}
         ref={flashListRef}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        contentContainerStyle={{
-          paddingBottom: 150,
-        }}
-        data={searchQuery.length > 1 ? memoizedFilteredData : memoizedChapters}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: false,
+        })}
+        contentContainerStyle={{ paddingBottom: 150 }}
+        data={searchQuery.length > 1 ? filteredData : chapters}
         estimatedItemSize={75}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -337,71 +278,26 @@ const ReaderSurah = () => {
         )}
       />
 
-      <Animated.View
-        style={[
-          styles.buttonScroll,
-          {
-            transform: [{ translateX: ButtonTranslate }],
-          },
-        ]}
-      >
+      <Animated.View style={[ { transform: [{ translateX: ButtonTranslate }] }]}>
         <ArrowScroll scrollToTop={scrollToTop} />
       </Animated.View>
     </View>
   );
 };
 
-const { ids, styles } = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
-
-  chapterSmall: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingTop: 30,
-    paddingLeft: 80,
-    paddingRight: 16,
-    alignItems: "center",
-    "@media (min-width: 768px)": {
-      paddingRight: 32,
-      paddingLeft: 100,
-    },
-  },
-  headerImage: {
-    width: "100%",
-    height: 366,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-
   imageContainer: {
-    shadowColor: "#000", // Shadow color for iOS
-    shadowOffset: { width: 0, height: 5 }, // Shadow offset for iOS
-    shadowOpacity: 0.3, // Shadow opacity for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
     shadowRadius: 100,
     elevation: 10,
-    width: 146,
-    height: 146,
     overflow: "hidden",
     borderRadius: 2,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    elevation: 100,
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "bold",
-
-    "@media (min-width: 700px)": {
-      width: 140,
-      height: 146,
-    },
-    // Match borderRadius of the container for consistent rounding
   },
   smallHeader: {
     position: "absolute",
@@ -416,48 +312,28 @@ const { ids, styles } = StyleSheet.create({
     alignItems: "center",
     zIndex: 2,
   },
-
   chapterTextSmall: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
   },
-
   BotHeader: {
     position: "absolute",
     bottom: 0,
     width: "100%",
     zIndex: 99,
-    paddingHorizontal: 16,
     flexDirection: "row",
     justifyContent: "space-between",
-
-    "@media (min-width: 700px)": {
-      paddingHorizontal: 32,
-    },
   },
-
   chapterNameText: {
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
   },
-  playPauseButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: Colors.barbottom,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  playPauseButtonSmall: {
-    width: 48,
-    height: 48,
-    backgroundColor: Colors.blue,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
+  buttonScroll: {
+    position: "absolute",
+    bottom: 80,
+    right: 20,
   },
 });
 

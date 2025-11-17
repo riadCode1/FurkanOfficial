@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, FlatList } from "react-native";
+import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
 import { fetchSuwar } from "../app/API/QuranApi";
@@ -10,13 +10,13 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
-import StyleSheet from "react-native-media-query";
-let { width, height } = Dimensions.get("window");
+
 const ReaderFilter = () => {
   const [reader, setReader] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const { languages } = useGlobalContext();
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
 
   const handleNavigate = (arab_name, name, id) => {
     router.push({
@@ -32,33 +32,25 @@ const ReaderFilter = () => {
   const getReciter = async () => {
     setLoading(true);
     const data = await fetchSuwar();
-
-    // Example of hardcoded data (NewData)
-
     if (data && data.recitations) {
       const idSet = new Set();
-
       const uniqueFetchedData = data.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) {
-          return false;
-        }
+        if (idSet.has(reciter.id)) return false;
         idSet.add(reciter.id);
         return true;
       });
-
       const uniqueNewData = NewData.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) {
-          return false;
-        }
+        if (idSet.has(reciter.id)) return false;
         idSet.add(reciter.id);
-        setLoading(false);
         return true;
       });
-
       const combinedData = [...uniqueFetchedData, ...uniqueNewData];
       setReader(combinedData.splice(1));
     }
+    setLoading(false);
   };
+
+  const dynamicPadding = isTablet ? 32 : 16;
 
   return (
     <View style={styles.container}>
@@ -89,7 +81,7 @@ const ReaderFilter = () => {
                   )
                 }
                 rippleColor="rgba(200, 200, 200, 0.1)"
-                style={styles.playButton}
+                style={[styles.playButton, { paddingHorizontal: dynamicPadding }]}
               >
                 <View
                   style={{
@@ -106,7 +98,7 @@ const ReaderFilter = () => {
                         source={{
                           uri: dataArray[item.id]?.image
                             ? dataArray[item.id]?.image
-                            : require('../assets/images/noImage.jpg'),
+                            : require("../assets/images/noImage.jpg"),
                         }}
                       />
                     </View>
@@ -121,9 +113,7 @@ const ReaderFilter = () => {
                     </View>
                   </View>
 
-                  <View style={{ width: 45, height: 48, paddingLeft: 15 }}>
-                    {/* <Dropmenu /> */}
-                  </View>
+                  <View style={{ width: 45, height: 48, paddingLeft: 15 }} />
                 </View>
               </TouchableRipple>
             )}
@@ -134,21 +124,16 @@ const ReaderFilter = () => {
   );
 };
 
-const { styles } = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 8,
   },
-
   playButton: {
     width: "100%",
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    "@media (min-width: 768px)": {
-      paddingHorizontal: 32,
-    },
   },
   imageContainer: {
     overflow: "hidden",
@@ -177,12 +162,10 @@ const { styles } = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-
   menuContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
-  menuIconContainer: {},
 });
 
 export default ReaderFilter;
