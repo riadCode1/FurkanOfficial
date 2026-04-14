@@ -6,6 +6,7 @@ import axios from 'axios';
 
 
 const URL = 'https://api.quran.com/api/v4'; 
+const URL2 = 'https://listen.ourquraan.com/'; 
 const URLADN= "https://api.aladhan.com/v1/timings/"
 const ReciterEndpoint = `${URL}/resources/recitations` 
 const chaptersEndpoint = `${URL}/chapters` ;
@@ -61,12 +62,12 @@ export const fetchAudio = (id) => {
   return apicalls(AudioReciterEndpoint(id))
 }
 
-export const fetChapterID = (id) => {
+export const fetchChapterID = (id) => {
   return apicalls(ChapterIDEndpoint(id))
 }
 
 
-export const fetChapterInfo = (id) => {
+export const fetchChapterInfo = (id) => {
   return apicalls(ChapterInfoEndpoint(id))
 }
 

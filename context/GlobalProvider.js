@@ -34,13 +34,13 @@ const GlobalProvider = memo(({ children }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [prepareLocation, setPrepareLocation] = useState(null);
   const [currentReciter, setCurrentReciter] = useState(null);
-  const [tracks, setTracks] = useState([]); // List of all tracks
+  const [tracks, setTracks] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
   const [color, setColor] = useState(0);
   const [color2, setColor2] = useState(0);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [track, setTrack] = useState(null);
-   const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     const initializeState = async () => {
@@ -81,7 +81,6 @@ const GlobalProvider = memo(({ children }) => {
     initializeState();
   }, []);
 
-  // Memoized state update functions
   const saveCheck = useCallback(async (newName) => {
     try {
       setChecked(newName);
@@ -157,90 +156,109 @@ const GlobalProvider = memo(({ children }) => {
     }
   }, []);
 
-  //progress
-
   useEffect(() => {
     const updateProgress = async () => {
-      const progress = await TrackPlayer.getProgress();
-      setPosition(progress.position);
-      setDuration(progress.duration);
-    };
-
-    console.log(duration,position,shuffle)
-
-    const checkTrackEnd =  () => {
-      
-      if (shuffle === true  && position >= duration) {
-         playNext(); // Play the next track when the current one ends
+      try {
+        const progress = await TrackPlayer.getProgress();
+        setPosition(progress.position);
+        setDuration(progress.duration);
+        
+        // Check if track ended and shuffle is on
+        if (shuffle && progress.position >= progress.duration && progress.duration > 0) {
+          playNext();
+        }
+      } catch (error) {
+        console.error("Error updating progress:", error);
       }
     };
+
     const interval = setInterval(updateProgress, 1000);
-    checkTrackEnd();
     return () => clearInterval(interval);
-  }, [position, duration, shuffle]);
+  }, [shuffle]);
 
   const getAudio = useCallback(async (reciterId, chapterId) => {
     try {
+      if (!reciterId || !chapterId) {
+        console.warn("getAudio: Missing reciterId or chapterId");
+        return null;
+      }
+      
       const response = await fetch(
         `https://api.quran.com/api/v4/chapter_recitations/${reciterId}/${chapterId}`
       );
+      
+      if (!response.ok) {
+        console.error(`API error: ${response.status} ${response.statusText}`);
+        return null;
+      }
+      
       const data = await response.json();
-
-      return data?.audio_file?.audio_url; // Return the audio URL
+      const audioUrl = data?.audio_file?.audio_url;
+      
+      if (!audioUrl) {
+        console.warn("No audio URL found in response");
+        return null;
+      }
+      
+      return audioUrl;
     } catch (error) {
       console.error("Error fetching audio URL:", error);
+      return null;
     }
   }, []);
 
-  // //this for chapters skip or play
-
   const playTrack = async (track, index) => {
-    console.log("index", index);
+    try {
+      if (!track || !track.id) {
+        console.error("Invalid track object");
+        return;
+      }
 
-    setColor2(index);
-    setColor(track.id);
-    idReciterSaved(track.id);
-    setCurrentReciter(track.id);
+      console.log("Playing track at index:", index);
 
-    chapterSaved(
-      track.title ? track.title[index - 1].name_simple : track.chapter
-    );
-    chapterArSaved(
-      track.title ? track.title[index - 1].name_arabic : track.titleAR
-    );
-    reciterSaved(track.artist);
-    reciterARSaved(track.artistAR);
-    idChapterSaved(index);
+      setColor2(index);
+      setColor(track.id);
+      idReciterSaved(track.id);
 
-    await TrackPlayer.reset();
-    const uri = await getAudio(track.id, index);
+      // Safely get chapter name with null checks
+      const chapterName = track.title?.[index - 1]?.name_simple || track.chapter;
+      const chapterNameAR = track.title?.[index - 1]?.name_arabic || track.titleAR;
+      
+      chapterSaved(chapterName);
+      chapterArSaved(chapterNameAR);
+      reciterSaved(track.artist);
+      reciterARSaved(track.artistAR);
+      idChapterSaved(index);
 
-    const tracker = {
-      id: track.id,
-      url: uri, // or a remote URL
-      title: track.title
-        ? languages
-          ? track.title[index - 1].name_arabic
-          : track.title[index - 1].name_simple
-        : languages
-        ? track.titleAR
-        : track.chapter,
-      artist: languages ? track.artistAR : track.artist,
-      // artwork:require("../assets/images/icon.png")
-      artwork: track.id
-        ? dataArray[track.id].image
-        : require("../assets/images/icon.png"),
-    };
+      await TrackPlayer.reset();
+      const uri = await getAudio(track.id, index);
+      
+      if (!uri) {
+        console.error("Failed to get audio URL");
+        setLoading(false);
+        return;
+      }
 
-    await TrackPlayer.add(tracker);
-    await TrackPlayer.play();
-    setCurrentTrackIndex(index);
-    setTrack(uri);
-    setCurrentTrack(track.index);
-    setIsPlaying(true);
+      const tracker = {
+        id: track.id,
+        url: uri,
+        title: languages ? chapterNameAR : chapterName,
+        artist: languages ? track.artistAR : track.artist,
+        artwork: dataArray[track.id]?.image || require("../assets/images/icon.png"),
+      };
+
+      await TrackPlayer.add(tracker);
+      await TrackPlayer.play();
+      setCurrentTrackIndex(index);
+      setTrack(uri);
+      setCurrentTrack(track.index);
+      setIsPlaying(true);
+    } catch (error) {
+      console.error("Error playing track:", error);
+      setLoading(false);
+    }
   };
 
-  //this for readers skip
   const playTrackSkip = async (track, index) => {
     setColor(track[index].artist[index].id);
     idReciterSaved(track[index].artist[index].id);
@@ -254,12 +272,11 @@ const GlobalProvider = memo(({ children }) => {
 
     const tracker = {
       id: track[index].artist[index].id,
-      url: uri, // or a remote URL
+      url: uri,
       title: languages ? track[index].titleAR : track[index].title,
       artist: languages
         ? track[index].artist[index].translated_name.name
         : track[index].artist[index].reciter_name,
-      // artwork:require("../assets/images/icon.png")
       artwork: dataArray[track[index].artist[index].id].image,
     };
 
@@ -272,44 +289,55 @@ const GlobalProvider = memo(({ children }) => {
     setIsPlaying(true);
   };
 
-  // Play the next track
-
   const playNext = async () => {
-    const nextIndex = currentTrackIndex + 1;
-    const nextReciter = Number(currentTrack) + 1;
-    const nextTrack = tracks[nextIndex + 1];
-    const nextTrackSkip = tracks;
-     console.log(tracks.length)
+    try {
+      const nextIndex = currentTrackIndex + 1;
+      const nextReciter = Number(currentTrack) + 1;
+      const MAX_CHAPTERS = 114; // Quran has 114 chapters
+      
+      console.log("Track list length:", tracks.length);
 
-    if (tracks.length >= 112 ) {
-      await playTrack(nextTrack, nextIndex);
-    } else {
-      await playTrackSkip(nextTrackSkip, nextReciter);
+      // If we have a full chapter list (114 chapters), use playTrack
+      if (tracks.length >= MAX_CHAPTERS && nextIndex < tracks.length) {
+        const nextTrack = tracks[nextIndex];
+        await playTrack(nextTrack, nextIndex);
+      } else if (nextReciter <= MAX_CHAPTERS) {
+        // Otherwise use playTrackSkip for alternative logic
+        await playTrackSkip(tracks, nextReciter);
+      } else {
+        console.warn("Reached end of playlist");
+      }
+    } catch (error) {
+      console.error("Error playing next track:", error);
     }
   };
 
-  // Play the previous track
   const playPrevious = async () => {
-    const nextIndex = currentTrackIndex - 1;
-    const nextReciter = Number(currentTrack) - 1;
-    const nextTrack = tracks[nextIndex - 1];
-    const nextTrackSkip = tracks;
-    console.log(tracks.length)
+    try {
+      const nextIndex = currentTrackIndex - 1;
+      const nextReciter = Number(currentTrack) - 1;
+      const MAX_CHAPTERS = 114; // Quran has 114 chapters
+      
+      console.log("Track list length:", tracks.length);
 
-    if (tracks.length >= 112 ) {
-      await playTrack(nextTrack, nextIndex);
-    } else {
-      await playTrackSkip(nextTrackSkip, nextReciter);
+      // If we have a full chapter list (114 chapters), use playTrack
+      if (tracks.length >= MAX_CHAPTERS && nextIndex >= 0) {
+        const nextTrack = tracks[nextIndex];
+        await playTrack(nextTrack, nextIndex);
+      } else if (nextReciter >= 1) {
+        // Otherwise use playTrackSkip for alternative logic
+        await playTrackSkip(tracks, nextReciter);
+      } else {
+        console.warn("Reached beginning of playlist");
+      }
+    } catch (error) {
+      console.error("Error playing previous track:", error);
     }
-  
   };
 
-  // Set the list of tracks
   const setTrackList = (trackList) => {
     setTracks(trackList);
   };
-
-  // Toggle playback (play/pause)
 
   const togglePlayback = async () => {
     if (isPlaying) {
@@ -367,11 +395,11 @@ const GlobalProvider = memo(({ children }) => {
         color2,
         setColor2,
         loading,
-        setloading,
+        setLoading,
         track,
         setTrack,
-        currentLocation, setCurrentLocation,
-        prepareLocation, setPrepareLocation
+        currentLocation,
+        setCurrentLocation
       }}
     >
       {children}

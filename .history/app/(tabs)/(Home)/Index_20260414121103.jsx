@@ -279,38 +279,45 @@ const Index = () => {
           </View>
 
           {/* Carousel */}
-          <Carousel
-            width={ITEM_WIDTH}
-            height={isLargeScreen? 250: ITEM_HEIGHT}
-            data={groupedChapters}
-            mode="parallax"
-            loop={true}
-            autoPlay={false}
-            style={{ alignSelf: "flex-start" }}
-            pagingEnabled
-            snapEnabled
-            modeConfig={{
-              parallaxScrollingScale: isLargeScreen? 0.98:0.95,
-              parallaxScrollingOffset: 50,
-            }}
-            renderItem={({ item: group }) => (
-              <View style={{ marginLeft: 10 }}>
-                {group.map((item) => (
-                  <ReadingSurah
-                    key={item.id}
-                    item={item}
-                    languages={languages}
-                    loading={loading}
-                    name={item.name_simple}
-                    arab_name={item.translated_name.name}
-                    chapter_arab={item.name_arabic}
-                    Chapterid={item.id}
-                    verses={item.verses_count}
-                  />
-                ))}
-              </View>
-            )}
-          />
+        <Carousel
+  width={ITEM_WIDTH}
+  height={isLargeScreen ? 250 : ITEM_HEIGHT}
+  data={groupedChapters}
+  mode="parallax"
+  loop={true}
+  autoPlay={false}
+  pagingEnabled
+  snapEnabled
+  style={{ alignSelf: "center" }}           // Better centering
+  modeConfig={{
+    parallaxScrollingScale: isLargeScreen ? 0.98 : 0.95,
+    parallaxScrollingOffset: 50,
+  }}
+  // Optional: Add nice overscroll feel
+  overscrollEnabled={true}
+  // Optional: Custom parallax animation for even better effect
+  // customAnimation={parallaxLayout}   // see advanced example below
+  renderItem={({ item: group, index }) => (
+    <View style={{ 
+      marginHorizontal: 8, 
+      width: ITEM_WIDTH - 16,   // compensate for margin
+    }}>
+      {group.map((item) => (
+        <ReadingSurah
+          key={item.id}
+          item={item}
+          languages={languages}
+          loading={loading}
+          name={item.name_simple}
+          arab_name={item.translated_name.name}
+          chapter_arab={item.name_arabic}
+          Chapterid={item.id}
+          verses={item.verses_count}
+        />
+      ))}
+    </View>
+  )}
+/>
         </View>
 
         {/* Listen to Quran */}

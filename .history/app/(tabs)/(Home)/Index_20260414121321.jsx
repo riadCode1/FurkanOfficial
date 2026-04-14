@@ -26,10 +26,11 @@ import CustomAdan from "../../../components/CustomAdan";
 
 const Index = () => {
   const { width } = useWindowDimensions();
+  const { width: screenWidth } = Dimensions.get("window");
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
-  const ITEM_WIDTH = width;
-  const ITEM_HEIGHT = 150;
+  const ITEM_WIDTH = screenWidth * 0.90;   // Slightly narrower for nicer side peek
+const ITEM_HEIGHT = isLargeScreen ? 250 : 180
   const { setLanguages, languages, loading } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const isLargeScreen = width >= 700;

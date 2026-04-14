@@ -145,7 +145,10 @@ const Index = () => {
         <CustomAdan />
 
 
-        
+        {newData2.recitations.map((item)=>(
+          <Text style={{color:"white"}}>{item.reciter_name}</Text>
+        ))}
+
         {/* Popular Reciters */}
         <View style={dynamicStyles.section}>
           <View

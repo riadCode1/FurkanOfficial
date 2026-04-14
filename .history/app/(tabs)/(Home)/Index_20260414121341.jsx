@@ -26,6 +26,7 @@ import CustomAdan from "../../../components/CustomAdan";
 
 const Index = () => {
   const { width } = useWindowDimensions();
+  
   const [quranData, setQuranData] = useState([]);
   const [chapter, setChapter] = useState([]);
   const ITEM_WIDTH = width;

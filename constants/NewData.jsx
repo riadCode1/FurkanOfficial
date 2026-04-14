@@ -358,5 +358,91 @@ export const NewData = {
   ],
 };
 
+export const newData2={
+  "recitations": [
+    {
+      id: 1,
+      reciter_name: "Islam subhy",
+      urlName:"mishary_rashid_alafasy",
+      style: "Murattal",
+      translated_name: {
+        name: "مشاري راشد العفاسي",
+        language_name: "arabic",
+      },
+
+      "audio_files": [
+        {
+          chapter_id: 1,
+          chapterName:"Al-Fatiha",
+          url: "https://listen.ourquraan.com/Islam_sobhy/013.mp3"
+        },
+        {
+          chapter_id: 2,
+          chapterName:"Al-Baqarah",
+
+          url: "https://listen.ourquraan.com/mishary_rashid_alafasy/002.mp3"
+        },
+        {
+          chapter_id: 3,
+          url: "https://listen.ourquraan.com/mishary_rashid_alafasy/003.mp3"
+        },
+        {
+          chapter_id: 4,
+          url: "https://listen.ourquraan.com/mishary_rashid_alafasy/004.mp3"
+        },
+        {
+          chapter_id: 5,
+          url: "https://listen.ourquraan.com/mishary_rashid_alafasy/005.mp3"
+        },
+        {
+          chapter_id: 6,
+          url: "https://listen.ourquraan.com/mishary_rashid_alafasy/006.mp3" 
+        }
+      ]
+    },
+
+    {
+      id: 2,
+      reciter_name: "Islam subhy",
+      urlName:"mishary_rashid_alafasy",
+      style: "Murattal",
+      translated_name: {
+        name: "مشاري راشد العفاسي",
+        language_name: "arabic",
+      },
+
+      "audio_files": [
+        {
+          "chapter_id": 1,
+          "chapterName":"Al-Fatiha",
+          "url": "https://listen.ourquraan.com/Islam_sobhy/013.mp3"
+        },
+        {
+          "chapter_id": 2,
+          "chapterName":"Al-Baqarah",
+
+          "url": "https://listen.ourquraan.com/mishary_rashid_alafasy/002.mp3"
+        },
+        {
+          "chapter_id": 3,
+          "url": "https://listen.ourquraan.com/mishary_rashid_alafasy/003.mp3"
+        },
+        {
+          "chapter_id": 4,
+          "url": "https://listen.ourquraan.com/mishary_rashid_alafasy/004.mp3"
+        },
+        {
+          "chapter_id": 5,
+          "url": "https://listen.ourquraan.com/mishary_rashid_alafasy/005.mp3"
+        },
+        {
+          "chapter_id": 6,
+          "url": "https://listen.ourquraan.com/mishary_rashid_alafasy/006.mp3" 
+        }
+      ]
+    },
+  ],
+}
+
 
 
