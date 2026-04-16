@@ -1,0 +1,119 @@
+{
+  "expo": {
+    "name": "Furkan",
+    "slug": "Furkan",
+    "version": "1.6.3",
+   
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "furkan",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      },
+      "bundleIdentifier": "com.riadp1.Quran"
+    },
+    "android": {
+      "versionCode": 83,
+      "permissions": [
+        "android.permission.FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.riadp1.Quran",
+      "runtimeVersion": "1.6.3"
+    },
+    "web": {
+      "bundler": "metro",
+      "enabled": false,
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
+      [
+        "expo-router",
+        {
+          "origin": "https://node-1-gtzm.onrender.com"
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.furkanApp",
+          "publishableKey": "pk_live_51Qx6WlKIGwNk6vSfewuYLo7tqMlm5t7YDvlKwrmhbvJka612oP474cJPteSkdqERfWw2acJ7fPnSO3R4P6HhcEc3004QRGAm2O"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash.png",
+          "imageWidth": 144,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      "expo-font",
+      [
+        "expo-notifications"
+      ],
+      "expo-video",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "newArchEnabled": true
+          },
+          "ios": {
+            "newArchEnabled": true
+          }
+        }
+      ],
+      "expo-image",
+      "expo-web-browser",
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "updates": {
+      "url": "https://u.expo.dev/53349fe7-dd8a-4df8-a9c5-fe0fd5c0d96f"
+    },
+    "extra": {
+      "router": {
+        "origin": "https://node-1-gtzm.onrender.com"
+      },
+      "eas": {
+        "projectId": "f8329f84-5542-459b-8e13-a532adc1dc41"
+      }
+    }
+  }
+}
