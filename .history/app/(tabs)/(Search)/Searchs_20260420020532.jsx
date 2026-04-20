@@ -5,8 +5,6 @@ import {
   FlatList,
   SafeAreaView,
   useWindowDimensions,
-  Pressable,
-  StyleSheet,
 } from "react-native";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
@@ -185,6 +183,41 @@ const Search = () => {
               
             ]}
           >
+<<<<<<< HEAD
+            <Button
+              mode="contained"
+              onPress={() => handleButtonPress("reciters")}
+              contentStyle={[
+                { backgroundColor: getBackgroundColor("reciters") },
+                styles.filter,
+              ]}
+            >
+              <Text
+                style={{
+                  color: activeButton === "reciters" ? "white" : "#A3A8C5",
+                }}
+              >
+                {languages ? "قراء" : "Reciters"}
+              </Text>
+            </Button>
+
+            <Button
+              mode="contained"
+              onPress={() => handleButtonPress("chapters")}
+              contentStyle={[
+                { backgroundColor: getBackgroundColor("chapters") },
+                styles.filter,
+              ]}
+            >
+              <Text
+                style={{
+                  color: activeButton === "chapters" ? "white" : "#A3A8C5",
+                }}
+              >
+                {languages ? "سور" : "Chapters"}
+              </Text>
+            </Button>
+=======
             <Pressable
   onPress={() => handleButtonPress("reciters")}
   style={({ pressed }) => [
@@ -239,6 +272,7 @@ const Search = () => {
     {languages ? "سور" : "Chapters"}
   </Text>
 </Pressable>
+>>>>>>> 3cff79e (Initial commit)
           </View>
 
           {activeButton === "reciters" && <ReaderFilter />}
@@ -249,7 +283,11 @@ const Search = () => {
   );
 };
 
+<<<<<<< HEAD
+const styles = {
+=======
 const styles = StyleSheet.create( {
+>>>>>>> 3cff79e (Initial commit)
   container: {
     flex: 1,
     alignItems: "center",
@@ -265,14 +303,23 @@ const styles = StyleSheet.create( {
     flexDirection: "row",
    alignItems: "center",
     gap: 12,
+<<<<<<< HEAD
+    justifyContent: "center",
+    
+=======
     justifyContent: "space-between",
     marginHorizontal: 14,
+>>>>>>> 3cff79e (Initial commit)
    
     marginTop: 16,
   },
   filter: {
     
+<<<<<<< HEAD
+    width: 190,
+=======
     width: "48%",
+>>>>>>> 3cff79e (Initial commit)
     
     borderRadius: 70,
     
@@ -318,6 +365,10 @@ const styles = StyleSheet.create( {
     color: "white",
     textAlign: "left",
   },
+<<<<<<< HEAD
+};
+=======
 });
+>>>>>>> 3cff79e (Initial commit)
 
 export default Search;

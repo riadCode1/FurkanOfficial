@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, useWindowDimensions, Linking } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Colors } from "../constants/Colors";
-import { fetchChapterID } from "../app/API/QuranApi";
+import { fetChapterID } from "../app/API/QuranApi";
 
 const Details = ({ id, languages }) => {
   const [text, setText] = useState(null);
@@ -13,12 +13,19 @@ const Details = ({ id, languages }) => {
 
   const getChapter = async (chapterId) => {
     try {
+<<<<<<< HEAD
+      const data = await fetChapterID(chapterId);
+=======
       const data = await fetchChapterID(chapterId);
+>>>>>>> 3cff79e (Initial commit)
       setText(data.chapter);
     } catch (error) {
       console.error("Error fetching chapter:", error);
     }
+<<<<<<< HEAD
+=======
     console.log("Chapter data:", text);
+>>>>>>> 3cff79e (Initial commit)
   };
 
   const containerPadding = width > 700 ? 32 : 16;
@@ -72,7 +79,11 @@ const Details = ({ id, languages }) => {
                     Linking.openURL(`https://quran.com/surah/${id}/info`)
                   }
                 >
+<<<<<<< HEAD
+                  website
+=======
                   quran.com
+>>>>>>> 3cff79e (Initial commit)
                 </Text>
               </Text>
             </>
@@ -112,7 +123,11 @@ const Details = ({ id, languages }) => {
                     Linking.openURL(`https://quran.com/surah/${id}/info`)
                   }
                 >
+<<<<<<< HEAD
+                  website
+=======
                   Quran.com
+>>>>>>> 3cff79e (Initial commit)
                 </Text>
               </Text>
             </>

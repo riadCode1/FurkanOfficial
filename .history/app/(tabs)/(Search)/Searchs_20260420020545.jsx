@@ -5,8 +5,6 @@ import {
   FlatList,
   SafeAreaView,
   useWindowDimensions,
-  Pressable,
-  StyleSheet,
 } from "react-native";
 import { Image } from "expo-image";
 import React, { useEffect, useState } from "react";
@@ -179,66 +177,40 @@ const Search = () => {
         </View>
       ) : (
         <View style={{ width: "100%" }}>
-          <View
-            style={[
-              styles.filters,
-              
-            ]}
-          >
-            <Pressable
-  onPress={() => handleButtonPress("reciters")}
-  style={({ pressed }) => [
-    styles.filter,
-    {
-      backgroundColor: getBackgroundColor("reciters"),
-      borderRadius: 4,           // adjust as needed to match your original button
-      opacity: pressed ? 0.85 : 1, // optional subtle press effect
-    },
-  ]}
-  android_ripple={{
-    color: "rgba(255, 255, 255, 0.3)",   // ripple color (white with opacity)
-    borderless: false,
-    radius: 0,                           // set to 0 for default behavior
-  }}
->
-  <Text
-    style={{
-      color: activeButton === "reciters" ? "white" : "#A3A8C5",
-      textAlign: "center",
-      paddingVertical: 10,               // adjust padding to match original button height
-      fontSize: 16,                      // adjust as needed
-    }}
-  >
-    {languages ? "قراء" : "Reciters"}
-  </Text>
-</Pressable>
+          <View style={styles.filters}>
+            <Button
+              mode="contained"
+              onPress={() => handleButtonPress("reciters")}
+              contentStyle={[
+                { backgroundColor: getBackgroundColor("reciters") },
+                styles.filter,
+              ]}
+            >
+              <Text
+                style={{
+                  color: activeButton === "reciters" ? "white" : "#A3A8C5",
+                }}
+              >
+                {languages ? "قراء" : "Reciters"}
+              </Text>
+            </Button>
 
-<Pressable
-  onPress={() => handleButtonPress("chapters")}
-  style={({ pressed }) => [
-    styles.filter,
-    {
-      backgroundColor: getBackgroundColor("chapters"),
-      borderRadius: 4,
-      opacity: pressed ? 0.85 : 1,
-    },
-  ]}
-  android_ripple={{
-    color: "rgba(255, 255, 255, 0.3)",
-    borderless: false,
-  }}
->
-  <Text
-    style={{
-      color: activeButton === "chapters" ? "white" : "#A3A8C5",
-      textAlign: "center",
-      paddingVertical: 10,
-      fontSize: 16,
-    }}
-  >
-    {languages ? "سور" : "Chapters"}
-  </Text>
-</Pressable>
+            <Button
+              mode="contained"
+              onPress={() => handleButtonPress("chapters")}
+              contentStyle={[
+                { backgroundColor: getBackgroundColor("chapters") },
+                styles.filter,
+              ]}
+            >
+              <Text
+                style={{
+                  color: activeButton === "chapters" ? "white" : "#A3A8C5",
+                }}
+              >
+                {languages ? "سور" : "Chapters"}
+              </Text>
+            </Button>
           </View>
 
           {activeButton === "reciters" && <ReaderFilter />}
@@ -249,7 +221,7 @@ const Search = () => {
   );
 };
 
-const styles = StyleSheet.create( {
+const styles = {
   container: {
     flex: 1,
     alignItems: "center",
@@ -265,14 +237,14 @@ const styles = StyleSheet.create( {
     flexDirection: "row",
    alignItems: "center",
     gap: 12,
-    justifyContent: "space-between",
-    marginHorizontal: 14,
+    justifyContent: "center",
+    
    
     marginTop: 16,
   },
   filter: {
     
-    width: "48%",
+    width: 190,
     
     borderRadius: 70,
     
@@ -318,6 +290,6 @@ const styles = StyleSheet.create( {
     color: "white",
     textAlign: "left",
   },
-});
+};
 
 export default Search;

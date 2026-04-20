@@ -188,7 +188,7 @@ export default function Layout() {
         <BlurView
           intensity={92}
 
-          
+          experimentalBlurMethod="dimezisBlurView"
 
           
 

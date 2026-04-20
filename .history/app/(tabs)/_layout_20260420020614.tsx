@@ -187,11 +187,7 @@ export default function Layout() {
         {/* Base Blur */}
         <BlurView
           intensity={92}
-
-          
-
-          
-
+          experimentalBlurMethod="dimezisBlurView"
           tint="dark"
           style={StyleSheet.absoluteFill}
         />

@@ -1,14 +1,13 @@
-import { View, Text, StyleSheet, useWindowDimensions, Pressable, FlatList } from "react-native";
+import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import React, { useEffect, useState } from "react";
-
+import { useGlobalContext } from "../context/GlobalProvider";
 import { ActivityIndicator } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 
 const Read = ({ id }) => {
   const [surahs, setSurahs] = useState([]);
   const [surahsEng, setSurahsEng] = useState([]);
-  const [suwar, setSuwar] = useState([]);
-  const [languages, setLanguages] = useState("ar");
+  const { languages } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const { width } = useWindowDimensions();
 
@@ -30,31 +29,28 @@ const Read = ({ id }) => {
     getSurahs();
   }, [id]);
 
+<<<<<<< HEAD
+  useEffect(() => {
+    const API_URL = `https://quranapi.pages.dev/api/${id}.json`;
+=======
  
-
-
-   useEffect(() => {
-    const API_URL = `https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/quran_en.json`;
-    const getSurahsEng = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Failed to fetch data");
+  useEffect(() => {
+    const API_URL = `https://quranapi.pages.dev/api/${id}.json`;new Error("Failed to fetch data");
         const data = await response.json();
+<<<<<<< HEAD
+        setSurahsEng(data);
+=======
         setSuwar(data[id].verses);
         console.log("Fetched English Quran data:", data[1].verses[1]);
         
+>>>>>>> 3cff79e (Initial commit)
       } catch (error) {
         console.error("Error fetching Quran data:", error);
       } finally {
         setLoading(false);
       }
     };
-    getSurahsEng();
-  }, [id]);
-
-  const handleLanguageToggle = () => {
-    setLoading(true);
+        setSurahsEng(data);
     try {      setLanguages((prevLanguage) => (prevLanguage === "ar" ? "en" : "ar"));
     } catch (error) {
       console.error("Error toggling language:", error);
@@ -62,15 +58,9 @@ const Read = ({ id }) => {
     setLoading(false);
   }
 
+>>>>>>> 3cff79e (Initial commit)
   const dynamicPadding = width >= 768 ? 32 : 16;
 
-  return (
-    <View style={[styles.container, { paddingHorizontal: dynamicPadding }]}>
-      <Pressable
-        android_ripple={{ color: "rgba(0,0,0,0.1)", borderless: false }}
-        onPress={handleLanguageToggle}
-        style={styles.buttonScroll}
-      >
         <Text
           style={[
             styles.text,
@@ -91,12 +81,17 @@ const Read = ({ id }) => {
                   
                 }}>
           {languages === "ar"
+>>>>>>> 3cff79e (Initial commit)
             ? "﴿ بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ ﴾"
             : "﴾ In the name of God, the most gracious, the most merciful ﴿"}
         </Text>
       </View>
 
+<<<<<<< HEAD
+      {languages ? (
+=======
       {languages === "ar" ? (
+>>>>>>> 3cff79e (Initial commit)
         loading ? (
           <ActivityIndicator size="small" color={Colors.blue} />
         ) : (
@@ -110,11 +105,7 @@ const Read = ({ id }) => {
                   alignItems: "center",
                   alignSelf: "center",
                   justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>۝</Text>
-                <Text style={{ position: "absolute", fontSize: 10 }}>
-                  {item.verse_key.slice(2)}
+      {languages ? (y.slice(2)}
                 </Text>
               </View>
             </View>
@@ -123,6 +114,9 @@ const Read = ({ id }) => {
       ) : loading ? (
         <ActivityIndicator size="small" color={Colors.blue} />
       ) : (
+<<<<<<< HEAD
+        <Text style={styles.text}>{surahsEng.english}</Text>
+=======
         <FlatList
           data={suwar} // This should be the array of Surahs
           keyExtractor={(surah) => surah.id.toString()}
@@ -136,42 +130,7 @@ const Read = ({ id }) => {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  marginTop: 10,
-                }}
-              >
-                {surah?.text}
-              </Text>
-              <View
-                style={{
-                  backgroundColor: "#EBD7CA",
-                  textAlign: "center",
-                  padding: 10,
-                  borderRadius: 8,
-                  marginTop: 10,
-                }}
-              >
-                <Text>{surah.translation}</Text>
-              </View>
-
-              {/* Map through all verses of this Surah */}
-            </View>
-          )}
-        />
-      )}
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FFF9E4",
-    paddingVertical: 200,
-    paddingTop: 16,
-    alignItems: "center",
-    
-  },
+        <Text style={styles.text}>{surahsEng.english}</Text>
   listContent: {
     paddingHorizontal: 16,
   },
@@ -195,6 +154,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
+<<<<<<< HEAD
+=======
   buttonScroll: {
         width: 30,
         height: 30,
@@ -209,6 +170,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         elevation: 50,
       },
+>>>>>>> 3cff79e (Initial commit)
 });
 
 export default Read;

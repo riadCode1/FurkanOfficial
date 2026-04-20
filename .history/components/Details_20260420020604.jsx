@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, useWindowDimensions, Linking } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Colors } from "../constants/Colors";
-import { fetchChapterID } from "../app/API/QuranApi";
+import { fetChapterID } from "../app/API/QuranApi";
 
 const Details = ({ id, languages }) => {
   const [text, setText] = useState(null);
@@ -13,12 +13,11 @@ const Details = ({ id, languages }) => {
 
   const getChapter = async (chapterId) => {
     try {
-      const data = await fetchChapterID(chapterId);
+      const data = await fetChapterID(chapterId);
       setText(data.chapter);
     } catch (error) {
       console.error("Error fetching chapter:", error);
     }
-    console.log("Chapter data:", text);
   };
 
   const containerPadding = width > 700 ? 32 : 16;
@@ -72,7 +71,7 @@ const Details = ({ id, languages }) => {
                     Linking.openURL(`https://quran.com/surah/${id}/info`)
                   }
                 >
-                  quran.com
+                  website
                 </Text>
               </Text>
             </>
@@ -112,7 +111,7 @@ const Details = ({ id, languages }) => {
                     Linking.openURL(`https://quran.com/surah/${id}/info`)
                   }
                 >
-                  Quran.com
+                  website
                 </Text>
               </Text>
             </>
