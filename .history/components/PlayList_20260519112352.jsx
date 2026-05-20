@@ -1,0 +1,533 @@
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  Modal,
+  StatusBar,
+  useWindowDimensions,
+  StyleSheet,
+} from "react-native";
+
+import React, { use, useCallback, useEffect, useState } from "react";
+
+// AsyncStorage for saving playlist locally
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Custom components
+import Dropmenu from "./Dropmenu";
+import SearchBar from "./SearchBar";
+
+// Static reciters images
+import { dataArray } from "@/constants/RecitersImages";
+
+// Global context
+import { useGlobalContext } from "@/context/GlobalProvider";
+
+// App colors
+import { Colors } from "../constants/Colors";
+
+// Ripple touch effect
+import { TouchableRipple } from "react-native-paper";
+
+// Detect current focused screen
+import { useIsFocused } from "@react-navigation/native";
+
+// Quran API service
+import { useQuranApi } from "../services/quranApi";
+
+// Authentication hook
+import { useAuth } from "../hooks/useAuth";
+
+/* =========================================================
+   PLAYLIST COMPONENT
+========================================================= */
+const PlayList = () => {
+  /* =========================================================
+     WINDOW SIZE
+     Used for responsive UI
+  ========================================================= */
+  const { width } = useWindowDimensions();
+
+  /* =========================================================
+     LOCAL STATES
+  ========================================================= */
+
+  // Show delete alert modal
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  // Search input text
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Current selected track id color
+  const [idColor, setIdColor] = useState("");
+
+  // Loading state for search
+  const [loading, setloading] = useState(false);
+
+  // Filtered search results
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Saved playlist from AsyncStorage
+  const [playlist, setPlaylist] = useState([]);
+
+  // Current active reciter color state
+  const [color2, setColor2] = useState(0);
+
+  // Bookmarks from Quran API
+  const [bookmarks, setBookmarks] = useState([]);
+
+  /* =========================================================
+     HOOKS
+  ========================================================= */
+
+  // Auth session
+  const { session } = useAuth();
+
+  // Quran API instance
+  const api = useQuranApi();
+
+  // Detect when screen is focused
+  const isFocused = useIsFocused();
+
+  // Global context values
+  const { languages, playTrack } = useGlobalContext();
+
+  /* =========================================================
+     HIDE ALERT MODAL
+  ========================================================= */
+  const hideAlert = () => setAlertVisible(false);
+
+  /* =========================================================
+     FETCH PLAYLIST FROM ASYNC STORAGE
+     Runs whenever screen is focused
+  ========================================================= */
+  useEffect(() => {
+    if (isFocused) {
+      const fetchBookMark = async () => {
+        const token = await AsyncStorage.getItem("playList");
+
+        // Convert JSON string to array
+        const res = JSON.parse(token);
+
+        // Save playlist into state
+        if (res) setPlaylist(res);
+      };
+
+      fetchBookMark();
+    }
+  }, [, isFocused]);
+
+  /* =========================================================
+     REMOVE ITEM FROM PLAYLIST
+  ========================================================= */
+  const Remove = async (id) => {
+    try {
+      // Find selected item
+      const removedItem = playlist.find(
+        (item) => item && item.id === id?.id
+      );
+
+      // Stop if item doesn't exist
+      if (!removedItem) return;
+
+      // Remove selected item
+      const updatedPlaylist = playlist.filter(
+        (item) => item?.id !== id?.id
+      );
+
+      // Save updated playlist
+      await AsyncStorage.setItem(
+        "playList",
+        JSON.stringify(updatedPlaylist)
+      );
+
+      // Update state
+      setPlaylist(updatedPlaylist);
+
+      // Show success alert
+      setAlertVisible(true);
+
+      // Auto hide alert after 3 seconds
+      setTimeout(() => setAlertVisible(false), 3000);
+    } catch (e) {
+      console.error("Error removing item:", e);
+    } finally {
+      setAlertVisible(false);
+    }
+  };
+
+  /* =========================================================
+     SEARCH FILTER
+     Filters playlist based on search query
+  ========================================================= */
+  useEffect(() => {
+    if (searchQuery.length > 1) {
+      setloading(true);
+
+      // Filter by chapter name, reciter name, Arabic name...
+      const filteredRecitations = playlist.filter(
+        (item) =>
+          item.chapter?.toLowerCase()?.includes(
+            searchQuery.toLowerCase()
+          ) ||
+          item.reciterName?.toLowerCase()?.includes(
+            searchQuery.toLowerCase()
+          ) ||
+          item.arabName?.toLowerCase()?.includes(
+            searchQuery.toLowerCase()
+          ) ||
+          item.chapterAr?.toLowerCase()?.includes(
+            searchQuery.toLowerCase()
+          )
+      );
+
+      // Save filtered data
+      setFilteredData(filteredRecitations);
+    }
+  }, [languages, searchQuery]);
+
+  /* =========================================================
+     FETCH USER BOOKMARKS FROM API
+  ========================================================= */
+  const fetchBookmarks = useCallback(async () => {
+    try {
+      // Get bookmarks from API
+      const data = await api.getBookmarks();
+
+      // Save bookmarks into state
+      setBookmarks(data?.data ?? []);
+    } catch (err) {
+      console.error("Get bookmarks failed:", err);
+    } finally {
+      // NOTE:
+      // setBookmarksLoading does not exist
+      // You probably meant setloading(false)
+      setloading(false);
+    }
+  }, [session]);
+
+  /* =========================================================
+     RUN BOOKMARK FETCH ON COMPONENT MOUNT
+  ========================================================= */
+  useEffect(() => {
+    fetchBookmarks();
+  }, []);
+
+  /* =========================================================
+     DEBUG LOG
+  ========================================================= */
+ 
+
+  /* =========================================================
+     PLAY AUDIO FUNCTION
+  ========================================================= */
+  const playSound = (
+    idReciter,
+    trackId,
+    chapterName,
+    name,
+    arabName,
+    arabicCh
+  ) => {
+    playTrack(
+      {
+        id: idReciter,
+        chapterID: trackId,
+
+        // Display Arabic or English title
+        chapter: languages ? arabicCh : chapterName,
+
+        // Display Arabic or English reciter name
+        artist: languages ? arabName : name,
+
+        // Arabic fallback values
+        artistAR: arabName,
+        titleAR: arabicCh,
+      },
+      trackId
+    );
+  };
+
+  /* =========================================================
+     DYNAMIC STYLES
+     Responsive styles using screen width
+  ========================================================= */
+  const dynamicStyles = StyleSheet.create({
+    listItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      height: 75,
+
+      // Bigger padding for tablets
+      paddingHorizontal: width >= 768 ? 40 : 16,
+
+      paddingVertical: 8,
+    },
+  });
+
+  const combinedData = [...playlist, ...bookmarks];
+
+   console.log("Bookmarks updated:", combinedData[0].id);
+  /* =========================================================
+     COMPONENT UI
+  ========================================================= */
+  return (
+    <View style={{ alignItems: "center" }}>
+      {/* =====================================================
+          SEARCH BAR
+      ===================================================== */}
+      <View style={{ marginBottom: 16, alignItems: "center" }}>
+        <SearchBar
+          title={languages ? "بحث... " : "Search your savings"}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filteredData={filteredData}
+        />
+      </View>
+
+      {/* =====================================================
+          PLAYLIST LIST
+      ===================================================== */}
+      {combinedData[0] ? (
+        <FlatList
+          // Show filtered data if searching
+          data={searchQuery.length > 1 ? filteredData : combinedData}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={70}
+          keyExtractor={(item) => item?.id?.toString()}
+          contentContainerStyle={styles.flatlistContent}
+
+          /* =================================================
+             RENDER EACH PLAYLIST ITEM
+          ================================================= */
+          renderItem={({ item }) => (
+            <View
+              style={[
+                color2 === item[0]?.reciterID && idColor === item[0]?.id
+                  ? styles.Color
+                  : null,
+              ]}
+            >
+              <TouchableRipple
+                onPress={() => {
+                  // Play selected track
+                  playSound(
+                    item[0]?.reciterID,
+                    item[0]?.id,
+                    item[0]?.chapter,
+                    item[0]?.reciterName,
+                    item[0]?.arabName,
+                    item[0]?.chapterAr
+                  );
+
+                  // Highlight selected item
+                  setColor2(item[0]?.reciterID);
+                  setIdColor(item[0]?.id);
+                }}
+                activeOpacity={0.7}
+                rippleColor="rgba(200, 200, 200, 0.1)"
+                style={[dynamicStyles.listItem]}
+              >
+                <View style={[styles.itemContent]}>
+                  {/* =========================================
+                      LEFT SECTION
+                  ========================================= */}
+                  <View style={styles.buttonContent}>
+                    {/* Reciter image */}
+                    <View style={styles.imageContainer}>
+                      <Image
+                        resizeMode="cover"
+                        style={styles.image}
+                        source={{
+                          uri: dataArray[item[0]?.reciterID]?.image
+                            ? dataArray[item[0]?.reciterID]?.image
+                            : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBeNtIDXrucypAOP8APKT6-wuwPcJ8epwNvNMd4QbNlyWi9EfS",
+                        }}
+                      />
+                    </View>
+
+                    {/* Chapter & reciter names */}
+                    <View style={{ alignItems: "flex-start" }}>
+                      <Text style={styles.chapterText}>
+                        {languages
+                          ? item[0]?.chapterAr
+                          : item[0]?.chapter}
+                      </Text>
+
+                      <Text
+                        numberOfLines={1}
+                        style={styles.nameText}
+                      >
+                        {languages
+                          ? item[0]?.arabName
+                          : item[0]?.reciterName}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* =========================================
+                      RIGHT MENU
+                  ========================================= */}
+                  <View style={styles.menuContainer}>
+                    <Dropmenu
+                      playSound={playSound}
+                      RemoveItem={true}
+                      dataSave={item}
+                      reciterName={item[0]?.reciterName}
+                      reciterID={item[0]?.reciterID}
+                      chapteID={item[0]?.id}
+                      arabName={item[0]?.arabName}
+                      chapter={item[0]?.chapter}
+                      chapterAr={item[0]?.chapterAr}
+                      Remove={Remove}
+                    />
+                  </View>
+                </View>
+              </TouchableRipple>
+            </View>
+          )}
+        />
+      ) : (
+        /* ===================================================
+           EMPTY PLAYLIST STATE
+        =================================================== */
+        <View style={styles.emptyContainer}>
+          <Image
+            source={require("../assets/images/emptyState.png")}
+          />
+
+          <Text style={styles.emptyText}>
+            {languages
+              ? "   لم تقم بحفظ أي شيء بعد"
+              : " No Savings Yet"}
+          </Text>
+        </View>
+      )}
+
+      {/* =====================================================
+          DELETE ALERT MODAL
+      ===================================================== */}
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={alertVisible}
+        onRequestClose={hideAlert}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.alertBox}>
+            <Text style={styles.alertTitle}>Delete!</Text>
+
+            <Text style={styles.alertMessage}>
+              Surah Removed From PlayList
+            </Text>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+/* =========================================================
+   STYLES
+========================================================= */
+const styles = StyleSheet.create({
+  flatlistContent: {
+    paddingBottom: 450,
+    marginTop: 16,
+  },
+
+  itemContent: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    justifyContent: "space-between",
+  },
+
+  imageContainer: {
+    overflow: "hidden",
+    borderColor: "#00BCE5",
+    borderWidth: 1,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+
+  chapterText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  nameText: {
+    color: "#9ca3af",
+    fontSize: 12,
+  },
+
+  Color: {
+    backgroundColor: Colors.barbottom,
+  },
+
+  menuContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 48,
+    height: 48,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    bottom: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+  },
+
+  alertBox: {
+    width: "100%",
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    height: 80,
+    bottom: 0,
+    position: "absolute",
+    alignItems: "center",
+    elevation: 5,
+  },
+
+  alertTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+
+  alertMessage: {
+    fontSize: 16,
+    color: "#555",
+    textAlign: "center",
+  },
+
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 60,
+  },
+
+  emptyText: {
+    color: Colors.text,
+    fontWeight: "600",
+    marginTop: 20,
+  },
+});
+
+export default PlayList;
