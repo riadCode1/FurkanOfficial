@@ -1,6 +1,7 @@
 import {
   View,
   Text,
+<<<<<<< HEAD
   Image,
   useWindowDimensions,
   StyleSheet,
@@ -9,10 +10,24 @@ import React, { useEffect, useMemo, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dropmenu from "./Dropmenu";
 import { getReciterImage } from "../constants/reciterArtwork";
+=======
+  FlatList,
+  Image,
+  Modal,
+  StatusBar,
+  useWindowDimensions,
+  StyleSheet,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Dropmenu from "./Dropmenu";
+import { dataArray } from "@/constants/RecitersImages";
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "../constants/Colors";
 import SearchBar from "./SearchBar";
 import { TouchableRipple } from "react-native-paper";
+<<<<<<< HEAD
 import { MaterialIcons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -28,6 +43,24 @@ const PlayList = () => {
   const { languages, playTrack, track, color, color2 } = useGlobalContext();
   const bottomOverlayPadding =
     Math.max(insets.bottom + 112, track ? 220 : 0) + 32;
+=======
+import { useIsFocused } from "@react-navigation/native";
+
+const PlayList = () => {
+  const { width } = useWindowDimensions();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [idColor, setIdColor] = useState("");
+  const [loading, setloading] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
+  const [color2, setColor2] = useState(0);
+  const isFocused = useIsFocused();
+
+  const { languages, playTrack } = useGlobalContext();
+
+  const hideAlert = () => setAlertVisible(false);
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
   useEffect(() => {
     if (isFocused) {
@@ -38,6 +71,7 @@ const PlayList = () => {
       };
       fetchBookMark();
     }
+<<<<<<< HEAD
   }, [isFocused]);
 
   const Remove = async (id) => {
@@ -58,13 +92,45 @@ const PlayList = () => {
   const filteredData = useMemo(() => {
     if (searchQuery.length <= 1) return playlist;
     return playlist.filter(
+=======
+  }, [playlist, isFocused]);
+
+  const Remove = async (id) => {
+    try {
+      const removedItem = playlist.find((item) => item && item.id === id?.id);
+      if (!removedItem) return;
+
+      const updatedPlaylist = playlist.filter((item) => item?.id !== id?.id);
+      await AsyncStorage.setItem("playList", JSON.stringify(updatedPlaylist));
+      setPlaylist(updatedPlaylist);
+      setAlertVisible(true);
+      setTimeout(() => setAlertVisible(false), 3000);
+    } catch (e) {
+      console.error("Error removing item:", e);
+    } finally {
+      setAlertVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (searchQuery.length > 1) {
+      setloading(true);
+      const filteredRecitations = playlist.filter(
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
         (item) =>
           item.chapter?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
           item.reciterName?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
           item.arabName?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
           item.chapterAr?.toLowerCase()?.includes(searchQuery.toLowerCase())
+<<<<<<< HEAD
     );
   }, [playlist, searchQuery]);
+=======
+      );
+      setFilteredData(filteredRecitations);
+    }
+  }, [languages, searchQuery]);
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
   const playSound = (idReciter, trackId, chapterName, name, arabName, arabicCh) => {
     playTrack(
@@ -91,7 +157,11 @@ const PlayList = () => {
   });
 
   return (
+<<<<<<< HEAD
     <View style={styles.container}>
+=======
+    <View style={{ alignItems: "center" }}>
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       <View style={{ marginBottom: 16, alignItems: "center" }}>
         <SearchBar
           title={languages ? "بحث... " : "Search your savings"}
@@ -101,6 +171,7 @@ const PlayList = () => {
         />
       </View>
 
+<<<<<<< HEAD
       {playlist.length > 0 ? (
         filteredData.length > 0 ? (
         <View style={[styles.list, { paddingBottom: bottomOverlayPadding + 48 }]}>
@@ -109,6 +180,19 @@ const PlayList = () => {
               key={item?.id?.toString()}
               style={[
                 isTrackSelected(color, color2, item.reciterID, item.id)
+=======
+      {playlist[0] ? (
+        <FlatList
+          data={searchQuery.length > 1 ? filteredData : playlist}
+          showsVerticalScrollIndicator={false}
+          estimatedItemSize={70}
+          keyExtractor={(item) => item?.id?.toString()}
+          contentContainerStyle={styles.flatlistContent}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                color2 === item.reciterID && idColor === item.id
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
                   ? styles.Color
                   : null,
               ]}
@@ -123,6 +207,11 @@ const PlayList = () => {
                     item?.arabName,
                     item?.chapterAr
                   );
+<<<<<<< HEAD
+=======
+                  setColor2(item.reciterID);
+                  setIdColor(item.id);
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
                 }}
                 activeOpacity={0.7}
                 rippleColor="rgba(200, 200, 200, 0.1)"
@@ -135,8 +224,13 @@ const PlayList = () => {
                         resizeMode="cover"
                         style={styles.image}
                         source={{
+<<<<<<< HEAD
                           uri: getReciterImage(item?.reciterID)
                             ? getReciterImage(item?.reciterID)
+=======
+                          uri: dataArray[item?.reciterID]?.image
+                            ? dataArray[item?.reciterID]?.image
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
                             : "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSBeNtIDXrucypAOP8APKT6-wuwPcJ8epwNvNMd4QbNlyWi9EfS",
                         }}
                       />
@@ -169,6 +263,7 @@ const PlayList = () => {
                 </View>
               </TouchableRipple>
             </View>
+<<<<<<< HEAD
           ))}
         </View>
         ) : (
@@ -201,17 +296,51 @@ const PlayList = () => {
             {languages
               ? "اضغط على علامة الحفظ أثناء الاستماع لإضافة السورة هنا."
               : "Save a recitation while listening and it will be ready to play here."}
+=======
+          )}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Image source={require("../assets/images/emptyState.png")} />
+          <Text style={styles.emptyText}>
+            {languages ? "   لم تقم بحفظ أي شيء بعد" : " No Savings Yet"}
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
           </Text>
         </View>
       )}
 
+<<<<<<< HEAD
+=======
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={alertVisible}
+        onRequestClose={hideAlert}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.alertBox}>
+            <Text style={styles.alertTitle}>Delete!</Text>
+            <Text style={styles.alertMessage}>
+              Surah Removed From PlayList
+            </Text>
+          </View>
+        </View>
+      </Modal>
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   container: { width: "100%", alignItems: "center" },
   list: { marginTop: 16, width: "100%" },
+=======
+  flatlistContent: {
+    paddingBottom: 450,
+    marginTop: 16,
+  },
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
   itemContent: {
     flexDirection: "row",
     width: "100%",
@@ -253,6 +382,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
   },
+<<<<<<< HEAD
   emptyCard: {
     width: "93%",
     alignSelf: "center",
@@ -298,6 +428,44 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
     maxWidth: 280,
+=======
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    bottom: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+  },
+  alertBox: {
+    width: "100%",
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    height: 80,
+    bottom: 0,
+    position: "absolute",
+    alignItems: "center",
+    elevation: 5,
+  },
+  alertTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  alertMessage: {
+    fontSize: 16,
+    color: "#555",
+    textAlign: "center",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 60,
+  },
+  emptyText: {
+    color: Colors.text,
+    fontWeight: "600",
+    marginTop: 20,
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
   },
 });
 

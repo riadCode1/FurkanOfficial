@@ -21,7 +21,11 @@ export const Colors = {
     textTab:"#A1AAF1",
     border:"#9B9EFF",
     blue:"#03DAC5",
+<<<<<<< HEAD
     background: '#071426',
+=======
+    background: '#111223',
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
     backgroundRGB:"rgba(30,30,30,0.5)",
     backgroundTint: '#343C66',
     tint: tintColorDark,

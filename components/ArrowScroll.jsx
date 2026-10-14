@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { I18nManager, useWindowDimensions, StyleSheet } from "react-native";
+=======
+import { View, Text, useWindowDimensions, StyleSheet } from "react-native";
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 import React from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
@@ -7,6 +11,7 @@ import { TouchableRipple } from "react-native-paper";
 const ArrowScroll = ({ scrollToTop }) => {
   const { width } = useWindowDimensions();
 
+<<<<<<< HEAD
   return (
     <TouchableRipple
       accessibilityRole="button"
@@ -17,10 +22,37 @@ const ArrowScroll = ({ scrollToTop }) => {
       borderless
     >
       <MaterialIcons name="keyboard-double-arrow-up" size={24} color={Colors.background} />
+=======
+  const dynamicStyles = StyleSheet.create({
+    buttonScroll: {
+      width: 48,
+      height: 48,
+      right: width >= 700 ? 32 : 16,
+      borderRadius: 50,
+      position: "absolute",
+      zIndex: 999,
+      backgroundColor: Colors.barbottom,
+      bottom: width * 0.5,
+      alignItems: "center",
+      justifyContent: "center",
+      elevation: 50,
+    },
+  });
+
+  return (
+    <TouchableRipple
+      onPress={scrollToTop}
+      rippleColor="rgba(255, 255, 255, 0.2)"
+      style={dynamicStyles.buttonScroll}
+      borderless={true}
+    >
+      <MaterialIcons name="arrow-upward" size={24} color="white" />
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
     </TouchableRipple>
   );
 };
 
+<<<<<<< HEAD
 const styles = StyleSheet.create({
   buttonScroll: {
     width: 50,
@@ -41,4 +73,6 @@ const styles = StyleSheet.create({
   },
 });
 
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 export default ArrowScroll;

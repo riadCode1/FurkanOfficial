@@ -2,7 +2,11 @@ import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
+<<<<<<< HEAD
 import { getReciterImage } from "../constants/reciterArtwork";
+=======
+import { dataArray } from "../constants/RecitersImages";
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
 import { Image } from "expo-image";
@@ -63,8 +67,13 @@ const ReaderCard = ({ arab_name, languages, loading, name, id }) => {
                 style={styles.image}
                 contentFit="cover"
                 source={{
+<<<<<<< HEAD
                   uri: getReciterImage(id)
                     ? getReciterImage(id)
+=======
+                  uri: dataArray[id]?.image
+                    ? dataArray[id]?.image
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
                     : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
                 }}
               />

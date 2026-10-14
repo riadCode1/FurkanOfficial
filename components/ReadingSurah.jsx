@@ -4,7 +4,10 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
+<<<<<<< HEAD
 import { images } from "../constants/images";
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
 const ReadingSurah = ({
   chapter_arab,
@@ -14,7 +17,10 @@ const ReadingSurah = ({
   Chapterid,
   verses,
   loading,
+<<<<<<< HEAD
   cardWidth,
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 }) => {
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= 768;
@@ -28,6 +34,7 @@ const ReadingSurah = ({
 
   const dynamicStyles = StyleSheet.create({
     cardContainer: {
+<<<<<<< HEAD
       width: cardWidth || (isLargeScreen ? width * 0.55 : width * 0.82),
       minHeight: 84,
       paddingHorizontal: 12,
@@ -42,13 +49,30 @@ const ReadingSurah = ({
     Loti: {
       width: cardWidth || (isLargeScreen ? width * 0.55 : width * 0.82),
       height: 84,
+=======
+      width: isLargeScreen ? width * 2 : width * 0.85,
+      marginBottom: 8,
+      paddingVertical: 8,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    Loti: {
+      width: isLargeScreen ? 156 : 160,
+      height: isLargeScreen ? 156 : 60,
+      marginBottom: 12,
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       borderRadius: 5,
       overflow: "hidden",
       justifyContent: "space-between",
     },
     imageContainer: {
+<<<<<<< HEAD
       width: isLargeScreen ? 72 : 60,
       height: isLargeScreen ? 72 : 60,
+=======
+      width: isLargeScreen ? 100 : 60,
+      height: isLargeScreen ? 100 : 60,
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       borderColor: Colors.blue,
       borderRadius: 8,
       borderWidth: 1,
@@ -59,8 +83,12 @@ const ReadingSurah = ({
       height: "100%",
     },
     textContainer: {
+<<<<<<< HEAD
       flex: 1,
       marginTop: 0,
+=======
+      marginTop: 8,
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       alignItems: "flex-start",
     },
     chapterTitle: {
@@ -108,7 +136,11 @@ const ReadingSurah = ({
               <Image
                 style={dynamicStyles.image}
                 resizeMode="contain"
+<<<<<<< HEAD
                 source={images.quranCover}
+=======
+                source={require("../assets/images/quranLogo.jpeg")}
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
               />
             </View>
 

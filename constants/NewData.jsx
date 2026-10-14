@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const islamSobhiAudioFiles = Array.from({ length: 114 }, (_, index) => {
   const chapterId = index + 1;
   const paddedChapterId = String(chapterId).padStart(3, "0");
@@ -22,6 +23,11 @@ export const NewData = {
       audio_files: islamSobhiAudioFiles,
     },
     {
+=======
+export const NewData = {
+  "recitations": [
+    {
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       id: 10,
       reciter_name: "saud ash-shuraym",
       style: "Murattal",

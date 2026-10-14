@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+<<<<<<< HEAD
 import React, { useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../../context/GlobalProvider";
@@ -18,6 +19,18 @@ const Privacy = () => {
       </View>
       {languages ? (
         <ScrollView ref={scrollRef} onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.content} style={styles.container}>
+=======
+import React from "react";
+import { useGlobalContext } from "../../../context/GlobalProvider";
+
+const Privacy = () => {
+  const { languages } = useGlobalContext();
+
+  return (
+    <>
+      {languages ? (
+        <ScrollView contentContainerStyle={{ paddingBottom: 200 }} style={styles.container}>
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
           <Text style={styles.title}>سياسة الخصوصية</Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [23-03-2025]
@@ -64,7 +77,11 @@ const Privacy = () => {
           </Text>
         </ScrollView>
       ) : (
+<<<<<<< HEAD
         <ScrollView ref={scrollRef} onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.content} style={styles.container}>
+=======
+        <ScrollView contentContainerStyle={{ paddingBottom: 200 }} style={styles.container}>
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
           <Text style={styles.title}>Privacy Policy</Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Last Updated:</Text> [23-03-2025]
@@ -111,13 +128,18 @@ const Privacy = () => {
           </Text>
         </ScrollView>
       )}
+<<<<<<< HEAD
     </SafeAreaView>
+=======
+    </>
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
   );
 };
 
 export default Privacy;
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   safeArea: { flex: 1, backgroundColor: "#071426" },
   header: { minHeight: 58, flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 18 },
   headerTitle: { color: "#ffffff", fontSize: 17, fontWeight: "700" },
@@ -151,5 +173,21 @@ const styles = StyleSheet.create({
   bold: {
     color: "#ffffff",
     fontWeight: "700",
+=======
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  bold: {
+    fontWeight: 'bold',
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
   },
 });

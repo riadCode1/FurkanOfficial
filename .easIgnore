@@ -40,6 +40,7 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+<<<<<<< HEAD
 
 # local tool metadata and symlinked skill folders
 /.agents
@@ -52,3 +53,5 @@ app-example
 .vscode/
 .codestudio/
 .cortex/
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3

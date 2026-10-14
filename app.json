@@ -13,9 +13,12 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
+<<<<<<< HEAD
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       },
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -24,7 +27,10 @@
     "android": {
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
+<<<<<<< HEAD
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
         "FOREGROUND_SERVICE",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -81,10 +87,14 @@
       ],
       "expo-font",
       [
+<<<<<<< HEAD
         "expo-notifications",
         {
           "sounds": ["./assets/audio/adhan.wav"]
         }
+=======
+        "expo-notifications"
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       ],
       "expo-video",
       [

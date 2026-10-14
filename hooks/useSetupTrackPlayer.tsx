@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 import { useEffect } from 'react'
 import TrackPlayer, { AddTrack, AppKilledPlaybackBehavior, Capability, RatingType, RepeatMode } from 'react-native-track-player'
 import { images } from '@/constants/images'
 
 let setupPromise: Promise<void> | null = null
+=======
+import { useEffect, useRef } from 'react'
+import TrackPlayer, { AddTrack, AppKilledPlaybackBehavior, Capability, RatingType, RepeatMode } from 'react-native-track-player'
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
 const setupPlayer = async () => {
 
 	
+<<<<<<< HEAD
 	try {
 		await TrackPlayer.setupPlayer({
 			maxCacheSize: 100 * 1024 * 1024,
@@ -17,6 +23,15 @@ const setupPlayer = async () => {
 			throw error
 		}
 	}
+=======
+	await TrackPlayer.setupPlayer({
+		maxCacheSize: 100 * 1024 * 1024, 
+		autoUpdateMetadata: false,
+		
+		
+		
+	})
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
 	await TrackPlayer.updateOptions({
 
@@ -24,10 +39,17 @@ const setupPlayer = async () => {
 		
 		ratingType: RatingType.Heart,
 		capabilities: [
+<<<<<<< HEAD
 			Capability.SkipToPrevious,
 			Capability.Play,
 			Capability.Pause,
 			Capability.SkipToNext,
+=======
+			Capability.Play,
+			Capability.Pause,
+			// Capability.SkipToNext,
+			// Capability.SkipToPrevious,
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 			Capability.Stop,
 			
 			
@@ -35,6 +57,7 @@ const setupPlayer = async () => {
 		
 
 		notificationCapabilities:[
+<<<<<<< HEAD
 			Capability.SkipToPrevious,
 			Capability.Play,
             Capability.Pause,
@@ -44,6 +67,16 @@ const setupPlayer = async () => {
 			Capability.SkipToPrevious,
             Capability.Play,
 			Capability.SkipToNext,
+=======
+			Capability.Play,
+            Capability.Pause,
+            Capability.Stop,
+		],
+		compactCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+			
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
         ],
 		
 		
@@ -60,8 +93,12 @@ const setupPlayer = async () => {
 
 		
 		
+<<<<<<< HEAD
 		icon: images.trackPlayerIcon,
 		color: 0xff03dac5,
+=======
+		icon: require('../assets/images/Logo.png'),
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 		
 	})
 
@@ -72,6 +109,7 @@ const setupPlayer = async () => {
 }
 
 export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
+<<<<<<< HEAD
 	useEffect(() => {
 		if (!setupPromise) {
 			setupPromise = setupPlayer().catch((error) => {
@@ -83,6 +121,22 @@ export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
 		setupPromise
 			.then(() => onLoad?.())
 			.catch((error) => console.error(error))
+=======
+	const isInitialized = useRef(false)
+
+	useEffect(() => {
+		if (isInitialized.current) return
+
+		setupPlayer()
+			.then(() => {
+				isInitialized.current = true
+				onLoad?.()
+			})
+			.catch((error) => {
+				isInitialized.current = false
+				console.error(error)
+			})
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 	}, [onLoad])
 }
 export const playTrack = async (tracks: AddTrack[], index = 0) => {
@@ -91,4 +145,8 @@ export const playTrack = async (tracks: AddTrack[], index = 0) => {
 	await TrackPlayer.skip(index);
 	await TrackPlayer.play();
   };
+<<<<<<< HEAD
   
+=======
+  
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import {
   View,
   StyleSheet,
@@ -10,14 +11,20 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
+=======
+import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../constants/Colors";
 import { useIsFocused } from "@react-navigation/native";
 import { useGlobalContext } from "../context/GlobalProvider";
+<<<<<<< HEAD
 import {
   downloadRecitation,
   getDownloadedRecitation,
 } from "../constants/offlineDownloads";
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
 const Dropmenu = ({
   reciterName,
@@ -27,8 +34,11 @@ const Dropmenu = ({
   chapterAr,
   mp3,
   reciterID,
+<<<<<<< HEAD
   RemoveItem = false,
   Remove,
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 }) => {
   const SaveListe = [
     {
@@ -44,6 +54,7 @@ const Dropmenu = ({
 
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertVisible2, setAlertVisible2] = useState(false);
+<<<<<<< HEAD
   const [playlistPickerVisible, setPlaylistPickerVisible] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [isSaved, setIsSaved] = useState(false);
@@ -132,6 +143,11 @@ const Dropmenu = ({
       Alert.alert("Could not create playlist", "Please try again.");
     }
   };
+=======
+  const [isSaved, setIsSaved] = useState(false);
+  const focused = useIsFocused(); // State to track if the item is saved
+  const { setLanguages, languages, modalVisible, loading } = useGlobalContext();
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
   const saveToPlaylist = async (list) => {
     setIsSaved(true);
@@ -164,6 +180,7 @@ const Dropmenu = ({
   };
 
   const removeFromPlaylist = async (item) => {
+<<<<<<< HEAD
     if (RemoveItem && Remove) {
       await Remove(item);
       setIsSaved(false);
@@ -179,6 +196,17 @@ const Dropmenu = ({
         (id) => !(id.reciterID === item.reciterID && id.id === item.id)
       );
     });
+=======
+    setIsSaved(false);
+    const bookMark = await AsyncStorage.getItem("playList").then((token) => {
+      const res = JSON.parse(token);
+      return res.filter(
+        (id) => !(id.reciterID === item.reciterID && id.id === item.id)
+      );
+    });
+    !(item.id === chapteID && item.reciterID === reciterID);
+
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
     await AsyncStorage.setItem("playList", JSON.stringify(bookMark));
     setAlertVisible2(true);
 
@@ -186,6 +214,7 @@ const Dropmenu = ({
       setAlertVisible2(false);
     }, 2000);
   };
+<<<<<<< HEAD
   useEffect(() => {
     let isMounted = true;
     AsyncStorage.getItem("playList")
@@ -208,10 +237,27 @@ const Dropmenu = ({
       isMounted = false;
     };
   }, [focused, chapteID, reciterID]);
+=======
+  const renderBookmark = async (list) => {
+    await AsyncStorage.getItem("playList").then((token) => {
+      const res = JSON.parse(token);
+      if (res) {
+        let data = res.find(
+          (val) => val.id === list.id && val.reciterID === list.reciterID
+        );
+        return data == null ? setIsSaved(false) : setIsSaved(true);
+      }
+    });
+  };
+  useEffect(() => {
+    renderBookmark(SaveListe[0]);
+  }, [focused]);
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
+<<<<<<< HEAD
         accessibilityRole="button"
         accessibilityLabel={isDownloaded ? "Downloaded for offline listening" : "Download for offline listening"}
         activeOpacity={0.8}
@@ -232,6 +278,17 @@ const Dropmenu = ({
         onPress={() => (isSaved
           ? removeFromPlaylist(SaveListe[0])
           : saveToPlaylist(SaveListe[0]))}
+=======
+        activeOpacity={0.8}
+        style={{
+          justifyContent: "center",
+        }}
+        onPress={() => {
+          isSaved
+            ? removeFromPlaylist(SaveListe[0])
+            : saveToPlaylist(SaveListe[0]);
+        }}
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       >
         {isSaved ? (
           <MaterialIcons
@@ -248,6 +305,7 @@ const Dropmenu = ({
         )}
       </TouchableOpacity>
 
+<<<<<<< HEAD
       <TouchableOpacity
         accessibilityRole="button"
         accessibilityLabel="Add to a playlist"
@@ -258,6 +316,8 @@ const Dropmenu = ({
         <MaterialIcons name="playlist-add" size={25} color="white" />
       </TouchableOpacity>
 
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
       {/*Alert modal */}
 
       {languages ? (
@@ -275,9 +335,15 @@ const Dropmenu = ({
         <Modal transparent={true} animationType="slide" visible={alertVisible}>
           <View style={styles.modalOverlay}>
             <View style={styles.alertBox}>
+<<<<<<< HEAD
               <Text style={styles.alertTitle}>{languages ? "تم الحفظ" : "Saved!"}</Text>
               <Text style={styles.alertMessage}>
                 {languages ? "تمت إضافة السورة إلى المحفوظات" : "Chapter added to saved recitations"}
+=======
+              <Text style={styles.alertTitle}>Saved!</Text>
+              <Text style={styles.alertMessage}>
+                chapter Added to the Playlist
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
               </Text>
             </View>
           </View>
@@ -300,14 +366,21 @@ const Dropmenu = ({
         <Modal transparent={true} animationType="slide" visible={alertVisible2}>
           <View style={styles.modalOverlay}>
             <View style={styles.alertBox}>
+<<<<<<< HEAD
               <Text style={styles.alertTitle}>{languages ? "تمت الإزالة" : "Removed"}</Text>
               <Text style={styles.alertMessage}>
                 {languages ? "تمت إزالة السورة من المحفوظات" : "Chapter removed from saved recitations"}
+=======
+              <Text style={styles.alertTitle}>Removed</Text>
+              <Text style={styles.alertMessage}>
+                chapter Removed from Savelist
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
               </Text>
             </View>
           </View>
         </Modal>
       )}
+<<<<<<< HEAD
 
       <Modal
         transparent
@@ -367,11 +440,14 @@ const Dropmenu = ({
           </View>
         </View>
       </Modal>
+=======
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   container: { flexDirection: "row", alignItems: "center", gap: 4 },
   actionButton: {
     width: 40,
@@ -429,6 +505,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.blue,
   },
   createButtonText: { color: Colors.background, fontSize: 14, fontWeight: "700" },
+=======
+  container: {},
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -462,6 +541,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
+<<<<<<< HEAD
+=======
+  closeButton: {
+    backgroundColor: Colors.blue,
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+>>>>>>> 7d68767e3b3e36ecc4e484959e2011d2fa7e78c3
 });
 
 export default Dropmenu;
