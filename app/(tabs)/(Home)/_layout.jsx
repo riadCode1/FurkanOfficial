@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
+import { Alert } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { registerForPushNotificationsAsync } from "../../../constants/BackgroundTask";
 
 // ✅ Notification handler setup
 Notifications.setNotificationHandler({
@@ -17,7 +17,7 @@ Notifications.setNotificationHandler({
 });
 
 // ✅ Main prepare function
-export const prepareLocation = async (setCurrentLocation, currentLocation) => {
+export const prepareLocation = async (setCurrentLocation) => {
   try {
     // 1️⃣ Try to load stored location first
     const storedLocation = await AsyncStorage.getItem("currentLocation");
@@ -31,16 +31,10 @@ export const prepareLocation = async (setCurrentLocation, currentLocation) => {
     }
 
     // 2️⃣ If no stored location, request permissions
-    const { status: notifStatus } = await Notifications.requestPermissionsAsync();
-    if (notifStatus !== "granted") {
-      alert("Permission for notifications not granted!");
-      return;
-    }
-
     const { status: locStatus } =
       await Location.requestForegroundPermissionsAsync();
     if (locStatus !== "granted") {
-      alert("Permission for location not granted!");
+      Alert.alert("Location permission needed", "Allow location access to show prayer times.");
       return;
     }
 
@@ -58,24 +52,32 @@ export const prepareLocation = async (setCurrentLocation, currentLocation) => {
       longitude,
     });
 
+    if (placemarks.length === 0) {
+      Alert.alert("Location unavailable", "Could not determine your location. Try again.");
+      return;
+    }
+
     if (placemarks.length > 0) {
       const place = placemarks[0];
       const locationData = {
-        city: place.city || "Unknown city",
-        state: place.region || "Unknown state",
-        country: place.country || "Unknown country",
+        city: place.city || place.district || place.subregion || place.region,
+        state: place.region || place.subregion,
+        country: place.country,
       };
+
+      if (!locationData.city || !locationData.country) {
+        Alert.alert("Location unavailable", "Could not determine your city and country. Try again.");
+        return;
+      }
 
       console.log("🌍 Location data:", locationData);
 
       // Save to context
-      setCurrentLocation(locationData);
-
-      // Save to AsyncStorage
       await AsyncStorage.setItem(
         "currentLocation",
         JSON.stringify(locationData)
       );
+      setCurrentLocation(locationData);
 
       console.log("✅ Location saved to AsyncStorage");
     }
@@ -84,22 +86,16 @@ export const prepareLocation = async (setCurrentLocation, currentLocation) => {
   }
 };
 
-export const prepare = async (setCurrentLocation, currentLocation) => {
+export const prepare = async (setCurrentLocation) => {
   try {
     // 1️⃣ Try to load stored location first
     
 
     // 2️⃣ If no stored location, request permissions
-    const { status: notifStatus } = await Notifications.requestPermissionsAsync();
-    if (notifStatus !== "granted") {
-      alert("Permission for notifications not granted!");
-      return;
-    }
-
     const { status: locStatus } =
       await Location.requestForegroundPermissionsAsync();
     if (locStatus !== "granted") {
-      alert("Permission for location not granted!");
+      Alert.alert("Location permission needed", "Allow location access to show prayer times.");
       return;
     }
 
@@ -117,24 +113,32 @@ export const prepare = async (setCurrentLocation, currentLocation) => {
       longitude,
     });
 
+    if (placemarks.length === 0) {
+      Alert.alert("Location unavailable", "Could not determine your location. Try again.");
+      return;
+    }
+
     if (placemarks.length > 0) {
       const place = placemarks[0];
       const locationData = {
-        city: place.city || "Unknown city",
-        state: place.region || "Unknown state",
-        country: place.country || "Unknown country",
+        city: place.city || place.district || place.subregion || place.region,
+        state: place.region || place.subregion,
+        country: place.country,
       };
+
+      if (!locationData.city || !locationData.country) {
+        Alert.alert("Location unavailable", "Could not determine your city and country. Try again.");
+        return;
+      }
 
       console.log("🌍 Location data:", locationData);
 
       // Save to context
-      setCurrentLocation(locationData);
-
-      // Save to AsyncStorage
       await AsyncStorage.setItem(
         "currentLocation",
         JSON.stringify(locationData)
       );
+      setCurrentLocation(locationData);
 
       console.log("✅ Location saved to AsyncStorage");
     }
@@ -144,13 +148,12 @@ export const prepare = async (setCurrentLocation, currentLocation) => {
 };
 
 // ✅ Main layout component
-const _layout = () => {
-  const { setCurrentLocation, currentLocation } = useGlobalContext();
+const HomeLayout = () => {
+  const { setCurrentLocation } = useGlobalContext();
 
   useEffect(() => {
-    prepareLocation(setCurrentLocation, currentLocation);
-    registerForPushNotificationsAsync();
-  }, []);
+    void prepareLocation(setCurrentLocation);
+  }, [setCurrentLocation]);
 
   return (
     <>
@@ -169,9 +172,9 @@ const _layout = () => {
         />
       </Stack>
 
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#071426" style="light" />
     </>
   );
 };
 
-export default _layout;
+export default HomeLayout;

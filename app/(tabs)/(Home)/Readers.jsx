@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   TouchableOpacity,
-  Dimensions,
-  ScrollView,
   StatusBar,
   I18nManager,
   View,
@@ -10,6 +8,7 @@ import {
   Animated,
   ImageBackground,
   useWindowDimensions,
+  StyleSheet,
 } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
@@ -23,11 +22,10 @@ import Listen from "../../../components/Listen";
 import { fetchSuwar } from "../../API/QuranApi";
 import { NewData } from "../../../constants/NewData";
 import { TouchableRipple } from "react-native-paper";
-import { RFValue } from "react-native-responsive-fontsize";
 import TogglePlayReader from "../../../components/TogglePlayReader";
 import Lineargradient from "../../../components/LinearGradient";
 import Goback from "../../../components/Goback";
-import ArrowScroll from "../../../components/ArrowScroll";
+import { useScrollToTop } from "../../../context/ScrollToTopProvider";
 
 const Readers = () => {
   const { width, height } = useWindowDimensions();
@@ -45,12 +43,8 @@ const Readers = () => {
   });
 
   const smallHeaderOpacity = scrollY.interpolate({
-    inputRange: [
-      HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT,
-      HEADER_SCROLL_DISTANCE,
-      RFValue(350),
-    ],
-    outputRange: [0, 1, 1],
+    inputRange: [Math.max(0, HEADER_SCROLL_DISTANCE - 24), HEADER_SCROLL_DISTANCE + 48],
+    outputRange: [0, 1],
     extrapolate: "clamp",
   });
 
@@ -60,7 +54,6 @@ const Readers = () => {
   const {
     isPlaying,
     languages,
-    setTrackList,
     togglePlayback,
     playTrack,
     loading,
@@ -68,113 +61,69 @@ const Readers = () => {
 
   const [activeButton, setActiveButton] = useState("button1");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
   const [quranData, setQuranData] = useState([]);
   const flashListRef = useRef(null);
-
-  const scrollToTop = () => {
-    if (flashListRef.current) {
-      flashListRef?.current?.scrollTo({ offset: 0, animated: true });
-    }
-  };
+  const handleScrollToTopTracking = useScrollToTop(flashListRef);
 
   useEffect(() => {
-    getReciter();
+    let isCurrent = true;
+    const getReciters = async () => {
+      try {
+        const data = await fetchSuwar();
+        const uniqueReciters = new Map();
+        const processRecitations = (recitations = []) => {
+          recitations.forEach((reciter) => {
+            if (!reciter?.id || reciter.status === "inactive") return;
+            if (!uniqueReciters.has(reciter.id)) uniqueReciters.set(reciter.id, reciter);
+          });
+        };
+        processRecitations(data?.recitations);
+        processRecitations(NewData.recitations);
+
+        const reciters = Array.from(uniqueReciters.values())
+          .filter((item) => item.id !== 8)
+          .sort((a, b) => a.id - b.id)
+          .map((item, index) => ({ ...item, position: index + 1 }));
+
+        if (isCurrent) setQuranData(reciters);
+      } catch (error) {
+        console.error("Error fetching reciters:", error);
+      }
+    };
+    getReciters();
+    return () => { isCurrent = false; };
   }, []);
 
-  const getReciter = async () => {
-    try {
-      const data = await fetchSuwar();
-
-      const uniqueReciters = new Map();
-      const processRecitations = (recitations) => {
-        recitations.forEach((reciter) => {
-          if (!reciter?.id || reciter.status === "inactive") return;
-          if (!uniqueReciters.has(reciter.id)) {
-            uniqueReciters.set(reciter.id, reciter);
-          }
-        });
-      };
-
-      processRecitations(data.recitations);
-      processRecitations(NewData.recitations);
-
-      const filtered = Array.from(uniqueReciters.values())
-        .filter((item) => item.id !== 8)
-        .sort((a, b) => a.id - b.id)
-        .map((item, index) => ({
-          ...item,
-          position: index + 1,
-        }));
-
-      setQuranData(filtered);
-    } catch (error) {
-      console.error("Error fetching reciters:", error);
-    }
-  };
+  const filteredData = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase();
+    if (query.length < 2) return [];
+    return quranData.filter((item) =>
+      item.reciter_name?.toLocaleLowerCase().includes(query) ||
+      item.translated_name?.name?.toLocaleLowerCase().includes(query)
+    );
+  }, [quranData, searchQuery]);
 
   const handleButtonPress = (button) => setActiveButton(button);
 
   const getBackgroundColor = (button) =>
     activeButton === button ? "#00D1FF" : "transparent";
 
-  useEffect(() => {
-    if (searchQuery.length > 1) {
-      fetchSuwar(searchQuery)
-        .then((suwarData) => {
-          const filteredRecitations = suwarData.recitations.filter(
-            (item) =>
-              item.reciter_name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-              item.translated_name.name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase())
-          );
-          const filterNewData = NewData.recitations.filter(
-            (item) =>
-              item.reciter_name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-              item.translated_name.name
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase())
-          );
-          const combined = [...filteredRecitations, ...filterNewData];
-          const unique = combined.filter(
-            (recitation, index, self) =>
-              index === self.findIndex((r) => r.id === recitation.id)
-          );
-          setFilteredData(unique);
-        })
-        .catch(console.error);
-    }
-  }, [searchQuery]);
-
-  const playAuto = async (reciterId, index) => {
+  const playAuto = useCallback(async (reciterId, index) => {
+    const selectedReciter = quranData.find((item) => item?.id === reciterId);
     playTrack(
       {
         id: reciterId,
         chapterID: Chapterid,
         chapter: name,
         chapterAr: chapter_arab,
-        artist: quranData.find((r) => r?.id === reciterId)?.reciter_name,
-        artistAR: quranData.find((r) => r?.id === reciterId)?.translated_name
-          .name,
+        artist: selectedReciter?.reciter_name,
+        artistAR: selectedReciter?.translated_name?.name,
         titleAR: chapter_arab,
         index,
       },
       Chapterid
     );
-    setTrackList(
-      quranData.map((data) => ({
-        id: Chapterid,
-        titleAR: chapter_arab,
-        title: name,
-        artist: quranData,
-      }))
-    );
-  };
+  }, [playTrack, quranData, Chapterid, name, chapter_arab]);
 
   return (
     <View style={[styles.container, { backgroundColor: Colors.background }]}>
@@ -204,19 +153,21 @@ const Readers = () => {
 
       <Animated.ScrollView
         ref={flashListRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true, listener: handleScrollToTopTracking }
         )}
       >
         <ImageBackground
           source={require("../../../assets/images/quranLogo.jpeg")}
-          blurRadius={20}
           style={[
             styles.headerImage,
-            { height: height > 700 ? 400 : 300, width: "100%" },
+            { height: height > 700 ? 420 : 350, width: "100%" },
           ]}
         >
+          <View pointerEvents="none" style={styles.heroScrim} />
           <View style={styles.imageContainer}>
             <Image
               contentFit="contain"
@@ -235,7 +186,7 @@ const Readers = () => {
             ]}
           >
             <View style={styles.chapterName}>
-              <Text style={[styles.chapterNameText, { width: width * 0.6 }]}>
+              <Text numberOfLines={1} style={[styles.chapterNameText, { width: width * 0.66 }]}>
                 {languages ? chapter_arab : name}
               </Text>
               <Text style={{ color: Colors.textGray, fontSize: 16 }}>
@@ -252,7 +203,7 @@ const Readers = () => {
               <MaterialIcons
                 name={isPlaying ? "pause" : "play-arrow"}
                 size={24}
-                color={Colors.blue}
+                color={Colors.background}
               />
             </TouchableRipple>
           </View>
@@ -276,7 +227,7 @@ const Readers = () => {
                   onPress={() => handleButtonPress(btn)}
                   style={styles.button}
                 >
-                  <Text style={styles.buttonText}>
+                  <Text style={[styles.buttonText, activeButton === btn && styles.buttonTextActive]}>
                     {languages
                       ? ["استمع", "معلومات", "اقراء"][i]
                       : ["Listen", "Info", "Read"][i]}
@@ -317,6 +268,7 @@ const Readers = () => {
             loading={loading}
             ButtonTranslate={ButtonTranslate}
             quranData={quranData}
+            showTrackSelection
           />
         )}
         {activeButton === "button2" && (
@@ -325,13 +277,6 @@ const Readers = () => {
         {activeButton === "button3" && <Read id={Chapterid} />}
       </Animated.ScrollView>
 
-      <Animated.View
-        style={[
-          { transform: [{ translateX: ButtonTranslate }] },
-        ]}
-      >
-        <ArrowScroll scrollToTop={scrollToTop} />
-      </Animated.View>
     </View>
   );
 };
@@ -342,6 +287,10 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+  },
+  heroScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(7, 20, 38, 0.5)",
   },
   imageContainer: {
     shadowColor: "#000",
@@ -361,23 +310,31 @@ const styles = {
     justifyContent: "space-between",
   },
   relativeView: {
+    width: "100%",
     justifyContent: "center",
-    alignItems: "center",
   },
   buttonGroup: {
     flexDirection: "row",
-    justifyContent: "space-between",
     width: "100%",
-    bottom: 10,
+    padding: 4,
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.06)",
   },
-  button: { justifyContent: "center", alignItems: "center" },
-  buttonText: { color: Colors.textGray, marginBottom: 8 },
-  buttonUnderline: { width: RFValue(112), height: 1, borderRadius: 50 },
-  chapterNameText: { color: "white", fontSize: 20, fontWeight: "bold" },
+  button: {
+    flex: 1,
+    minHeight: 42,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 11,
+  },
+  buttonText: { color: Colors.textGray, fontSize: 13, fontWeight: "600" },
+  buttonTextActive: { color: Colors.text },
+  buttonUnderline: { width: "52%", height: 2, borderRadius: 50, marginTop: 5 },
+  chapterNameText: { color: Colors.text, fontSize: 22, fontWeight: "700" },
   playPauseButton: {
     width: 48,
     height: 48,
-    backgroundColor: Colors.barbottom,
+    backgroundColor: Colors.blue,
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",

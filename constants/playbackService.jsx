@@ -1,4 +1,5 @@
 import TrackPlayer, { Event } from 'react-native-track-player'
+import { navigateToAdjacentSurah } from './trackNavigation'
 
 export const playbackService = async () => {
 	TrackPlayer.addEventListener(Event.RemotePlay, () => {
@@ -14,12 +15,16 @@ export const playbackService = async () => {
 	})
 
 	TrackPlayer.addEventListener(Event.RemoteNext, () => {
-		TrackPlayer.skipToNext()
+		void navigateToAdjacentSurah(1).catch((error) => {
+			console.error('Could not play the next Surah:', error)
+		})
 		
 	})
 
 	TrackPlayer.addEventListener(Event.RemotePrevious, () => {
-		TrackPlayer.skipToPrevious()
+		void navigateToAdjacentSurah(-1).catch((error) => {
+			console.error('Could not play the previous Surah:', error)
+		})
 	})
 
 	// TrackPlayer.addEventListener('playback-track-changed', async (data) => {

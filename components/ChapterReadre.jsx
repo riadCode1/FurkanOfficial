@@ -3,7 +3,7 @@ import React from "react";
 import Dropmenu from "./Dropmenu";
 import { AntDesign } from "@expo/vector-icons";
 
-import { dataArray } from "../constants/RecitersImages";
+import { getReciterImage } from "../constants/reciterArtwork";
 import { useGlobalContext } from "../context/GlobalProvider";
 
 const ChapterReadre = ({
@@ -30,8 +30,8 @@ const ChapterReadre = ({
             resizeMode="contain"
             className=" w-full h-full overflow-hidden"
             source={{
-              uri: dataArray[IdReciter]?.image
-                ? dataArray[IdReciter]?.image
+              uri: getReciterImage(IdReciter)
+                ? getReciterImage(IdReciter)
                 : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
             }}
           />

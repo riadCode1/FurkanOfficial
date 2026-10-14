@@ -2,34 +2,39 @@ import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useGlobalContext } from "../../../context/GlobalProvider";
+import { Colors } from "../../../constants/Colors";
+import Goback from "../../../components/Goback";
 
-const _layout = () => {
+const SettingsLayout = () => {
   const { languages } = useGlobalContext();
+  const secondaryHeaderOptions = {
+    headerLeft: () => <Goback inline />,
+    headerBackVisible: false,
+    headerShadowVisible: false,
+    headerStyle: { backgroundColor: Colors.background },
+    headerTintColor: Colors.text,
+    headerTitleStyle: { color: Colors.text, fontWeight: "700" },
+  };
+
   return (
     <>
       <Stack>
         <Stack.Screen
           name="Setting"
-          options={{
-            animationDuration: 250,
-            animation: "fade",
-            headerShown: false,
-          }}
+          options={{ animationDuration: 250, animation: "fade", headerShown: false }}
         />
         <Stack.Screen
           name="Languagues"
-          options={{
-            animationDuration: 250,
-            animation: "fade",
-            headerShown: false,
-          }}
+          options={{ animationDuration: 250, animation: "fade", headerShown: false }}
         />
         <Stack.Screen
           name="Privacy"
           options={{
             animationDuration: 250,
             animation: "fade",
-            headerTitle: languages ? "الخصوصية و السياسة " : "Privacy & Policy",
+            headerTitle: languages ? "الخصوصية والسياسة" : "Privacy & Policy",
+            ...secondaryHeaderOptions,
+            headerShown: false,
           }}
         />
         <Stack.Screen
@@ -37,14 +42,15 @@ const _layout = () => {
           options={{
             animationDuration: 250,
             animation: "fade",
-            headerTitle: languages ? " شروط الخدمة" : "Terms & Conditions  ",
+            headerTitle: languages ? "شروط الخدمة" : "Terms & Conditions",
+            ...secondaryHeaderOptions,
+            headerShown: false,
           }}
         />
       </Stack>
-
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor={Colors.background} style="light" />
     </>
   );
 };
 
-export default _layout;
+export default SettingsLayout;

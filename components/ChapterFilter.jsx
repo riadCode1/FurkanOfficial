@@ -1,38 +1,18 @@
 import { View, Text, useWindowDimensions, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useRef } from "react";
 import { Image } from "expo-image";
-import { fetchChater } from "../app/API/QuranApi";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
-import LottieView from "lottie-react-native";
+import { useScrollToTop } from "../context/ScrollToTopProvider";
 
-const ChapterFilter = () => {
-  const [chapter, setChapter] = useState([]);
-  const [loading, setLoading] = useState(false);
-
+const ChapterFilter = ({ chapter = [] }) => {
   const { languages } = useGlobalContext();
   const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    getChapter();
-  }, [languages]);
-
-  const getChapter = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchChater();
-      if (data && data.chapters) {
-        setChapter(data.chapters);
-      }
-    } catch (error) {
-      console.error("Error fetching chapters:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const listRef = useRef(null);
+  const handleScroll = useScrollToTop(listRef);
 
   const handleNavigate = (name, chapter_arab, Chapterid) => {
     router.push({
@@ -47,23 +27,15 @@ const ChapterFilter = () => {
   return (
     <View style={styles.container}>
       <FlashList
-        contentContainerStyle={{ paddingBottom: 320 }}
+        ref={listRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 400 }}
         data={chapter}
         showsVerticalScrollIndicator={false}
         estimatedItemSize={75}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            {loading ? (
-              <View>
-                <LottieView
-                  source={require("../assets/images/Loading.json")}
-                  style={{ right: 70, width: 400, height: 50 }}
-                  autoPlay
-                  loop
-                />
-              </View>
-            ) : (
               <TouchableRipple
                 onPress={() =>
                   handleNavigate(item.name_simple, item.name_arabic, item.id)
@@ -98,8 +70,6 @@ const ChapterFilter = () => {
                   <View style={{ width: 45, height: 48, paddingLeft: 15 }} />
                 </View>
               </TouchableRipple>
-            )}
-          </View>
         )}
       />
     </View>
@@ -108,14 +78,15 @@ const ChapterFilter = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flex: 1,
     paddingVertical: 8,
   },
   playButton: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: 11,
+    borderRadius: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(169,177,188,0.12)",
   },
   imageContainer: {
     overflow: "hidden",
@@ -123,7 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 12,
   },
   image: {
     width: "100%",

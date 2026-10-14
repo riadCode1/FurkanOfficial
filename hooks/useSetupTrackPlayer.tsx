@@ -1,16 +1,22 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import TrackPlayer, { AddTrack, AppKilledPlaybackBehavior, Capability, RatingType, RepeatMode } from 'react-native-track-player'
+import { images } from '@/constants/images'
+
+let setupPromise: Promise<void> | null = null
 
 const setupPlayer = async () => {
 
 	
-	await TrackPlayer.setupPlayer({
-		maxCacheSize: 100 * 1024 * 1024, 
-		autoUpdateMetadata: false,
-		
-		
-		
-	})
+	try {
+		await TrackPlayer.setupPlayer({
+			maxCacheSize: 100 * 1024 * 1024,
+			autoUpdateMetadata: true,
+		})
+	} catch (error) {
+		if (!(error instanceof Error) || !error.message.includes('already been initialized')) {
+			throw error
+		}
+	}
 
 	await TrackPlayer.updateOptions({
 
@@ -18,10 +24,10 @@ const setupPlayer = async () => {
 		
 		ratingType: RatingType.Heart,
 		capabilities: [
+			Capability.SkipToPrevious,
 			Capability.Play,
 			Capability.Pause,
-			// Capability.SkipToNext,
-			// Capability.SkipToPrevious,
+			Capability.SkipToNext,
 			Capability.Stop,
 			
 			
@@ -29,14 +35,15 @@ const setupPlayer = async () => {
 		
 
 		notificationCapabilities:[
+			Capability.SkipToPrevious,
 			Capability.Play,
             Capability.Pause,
-            Capability.Stop,
+			Capability.SkipToNext,
 		],
 		compactCapabilities: [
+			Capability.SkipToPrevious,
             Capability.Play,
-            Capability.Pause,
-			
+			Capability.SkipToNext,
         ],
 		
 		
@@ -53,7 +60,8 @@ const setupPlayer = async () => {
 
 		
 		
-		icon: require('../assets/images/Logo.png'),
+		icon: images.trackPlayerIcon,
+		color: 0xff03dac5,
 		
 	})
 
@@ -64,20 +72,17 @@ const setupPlayer = async () => {
 }
 
 export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
-	const isInitialized = useRef(false)
-
 	useEffect(() => {
-		if (isInitialized.current) return
+		if (!setupPromise) {
+			setupPromise = setupPlayer().catch((error) => {
+				setupPromise = null
+				throw error
+			})
+		}
 
-		setupPlayer()
-			.then(() => {
-				isInitialized.current = true
-				onLoad?.()
-			})
-			.catch((error) => {
-				isInitialized.current = false
-				console.error(error)
-			})
+		setupPromise
+			.then(() => onLoad?.())
+			.catch((error) => console.error(error))
 	}, [onLoad])
 }
 export const playTrack = async (tracks: AddTrack[], index = 0) => {

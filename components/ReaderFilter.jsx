@@ -1,22 +1,20 @@
 import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import { Image } from "expo-image";
-import React, { useEffect, useState } from "react";
-import { fetchSuwar } from "../app/API/QuranApi";
+import React, { useRef } from "react";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { FlashList } from "@shopify/flash-list";
-import { NewData } from "../constants/NewData";
-import { dataArray } from "../constants/RecitersImages";
+import { getReciterImage } from "../constants/reciterArtwork";
 import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
-import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
+import { useScrollToTop } from "../context/ScrollToTopProvider";
 
-const ReaderFilter = () => {
-  const [reader, setReader] = useState([]);
-  const [loading, setLoading] = useState(false);
+const ReaderFilter = ({ reader = [] }) => {
   const { languages } = useGlobalContext();
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
+  const listRef = useRef(null);
+  const handleScroll = useScrollToTop(listRef);
 
   const handleNavigate = (arab_name, name, id) => {
     router.push({
@@ -25,57 +23,24 @@ const ReaderFilter = () => {
     });
   };
 
-  useEffect(() => {
-    getReciter();
-  }, [languages]);
-
-  const getReciter = async () => {
-    setLoading(true);
-    const data = await fetchSuwar();
-    if (data && data.recitations) {
-      const idSet = new Set();
-      const uniqueFetchedData = data.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) return false;
-        idSet.add(reciter.id);
-        return true;
-      });
-      const uniqueNewData = NewData.recitations.filter((reciter) => {
-        if (idSet.has(reciter.id)) return false;
-        idSet.add(reciter.id);
-        return true;
-      });
-      const combinedData = [...uniqueFetchedData, ...uniqueNewData];
-      setReader(combinedData.splice(1));
-    }
-    setLoading(false);
-  };
-
   const dynamicPadding = isTablet ? 32 : 16;
 
   return (
     <View style={styles.container}>
       <FlashList
-        contentContainerStyle={{ paddingBottom: 320 }}
+        ref={listRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 400 }}
         data={reader}
         showsVerticalScrollIndicator={false}
         estimatedItemSize={75}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            {loading ? (
-              <View>
-                <LottieView
-                  source={require("../assets/images/Loading.json")}
-                  style={{ right: 70, width: 400, height: 50 }}
-                  autoPlay
-                  loop
-                />
-              </View>
-            ) : (
               <TouchableRipple
                 onPress={() =>
                   handleNavigate(
-                    item?.translated_name.name,
+                    item?.translated_name?.name,
                     item?.reciter_name,
                     item?.id
                   )
@@ -96,8 +61,8 @@ const ReaderFilter = () => {
                         contentFit="cover"
                         style={styles.image}
                         source={{
-                          uri: dataArray[item.id]?.image
-                            ? dataArray[item.id]?.image
+                          uri: getReciterImage(item.id)
+                            ? getReciterImage(item.id)
                             : require("../assets/images/noImage.jpg"),
                         }}
                       />
@@ -107,8 +72,8 @@ const ReaderFilter = () => {
                       <Text style={styles.reciterText}>
                         {item.reciter_name}
                       </Text>
-                      <Text style={styles.reciterARText}>
-                        {item.translated_name.name}
+                        <Text style={styles.reciterARText}>
+                          {item.translated_name?.name}
                       </Text>
                     </View>
                   </View>
@@ -116,8 +81,6 @@ const ReaderFilter = () => {
                   <View style={{ width: 45, height: 48, paddingLeft: 15 }} />
                 </View>
               </TouchableRipple>
-            )}
-          </View>
         )}
       />
     </View>
@@ -126,14 +89,15 @@ const ReaderFilter = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flex: 1,
     paddingVertical: 8,
   },
   playButton: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: 11,
+    borderRadius: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(169,177,188,0.12)",
   },
   imageContainer: {
     overflow: "hidden",
@@ -141,7 +105,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 15,
   },
   image: {
     width: "100%",

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from "react";
+import "../global.css";
 import { router, SplashScreen, Stack } from "expo-router";
 import { Provider as PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ModalPortal } from "react-native-modals";
 import GlobalProvider from "../context/GlobalProvider";
-import { Slot } from "expo-router";
 
 import TrackPlayer from "react-native-track-player";
 import { useSetupTrackPlayer } from "@/hooks/useSetupTrackPlayer";
@@ -20,6 +20,7 @@ import SpInAppUpdates, {
   StartUpdateOptions,
 } from 'sp-react-native-in-app-updates';
 import { Colors } from "@/constants/Colors";
+import { ScrollToTopProvider } from "../context/ScrollToTopProvider";
 
 
 
@@ -55,12 +56,12 @@ console.log(inAppUpdates.startUpdate)
 // native tab bar 
 
  useEffect(() => {
-      NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+      NavigationBar.setBackgroundColorAsync(Colors.background);
       NavigationBar.setButtonStyleAsync('dark'); // or 'light'
   
       return () => {
         // Optional: reset on unfocus
-        NavigationBar.setBackgroundColorAsync(Colors.barbottom);
+        NavigationBar.setBackgroundColorAsync(Colors.background);
       };
    }, [])
 
@@ -73,10 +74,10 @@ console.log(inAppUpdates.startUpdate)
     onLoad: handleTrackPlayerLoaded,
   });
   useEffect(() => {
-    const handleDeepLink = (url) => {
+    const handleDeepLink = (url: string) => {
       if (url === "trackplayer://notification.click") {
         // Navigate to your player screen
-        router.navigate("Index"); // Replace with your navigation logic
+        router.navigate("/(tabs)/(Home)/Index"); // Replace with your navigation logic
       }
     };
 
@@ -108,15 +109,22 @@ console.log(inAppUpdates.startUpdate)
 
        
           <PaperProvider>
+            <ScrollToTopProvider>
             <Stack>
 
 
               
-              <Slot />
               <Stack.Screen
                 name="index"
                 options={{
                   statusBarBackgroundColor: "transparent",
+                  animation: "fade",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="onboarding"
+                options={{
                   animation: "fade",
                   headerShown: false,
                 }}
@@ -139,6 +147,7 @@ console.log(inAppUpdates.startUpdate)
               />
             </Stack>
             <ModalPortal />
+            </ScrollToTopProvider>
           </PaperProvider>
        
           

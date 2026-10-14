@@ -1,15 +1,13 @@
 import {
   View,
   Text,
-  TouchableOpacity,
   BackHandler,
-  Dimensions,
   StyleSheet,
   useWindowDimensions,
 } from "react-native";
-import React, { useEffect, useMemo, useRef } from "react";
-import { Image, ImageBackground } from "expo-image";
-import { dataArray } from "@/constants/RecitersImages";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Image } from "expo-image";
+import { getReciterImage } from "../constants/reciterArtwork";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
 import { useGlobalContext } from "../context/GlobalProvider";
@@ -19,6 +17,8 @@ import { router } from "expo-router";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import Modals from "../components/Modals";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
+import { StatusBar } from "expo-status-bar";
 
 const BottomBar = ({
   chapterId,
@@ -27,13 +27,15 @@ const BottomBar = ({
   reciterAR,
   arabicCH,
   idReader,
+  onSheetChange,
 }) => {
   const { languages, togglePlayback, isPlaying, setIsPlaying } =
     useGlobalContext();
 
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => [0.1, "100%"], []);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const snapPoints = useMemo(() => [height], [height]);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Handle remote play/pause events
   useEffect(() => {
@@ -51,14 +53,14 @@ const BottomBar = ({
     };
   }, []);
 
-  const handleCloseBottomSheet = () => {
+  const handleCloseBottomSheet = useCallback(() => {
     bottomSheetRef.current?.close();
-  };
+  }, []);
 
   // Handle Android back button
   useEffect(() => {
     const backAction = () => {
-      if (bottomSheetRef.current) {
+      if (sheetOpen) {
         handleCloseBottomSheet();
         return true;
       }
@@ -71,7 +73,7 @@ const BottomBar = ({
     );
 
     return () => backHandler.remove();
-  }, []);
+  }, [handleCloseBottomSheet, sheetOpen]);
 
   const handleNavigate = () => {
     router.push({
@@ -85,12 +87,16 @@ const BottomBar = ({
   };
 
   // Responsive width adjustment (was media query)
-  const playTextWidth = width >= 700 ? "90%" : "82%";
-   const bottomB = width >= 768 ? 90 : 80;
+  const bottomB = (width >= 768 ? 90 : 80) + 14;
 
   return (
     <>
-      <SafeAreaView style={{ position: "absolute", bottom: bottomB }}>
+      {sheetOpen && (
+        <StatusBar style="light" backgroundColor="transparent" translucent />
+      )}
+      <SafeAreaView
+        style={{ position: "absolute", left: 0, right: 0, bottom: bottomB }}
+      >
         <TouchableRipple
           rippleColor="rgba(200, 200, 200, 0.1)"
           onPress={handleOpenBottomSheet}
@@ -98,13 +104,19 @@ const BottomBar = ({
           borderless
         >
           <View style={styles.row}>
+            <BlurView
+              pointerEvents="none"
+              intensity={82}
+              tint="dark"
+              style={styles.blurBackground}
+            />
             <TouchableRipple onPress={handleNavigate}>
               <View style={styles.imageContainer}>
                 <Image
                   style={styles.image}
                   source={{
-                    uri: dataArray[idReader]?.image
-                      ? dataArray[idReader]?.image
+                  uri: getReciterImage(idReader)
+                    ? getReciterImage(idReader)
                       : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
                   }}
                   contentFit="cover"
@@ -112,12 +124,12 @@ const BottomBar = ({
               </View>
             </TouchableRipple>
 
-            <View style={[styles.playText, { width: playTextWidth }]}>
+            <View style={styles.playText}>
               <View style={styles.textContainer}>
-                <Text style={styles.chapterText}>
+                <Text numberOfLines={1} style={styles.chapterText}>
                   {languages ? arabicCH : chapterId}
                 </Text>
-                <Text style={styles.reciterText}>
+                <Text numberOfLines={1} style={styles.reciterText}>
                   {languages ? reciterAR : name}
                 </Text>
               </View>
@@ -129,11 +141,11 @@ const BottomBar = ({
                 borderless
                 style={styles.iconButton}
               >
-                {isPlaying ? (
-                  <MaterialIcons name="pause" size={30} color={Colors.blue} />
-                ) : (
-                  <MaterialIcons name="play-arrow" size={30} color={Colors.blue} />
-                )}
+                <MaterialIcons
+                  name={isPlaying ? "pause" : "play-arrow"}
+                  size={28}
+                  color={Colors.background}
+                />
               </TouchableRipple>
             </View>
           </View>
@@ -142,28 +154,28 @@ const BottomBar = ({
 
       <BottomSheet
         ref={bottomSheetRef}
+        index={-1}
         snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        topInset={0}
+        bottomInset={0}
+        onChange={(index) => {
+          const isOpen = index >= 0;
+          setSheetOpen(isOpen);
+          setModalVisible(isOpen);
+          onSheetChange?.(isOpen);
+        }}
         enablePanDownToClose={true}
         enableContentPanningGesture={true}
         enableHandlePanningGesture={true}
         overDragResistanceFactor={0}
         enableOverDrag={false}
-        handleComponent={() => <View style={styles.handleContainer} />}
+        backgroundStyle={styles.sheetBackground}
+        handleComponent={null}
       >
-        <View
-          style={{
-            width: "100%",
-            height: "100%",
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
-            overflow: "hidden",
-            backgroundColor: Colors.background,
-          }}
-        >
-          <BottomSheetView style={styles.sheetContent}>
-            <Modals handleCloseBottomSheet={handleCloseBottomSheet} />
-          </BottomSheetView>
-        </View>
+        <BottomSheetView style={styles.sheetContent}>
+          <Modals handleCloseBottomSheet={handleCloseBottomSheet} />
+        </BottomSheetView>
       </BottomSheet>
     </>
   );
@@ -171,62 +183,75 @@ const BottomBar = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderTopWidth: 3,
-    borderColor: Colors.blue,
-    height: 60,
-    borderRadius: 8,
-    backgroundColor: Colors.barbottom,
-    alignSelf: "center",
+    marginHorizontal: 10,
+    height: 64,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(3, 218, 197, 0.24)",
+    backgroundColor: "rgba(7, 20, 38, 0.78)",
+    alignSelf: "stretch",
     overflow: "hidden",
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
+    height: "100%",
   },
-  handleContainer: {
-    alignItems: "center",
+  blurBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(52, 53, 68, 0.3)",
+  },
+  sheetBackground: {
+    backgroundColor: "#121212",
+    borderRadius: 0,
   },
   sheetContent: {
     flex: 1,
     height: "100%",
   },
   imageContainer: {
-    width: 60,
-    height: 60,
+    width: 48,
+    height: 48,
+    marginStart: 8,
+    borderRadius: 12,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: "100%",
+    borderRadius: 12,
   },
   textContainer: {
-    paddingHorizontal: 9,
-    paddingVertical: 16,
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     alignItems: "flex-start",
   },
   chapterText: {
-    fontSize: 16,
-    color: "#FFFFFF",
+    fontSize: 14,
+    color: Colors.text,
     fontWeight: "600",
   },
   reciterText: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.textGray,
   },
   iconButton: {
     justifyContent: "center",
     alignItems: "center",
-    height: 58,
-    width: 58,
+    height: 42,
+    width: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.blue,
+    marginHorizontal: 10,
   },
   playText: {
-    justifyContent: "space-between",
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    minWidth: 0,
   },
 });
 

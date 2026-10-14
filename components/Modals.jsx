@@ -16,7 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../context/GlobalProvider";
 import Dropmenu from "./Dropmenu";
 import { Colors } from "../constants/Colors";
-import { dataArray } from "../constants/RecitersImages";
+import { images } from "../constants/images";
+import { getReciterImage } from "../constants/reciterArtwork";
 import { Image } from "expo-image";
 import ImageColors from "react-native-image-colors";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
@@ -25,8 +26,6 @@ const Modals = ({ handleCloseBottomSheet }) => {
   const {
     setModalVisible,
     chapterId,
-    duration,
-    position,
     reciter,
     reciterAR,
     isPlaying,
@@ -45,12 +44,12 @@ const Modals = ({ handleCloseBottomSheet }) => {
 
   const progress = useProgress();
   const [backgroundColor, setBackgroundColor] = useState(Colors.background);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   // Fetch dominant image color
   useEffect(() => {
     const fetchColors = async () => {
-      const uri = dataArray[idReader]?.image;
+      const uri = getReciterImage(idReader);
       if (!uri) return;
 
       try {
@@ -107,11 +106,17 @@ const Modals = ({ handleCloseBottomSheet }) => {
     return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  const imageSize = width > 700 ? width * 0.6 : width * 0.85;
-  const controlPadding = width > 768 ? 200 : 16;
+  const imageSize = Math.min(width * (width > 700 ? 0.58 : 0.82), height * 0.39, 360);
+  const controlPadding = width > 768 ? 80 : 12;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[backgroundColor, "#121212", "#121212"]}
+        locations={[0, 0.42, 1]}
+        style={StyleSheet.absoluteFill}
+      />
       {/* Header */}
       <View
         style={[
@@ -119,28 +124,23 @@ const Modals = ({ handleCloseBottomSheet }) => {
           { paddingHorizontal: width > 768 ? 32 : 16 },
         ]}
       >
+        <Image
+          source={images.trackPlayerIcon}
+          style={styles.headerLogo}
+          contentFit="contain"
+          accessibilityLabel="App logo"
+        />
+
+        <Text style={styles.nowPlayingLabel}>{languages ? "قيد التشغيل" : "NOW PLAYING"}</Text>
+
         <TouchableRipple
           onPress={handleCloseBottomSheet}
           rippleColor="rgba(255, 255, 255, 0.2)"
           style={styles.backButton}
           borderless
+          accessibilityLabel="Close player"
         >
           <MaterialIcons name="keyboard-arrow-down" size={24} color="white" />
-        </TouchableRipple>
-
-        <TouchableRipple
-          rippleColor="rgba(255, 255, 255, 0.2)"
-          style={styles.backButton}
-          borderless
-        >
-          <Dropmenu
-            chapter={chapterId}
-            reciterName={reciter}
-            reciterID={idReader}
-            arabName={reciterAR}
-            chapterAr={arabicCH}
-            chapteID={IDchapter}
-          />
         </TouchableRipple>
       </View>
 
@@ -156,7 +156,7 @@ const Modals = ({ handleCloseBottomSheet }) => {
             style={styles.image}
             source={{
               uri:
-                dataArray[idReader]?.image ||
+                getReciterImage(idReader) ||
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
             }}
             contentFit="cover"
@@ -166,20 +166,31 @@ const Modals = ({ handleCloseBottomSheet }) => {
 
       {/* Progress & Info */}
       <View style={styles.progressContainer}>
-        <View style={styles.textContainer}>
-          <Text style={styles.chapterText}>
-            {languages ? arabicCH : chapterId}
-          </Text>
-          <Text style={styles.reciterText}>
-            {languages ? reciterAR : reciter}
-          </Text>
+        <View style={styles.trackInfoRow}>
+          <View style={styles.textContainer}>
+            <Text numberOfLines={1} style={[styles.chapterText, { textAlign: languages ? "right" : "left" }]}>
+              {languages ? arabicCH : chapterId}
+            </Text>
+            <Text numberOfLines={1} style={styles.reciterText}>
+              {languages ? reciterAR : reciter}
+            </Text>
+          </View>
+          <View style={styles.menuActions}>
+            <Dropmenu
+              chapter={chapterId}
+              reciterName={reciter}
+              reciterID={idReader}
+              arabName={reciterAR}
+              chapterAr={arabicCH}
+              chapteID={IDchapter}
+            />
+          </View>
         </View>
 
         <MultiSlider
-          values={[position]}
+          values={[progress.position]}
           min={0}
-          
-          max={duration || 1}
+          max={progress.duration || 1}
           step={2}
           sliderLength={width * 0.9}
           onValuesChangeFinish={async (values) =>
@@ -202,15 +213,15 @@ const Modals = ({ handleCloseBottomSheet }) => {
                 height: 20,
                 top: 2,
                 borderRadius: 10,
-                backgroundColor: Colors.blue,
+              backgroundColor: Colors.blue,
               }}
             />
           )}
         />
 
         <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{formatTime(position)}</Text>
-          <Text style={styles.timeText}>{formatTime(duration)}</Text>
+          <Text style={styles.timeText}>{formatTime(progress.position)}</Text>
+          <Text style={styles.timeText}>{formatTime(progress.duration)}</Text>
         </View>
 
         {/* Controls */}
@@ -219,20 +230,21 @@ const Modals = ({ handleCloseBottomSheet }) => {
         >
           {/* Shuffle */}
           <TouchableRipple
-            onPress={() => setShuffle(true)}
+            onPress={() => setShuffle((enabled) => !enabled)}
             borderless
             rippleColor="rgba(255, 255, 255, 0.3)"
             style={[
               styles.controlButton,
-              { backgroundColor: shuffle ? "#5C63A3" : "transparent" },
+              { backgroundColor: "transparent" },
             ]}
           >
-            <MaterialIcons name="shuffle" size={30} color="white" />
+            <MaterialIcons name="shuffle" size={28} color={shuffle ? Colors.blue : Colors.textGray} />
           </TouchableRipple>
 
           {/* Previous */}
           <TouchableRipple
             onPress={playPrevious}
+            accessibilityLabel="Previous surah"
             borderless
             rippleColor="rgba(255, 255, 255, 0.3)"
             style={styles.iconControl}
@@ -265,6 +277,7 @@ const Modals = ({ handleCloseBottomSheet }) => {
           {/* Next */}
           <TouchableRipple
             onPress={playNext}
+            accessibilityLabel="Next surah"
             borderless
             rippleColor="rgba(255, 255, 255, 0.3)"
             style={styles.iconControl}
@@ -283,20 +296,14 @@ const Modals = ({ handleCloseBottomSheet }) => {
             rippleColor="rgba(255, 255, 255, 0.3)"
             style={[
               styles.controlButton,
-              { backgroundColor: !shuffle ? "#5C63A3" : "transparent" },
+              { backgroundColor: "transparent" },
             ]}
           >
-            <MaterialIcons name="repeat" size={30} color="white" />
+            <MaterialIcons name="repeat" size={28} color={!shuffle ? Colors.blue : Colors.textGray} />
           </TouchableRipple>
         </View>
       </View>
 
-      <LinearGradient
-        colors={["transparent", "#181A3C", "rgba(0,0,0,1)"]}
-        style={styles.gradient}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 2 }}
-      />
     </SafeAreaView>
   );
 };
@@ -306,11 +313,12 @@ export default Modals;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 8,
+    paddingTop: 2,
+    backgroundColor: "#121212",
   },
   header: {
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -321,40 +329,74 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 44,
     height: 44,
-    backgroundColor: Colors.barbottom,
+    backgroundColor: "rgba(236, 237, 238, 0.1)",
+  },
+  headerLogo: { width: 44, height: 44 },
+  nowPlayingLabel: {
+    color: Colors.text,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1.1,
+  },
+  headerSpacer: { width: 44, height: 44 },
+  menuActions: {
+    width: 88,
+    height: 44,
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
   imageContainer: {
     alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 1,
   },
   imageWrapper: {
     alignItems: "center",
+    borderRadius: 18,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.04)",
+    elevation: 18,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
   },
   image: {
     width: "100%",
     height: "100%",
-    borderColor: Colors.blue,
-    borderRadius: 10,
+    borderRadius: 18,
+  },
+  trackInfoRow: {
+    width: "90%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 22,
   },
   textContainer: {
-    alignItems: "center",
-    marginTop: 24,
+    flex: 1,
+    minWidth: 0,
+    alignItems: "flex-start",
+    paddingEnd: 8,
   },
   chapterText: {
-    color: "white",
+    color: Colors.text,
     fontSize: 24,
     fontWeight: "bold",
   },
   reciterText: {
-    color: "#D1D5DB",
+    color: Colors.textGray,
     fontSize: 16,
+    marginTop: 5,
   },
   progressContainer: {
     alignItems: "center",
+    paddingTop: 4,
   },
   timeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 12,
     width: "90%",
   },
   timeText: {
@@ -366,12 +408,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginTop: 12,
+    marginTop: 6,
   },
   playPauseButton: {
     backgroundColor: Colors.blue,
-    width: 64,
-    height: 64,
+    width: 72,
+    height: 72,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 90,
@@ -384,12 +426,5 @@ const styles = StyleSheet.create({
   iconControl: {
     borderRadius: 50,
     padding: 10,
-  },
-  gradient: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    zIndex: -1,
-    bottom: 0,
   },
 });

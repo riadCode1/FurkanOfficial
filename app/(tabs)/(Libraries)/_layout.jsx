@@ -15,7 +15,7 @@ const _layout = () => {
           }}
         />
         <Stack.Screen
-          name="PlayLists"
+          name="[playlistId]"
           options={{
             animationDuration: 250,
             animation: "ios_from_right",
@@ -24,7 +24,7 @@ const _layout = () => {
         />
       </Stack>
 
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#071426" style="light" />
     </>
   );
 };

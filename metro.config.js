@@ -1,5 +1,6 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
 
 const {
     wrapWithReanimatedMetroConfig,
@@ -8,4 +9,6 @@ const {
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-module.exports = wrapWithReanimatedMetroConfig(config);
+module.exports = wrapWithReanimatedMetroConfig(
+  withNativeWind(config, { input: './global.css' })
+);

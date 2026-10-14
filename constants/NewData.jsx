@@ -1,5 +1,26 @@
+const islamSobhiAudioFiles = Array.from({ length: 114 }, (_, index) => {
+  const chapterId = index + 1;
+  const paddedChapterId = String(chapterId).padStart(3, "0");
+
+  return {
+    chapter_id: chapterId,
+    audio_url: `https://cdn.mp3quran.net/audio/islam-sobhi/r1/${paddedChapterId}.mp3`,
+  };
+});
+
 export const NewData = {
   "recitations": [
+    {
+      id: 1001,
+      reciter_name: "Islem Subhi",
+      style: "Murattal",
+      translated_name: {
+        name: "سلام صبحي",
+        language_name: "arabic",
+      },
+      image: "https://storage.googleapis.com/way2quran_storage/imgs/islam-sobhi.jpg",
+      audio_files: islamSobhiAudioFiles,
+    },
     {
       id: 10,
       reciter_name: "saud ash-shuraym",

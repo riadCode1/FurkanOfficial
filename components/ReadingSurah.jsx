@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { TouchableRipple } from "react-native-paper";
 import LottieView from "lottie-react-native";
 import { Colors } from "../constants/Colors";
+import { images } from "../constants/images";
 
 const ReadingSurah = ({
   chapter_arab,
@@ -13,6 +14,7 @@ const ReadingSurah = ({
   Chapterid,
   verses,
   loading,
+  cardWidth,
 }) => {
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= 768;
@@ -26,23 +28,27 @@ const ReadingSurah = ({
 
   const dynamicStyles = StyleSheet.create({
     cardContainer: {
-      width: isLargeScreen ? width * 2 : width * 0.85,
-      marginBottom: 8,
-      paddingVertical: 8,
+      width: cardWidth || (isLargeScreen ? width * 0.55 : width * 0.82),
+      minHeight: 84,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
       flexDirection: "row",
       alignItems: "center",
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: "rgba(75, 142, 224, 0.3)",
+      backgroundColor: "#0b1b4b",
     },
     Loti: {
-      width: isLargeScreen ? 156 : 160,
-      height: isLargeScreen ? 156 : 60,
-      marginBottom: 12,
+      width: cardWidth || (isLargeScreen ? width * 0.55 : width * 0.82),
+      height: 84,
       borderRadius: 5,
       overflow: "hidden",
       justifyContent: "space-between",
     },
     imageContainer: {
-      width: isLargeScreen ? 100 : 60,
-      height: isLargeScreen ? 100 : 60,
+      width: isLargeScreen ? 72 : 60,
+      height: isLargeScreen ? 72 : 60,
       borderColor: Colors.blue,
       borderRadius: 8,
       borderWidth: 1,
@@ -53,7 +59,8 @@ const ReadingSurah = ({
       height: "100%",
     },
     textContainer: {
-      marginTop: 8,
+      flex: 1,
+      marginTop: 0,
       alignItems: "flex-start",
     },
     chapterTitle: {
@@ -101,7 +108,7 @@ const ReadingSurah = ({
               <Image
                 style={dynamicStyles.image}
                 resizeMode="contain"
-                source={require("../assets/images/quranLogo.jpeg")}
+                source={images.quranCover}
               />
             </View>
 

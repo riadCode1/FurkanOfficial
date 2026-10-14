@@ -2,11 +2,11 @@ import React, { useMemo } from "react";
 import { View, Text, useWindowDimensions } from "react-native";
 import Dropmenu from "./Dropmenu";
 import { Image } from "expo-image";
-import { dataArray } from "../constants/RecitersImages";
+import { getReciterImage } from "../constants/reciterArtwork";
 import { TouchableRipple } from "react-native-paper";
 import { Colors } from "../constants/Colors";
-import LottieView from "lottie-react-native";
 import { useGlobalContext } from "../context/GlobalProvider";
+import { isTrackSelected } from "../constants/trackSelection";
 
 const ListenComp = React.memo(
   ({
@@ -21,10 +21,11 @@ const ListenComp = React.memo(
     chapterAr,
     Chapterid,
     index,
-    handleClick,
+    showTrackSelection,
   }) => {
-    const { color, loading } = useGlobalContext();
+    const { color, color2 } = useGlobalContext();
     const { width } = useWindowDimensions();
+    const isSelected = showTrackSelection && isTrackSelected(color, color2, id, Chapterid);
 
     // Adjust layout dynamically
     const isLargeScreen = width > 768;
@@ -39,19 +40,18 @@ const ListenComp = React.memo(
     const imageSource = useMemo(
       () => ({
         uri:
-          dataArray[id]?.image ||
+          getReciterImage(id) ||
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzCTMhnLo43ZCkuSoHwfvO8sj3nLMJLU9_EA&s",
       }),
-      [id, color]
+      [id]
     );
 
     // Memoize the main content to prevent unnecessary re-renders
     const mainContent = useMemo(
       () => (
-        <View style={color === id ? styles.activeColor : null}>
+        <View style={isSelected ? styles.activeColor : null}>
           <TouchableRipple
             onPress={() => {
-              handleClick(id);
               handleReciterSelect(id, index);
             }}
             activeOpacity={0.7}
@@ -98,15 +98,15 @@ const ListenComp = React.memo(
         </View>
       ),
       [
-        color,
+        isSelected,
         id,
         imageSource,
         formattedName,
         languages,
         chapterAr,
         chapterName,
-        handleClick,
         handleReciterSelect,
+        index,
         handleReciterDrop,
         arabName,
         reciterName,
@@ -116,40 +116,16 @@ const ListenComp = React.memo(
       ]
     );
 
-    return (
-      <View>
-        {loading ? (
-          <View
-            style={[
-              styles.lottie,
-              {
-                right: isLargeScreen ? 270 : 70,
-              },
-            ]}
-          >
-            <LottieView
-              source={require("../assets/images/Loading.json")}
-              style={{ width: "100%", height: "100%" }}
-              autoPlay
-              loop
-            />
-          </View>
-        ) : (
-          mainContent
-        )}
-      </View>
-    );
+    return <View>{mainContent}</View>;
   }
 );
+
+ListenComp.displayName = "ListenComp";
 
 const styles = {
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  lottie: {
-    width: "100%",
-    height: 50,
   },
   listItem: {
     flexDirection: "row",
@@ -186,7 +162,7 @@ const styles = {
   textContainer: {
     justifyContent: "center",
     alignItems: "flex-start",
-    marginLeft: 12,
+    marginStart: 12,
     flexShrink: 1,
   },
   reciterName: {

@@ -1,14 +1,23 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalContext } from "../../../context/GlobalProvider";
+import Goback from "../../../components/Goback";
+import { useScrollToTop } from "../../../context/ScrollToTopProvider";
 
 const Privacy = () => {
+  const scrollRef = useRef(null);
+  const handleScroll = useScrollToTop(scrollRef);
   const { languages } = useGlobalContext();
 
   return (
-    <>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <View style={styles.header}>
+        <Goback inline />
+        <Text style={styles.headerTitle}>{languages ? "الخصوصية والسياسة" : "Privacy & Policy"}</Text>
+      </View>
       {languages ? (
-        <ScrollView contentContainerStyle={{ paddingBottom: 200 }} style={styles.container}>
+        <ScrollView ref={scrollRef} onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.content} style={styles.container}>
           <Text style={styles.title}>سياسة الخصوصية</Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>تاريخ آخر تحديث:</Text> [23-03-2025]
@@ -55,7 +64,7 @@ const Privacy = () => {
           </Text>
         </ScrollView>
       ) : (
-        <ScrollView contentContainerStyle={{ paddingBottom: 200 }} style={styles.container}>
+        <ScrollView ref={scrollRef} onScroll={handleScroll} scrollEventThrottle={16} contentContainerStyle={styles.content} style={styles.container}>
           <Text style={styles.title}>Privacy Policy</Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Last Updated:</Text> [23-03-2025]
@@ -102,26 +111,45 @@ const Privacy = () => {
           </Text>
         </ScrollView>
       )}
-    </>
+    </SafeAreaView>
   );
 };
 
 export default Privacy;
 
 const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#071426" },
+  header: { minHeight: 58, flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 18 },
+  headerTitle: { color: "#ffffff", fontSize: 17, fontWeight: "700" },
   container: {
-    padding: 20,
+    flex: 1,
+    backgroundColor: "#071426",
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 150,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    color: "#06dce7",
+    fontSize: 26,
+    fontWeight: "800",
+    letterSpacing: -0.4,
+    marginBottom: 16,
+    paddingHorizontal: 2,
   },
   text: {
-    fontSize: 16,
-    lineHeight: 24,
+    color: "#d8e2f2",
+    backgroundColor: "#0b1b35",
+    borderColor: "rgba(75,142,224,0.28)",
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 18,
+    fontSize: 15,
+    lineHeight: 25,
   },
   bold: {
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontWeight: "700",
   },
 });

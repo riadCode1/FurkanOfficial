@@ -13,6 +13,9 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      },
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -21,6 +24,7 @@
     "android": {
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
         "FOREGROUND_SERVICE",
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -77,7 +81,10 @@
       ],
       "expo-font",
       [
-        "expo-notifications"
+        "expo-notifications",
+        {
+          "sounds": ["./assets/audio/adhan.wav"]
+        }
       ],
       "expo-video",
       [

@@ -39,4 +39,11 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# local tool metadata and symlinked skill folders
+.agents/
+.claude/
+.history/
+.vscode/*
+skills/*
+
 app-example

@@ -1,12 +1,12 @@
-import { View, StyleSheet, Animated, Dimensions } from "react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useGlobalContext } from "../context/GlobalProvider";
 import { Colors } from "../constants/Colors";
 
 import ListenComp from "./ListenComp";
 import { FlashList } from "@shopify/flash-list";
 
-let { width, height } = Dimensions.get("window");
+let { height } = Dimensions.get("window");
 
 const Listen = ({
   searchQuery,
@@ -16,17 +16,14 @@ const Listen = ({
   chapterAr,
   quranData,
   Chapterid,
-  scrollY,
   chapterName,
+  showTrackSelection = false,
 }) => {
   const [audioUri, setAudioUri] = useState(null);
   const [mp3, setMp3] = useState(null);
-  const flashListRef = useRef(null);
-  const [i, setI] = useState(null);
-
  
 
-  const { setTrackList, setIDreader, playTrack, color, setColor } =
+  const { setIDreader, playTrack } =
     useGlobalContext();
 
   // Fetch audio URL based on reciter ID
@@ -59,13 +56,6 @@ const Listen = ({
       },
       Chapterid
     );
-    const trackList = quranData.map((data) => ({
-      id: Chapterid,
-      titleAR: chapterAr,
-      title: chapterName,
-      artist: quranData,
-    }));
-    setTrackList(trackList);
   };
 
   const handleReciterDrop = async (reciterId) => {
@@ -80,18 +70,10 @@ const Listen = ({
     // 
   }, [searchQuery, Chapterid, quranData, chapterName]);
 
-  const handleClick = useCallback(
-    (id) => {
-      setColor(id);
-    },
-    [color]
-  );
-
   return (
     <View style={styles.container}>
       <FlashList
         scrollEnabled={false}
-        ref={flashListRef}
         contentContainerStyle={{
           paddingBottom: 150,
         }}
@@ -101,10 +83,6 @@ const Listen = ({
         windowSize={20} // Reduce offscreen items
         updateCellsBatchingPeriod={50}
         removeClippedSubviews={true}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
         keyExtractor={( item) => item.id?.toString()} // No need for toString() if id is already a string
         renderItem={({ item, index  }) => (
           <ListenComp
@@ -118,10 +96,9 @@ const Listen = ({
             chapterName={chapterName}
             languages={languages}
             mp3={searchQuery.length > 1 ? audioUri : mp3}
-            color={color}
             handleReciterDrop={handleReciterDrop}
             Chapterid={Chapterid}
-            handleClick={handleClick}
+            showTrackSelection={showTrackSelection}
           />
         )}
       />
@@ -164,7 +141,7 @@ const styles = StyleSheet.create({
   button: {
     position: "absolute",
     bottom: height * 0.25,
-    right: 20,
+    end: 20,
     backgroundColor: Colors.tint,
     borderRadius: 50,
     padding: 15,
@@ -190,7 +167,7 @@ const styles = StyleSheet.create({
   textContainer: {
     justifyContent: "center",
     alignItems: "flex-start",
-    marginLeft: 12,
+    marginStart: 12,
   },
   reciterName: {
     color: "white",
